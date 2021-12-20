@@ -2,7 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>/authors/</loc>
+    <loc>/</loc>
+    <lastmod>2021-12-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/about/</loc>
     <lastmod>2021-12-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/argocd/</loc>
@@ -172,8 +175,5 @@
   </url><url>
     <loc>/posts/nginx-oauth2-oidc-series/</loc>
     <lastmod>2020-05-10T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/</loc>
-    <lastmod>2018-11-28T15:14:39+10:00</lastmod>
   </url>
 </urlset>

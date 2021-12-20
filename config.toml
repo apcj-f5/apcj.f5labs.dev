@@ -30,8 +30,8 @@ paginate = 5
     [languages.en.menu]
       [[languages.en.menu.main]]
         identifier = "about"
-        name = "Authors"
-        url = "/authors"
+        name = "About"
+        url = "/about"
       [[languages.en.menu.main]]
         identifier = "posts"
         name = "Posts"
