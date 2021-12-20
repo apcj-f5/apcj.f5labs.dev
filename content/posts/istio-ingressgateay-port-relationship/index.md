@@ -1,5 +1,5 @@
 ---
-title: 'The rule of Istio Gateway port definition'
+title: 'Istio | The role of Istio Gateway port definition'
 subtitle: 'Translate by google'
 summary: Dont set wrong port in Gateway.
 authors:

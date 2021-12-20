@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nginx on apcj@f5 technical blog</title>
+    <title>nginx on apcj@f5 blog</title>
     <link>/tags/nginx/</link>
-    <description>Recent content in nginx on apcj@f5 technical blog</description>
+    <description>Recent content in nginx on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/nginx/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>NGINX Unit</title>
+      <title>Development | NGINX Unit</title>
       <link>/posts/development/nginx-unit/</link>
       <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
       
@@ -16,24 +16,453 @@
       <description>Intro I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software. I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:
  Open Source Super cool software Extensible Makes my life as a developer easier  It pretty much ticks all the boxes.
 What is it? This one is a little harder to answer.</description>
+      <content>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software.
+I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Open Source&lt;/li&gt;
+&lt;li&gt;Super cool software&lt;/li&gt;
+&lt;li&gt;Extensible&lt;/li&gt;
+&lt;li&gt;Makes my life as a developer easier&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It pretty much ticks all the boxes.&lt;/p&gt;
+&lt;h2 id=&#34;what-is-it&#34;&gt;What is it?&lt;/h2&gt;
+&lt;p&gt;This one is a little harder to answer.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It&amp;rsquo;s a lot of things&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ll let the &lt;a href=&#34;https://unit.nginx.org&#34;&gt;unit webpage&lt;/a&gt; do the talking here:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;NGINX Unit is a polyglot app server, a reverse proxy, and a static file server, available for Unix-like systems.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Dare I say it&amp;rsquo;s a lot more than that though.&lt;/p&gt;
+&lt;h2 id=&#34;in-a-nutshell&#34;&gt;In a nutshell&lt;/h2&gt;
+&lt;p&gt;In a nutshell, if I had to describe it I would say it&amp;rsquo;s a multi language application server that has a declarative configuration and description interface.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s wordy but that&amp;rsquo;s what it is to me.&lt;/p&gt;
+&lt;h2 id=&#34;why-is-this-important&#34;&gt;Why is this important?&lt;/h2&gt;
+&lt;p&gt;In a modern application ecosystem I have many services written in multiple languages.
+Some of these will be written in spring, some will be written in golang and some will be written in nodejs as examples.&lt;/p&gt;
+&lt;p&gt;This is great because every team writes services the way that best fits them and makes sense for the delivery of that particular service. It lets teams operate at the speed they&amp;rsquo;re comfortable with and means that services get delivered in the best way.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What if I want services in different languages to coexist together?&lt;/li&gt;
+&lt;li&gt;What if I want to describe my services in a common way?&lt;/li&gt;
+&lt;li&gt;What I don&amp;rsquo;t want my pipelines to be brittle and I want them to be templated?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is why I think Unit is important.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/images/unit.JPG&#34; alt=&#34;unit.JPG&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;multiple-languages&#34;&gt;Multiple languages&lt;/h2&gt;
+&lt;p&gt;NGINX Unit allows you to use multiple langugaes. In a modern application architecture, this is a very common thing to want to do.
+Multiple services, written by different teams in different languages - this is a completely common scenario.&lt;/p&gt;
+&lt;p&gt;NGINX Unit allows you to deploy services written in multiple different languages on the same application server.
+This makes deployment easier and makes the whole dev experience a lot easier also.&lt;/p&gt;
+&lt;h2 id=&#34;declarative-configuration&#34;&gt;Declarative configuration&lt;/h2&gt;
+&lt;p&gt;NGINX Unit has a REST based declarative configuration.
+This is one of the other very nice things about Unit -  everything in the configuration is declarative. With a declarative configuration, everything is real time, and I don&amp;rsquo;t need to worry about restarting applications.&lt;/p&gt;
+&lt;p&gt;A simple configuration looks something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;{
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;listeners&amp;#34;&lt;/span&gt;: {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;*:8080&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;applications/python&amp;#34;&lt;/span&gt;
+                },
+
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;*:80&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;routes&amp;#34;&lt;/span&gt;
+                }
+        },
+
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;routes&amp;#34;&lt;/span&gt;: [
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;share&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/pacman-unit/&amp;#34;&lt;/span&gt;
+                        }
+                }
+        ],
+
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;applications&amp;#34;&lt;/span&gt;: {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;path&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/git-pull-api/&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;module&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wsgi&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;callable&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;app&amp;#34;&lt;/span&gt;
+                }
+        }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;components&#34;&gt;Components&lt;/h2&gt;
+&lt;p&gt;Each component of the configuration above allows you to step through connecting to, and serving my application.
+A picutre is worth a thousand words here, so here is one that I like as it explains the concepts of unit nicely.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/images/unit-config.JPG&#34; alt=&#34;unit-config.JPG&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Listeners expose the application publicly, and can have characteristics like ports, certificates, names and so on.
+Listeners can pass to either routes or directly to applications. In the case above, my first listener passes directly to my application named &amp;ldquo;python&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;My second listener passes to a route. While I only have one route, it is possible to have multiple routes. Each route can have multiple conditions or matches and actions. In the case above, the route simply passes to a directory that serves out a static website (and yes it&amp;rsquo;s pacman).&lt;/p&gt;
+&lt;p&gt;Routes in unit are handled by a separate router process. This software based router handles request routing for unit.&lt;/p&gt;
+&lt;p&gt;A more complex route block looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;routes&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt; [
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;match&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;static.svkcode.org&amp;#34;&lt;/span&gt;
+                        },
+
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;share&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/pacman-canvas&amp;#34;&lt;/span&gt;
+                        }
+                },
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;match&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;api.svkcode.org&amp;#34;&lt;/span&gt;
+                        },
+
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;upstreams/rr-lb&amp;#34;&lt;/span&gt;
+                        }
+                },
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;match&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jsp.svkcode.org&amp;#34;&lt;/span&gt;
+                        },
+
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;applications/java&amp;#34;&lt;/span&gt;
+                        }
+                }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Each route in this case passes to a different application based on the incoming host header. In this way, the unit router can be used to handle incoming request routing at a very granular level.&lt;/p&gt;
+&lt;p&gt;My application block is the last piece of the puzzle here.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;applications&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt; {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;path&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/git-pull-api/&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;module&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wsgi&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;callable&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;app&amp;#34;&lt;/span&gt;
+                }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;My application block tells unit to run my application.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;That&amp;rsquo;s right unit is an application server.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The example above is a python application, but unit can also run nodejs, java, golang, perl (yes really - though I haven&amp;rsquo;t tried it), php, ruby, python and so on.&lt;/p&gt;
+&lt;p&gt;The intention here is that unit handles instantiating the application and everything is configured via the declarative configuration language of unit in real time.&lt;/p&gt;
+&lt;h2 id=&#34;low-barrier-to-adoption&#34;&gt;Low barrier to adoption&lt;/h2&gt;
+&lt;p&gt;Unit offers a very low barrier to entry.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The concepts are simple and sensible.&lt;/li&gt;
+&lt;li&gt;The declarative configuration is JSON based with a &amp;ldquo;get it, put it&amp;rdquo; mentality.&lt;/li&gt;
+&lt;li&gt;Everything is real time - make a change, it&amp;rsquo;s reflected immediately.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;NGINX Unit is a good application server, and has a lot of uses.
+Look out for additional posts on how to use it, how to configure it, and where it fits in a knative world.&lt;/p&gt;
+</content>
     </item>
     
     <item>
-      <title>How an application delivery veteran see Envoy in the era of cloud native</title>
+      <title>Infrastructure | How an application delivery veteran sees Envoy in the era of cloud native</title>
       <link>/posts/f5-envoy-cloud-native/</link>
       <pubDate>Tue, 30 Jun 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts/f5-envoy-cloud-native/</guid>
       <description>How to understand envoy, compare to F5/NGINX.</description>
+      <content>&lt;h2 id=&#34;foreword&#34;&gt;Foreword&lt;/h2&gt;
+&lt;p&gt;Envoy, messenger, envoy, representative! Just like the meaning of the word itself, with a sense of authority, a sense of sacred full agent. Combined with its own use and role, it is really &amp;ldquo;people as their name&amp;rdquo;, can&amp;rsquo;t help but like Lyft, I don&amp;rsquo;t know which master got the name to get this name. In the current era of fiery microservices, Envoy is an absolute star, and it is no exaggeration to describe it as everyone knows. Someone once asked me how to look at Envoy and whether Envoy will replace F5 instead of NGINX in the cloud-native era. As a veteran who has experienced two waves of change in the field of application delivery technology, in this article I will talk about Envoy in the future From a perspective to understand and answer this question. Why talk a little bit, this is really not modesty, but objectively, there is really no such in-depth large-scale long-term use and research of all technical details of Envoy, so I will combine my professional experience and experience to make an Envoy Talk.&lt;/p&gt;
+&lt;h2 id=&#34;star-studded-envoy&#34;&gt;Star-studded Envoy&lt;/h2&gt;
+&lt;p&gt;First, let&amp;rsquo;s take a look at how Envoy officially introduced Envoy:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;ENVOY IS AN OPEN SOURCE EDGE AND SERVICE PROXY, DESIGNED FOR CLOUD-NATIVE APPLICATIONS&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;From this description on the homepage of the website, we can clearly see the official definition of Envoy, which is simply a proxy for east-west, north-south traffic in the cloud native era. Lfyt is the pioneer of the microservice application architecture. We can see Lfyt in a large number of microservice sermon articles. After a large-scale shift from monolithic applications to microservice architecture, a serious problem was placed in development. In front of the architects, on the one hand, Lyft&amp;rsquo;s services are developed in multiple languages, and the use of class libraries to solve various problems under the distributed architecture requires a lot of language adaptation and code intrusion. On the other hand, Lyft&amp;rsquo;s business Both are deployed on AWS, relying heavily on AWS&#39; ELB and EC2, but the traffic control, insight, and problem elimination between the services provided by ELB and AWS at that time could not meet Lyft&amp;rsquo;s needs. It is based on this background, Lfyt is Envoy development started in May 2015. It was first deployed as an edge agent and began to replace ELB, and then began to be deployed as a sidecar method for large-scale deployment. On September 14, 2016, Lyft officially announced this project on its blog: Envoy C++ L7 proxy and communication bus . For a while, Envoy received a lot of attention, and companies such as Google began to contribute to this project, and donated the project to CNCF one year later in September 2017. With a good mom like Lyft, and the succession to CNCF as a rich dad, plus the half-brother Istio star brother&amp;rsquo;s blessing, it can be said that Envoy has a good scene for a while, earning enough eyeball and developer support, I graduated from CNCF in just over a year.&lt;/p&gt;
+&lt;p&gt;Container technology has helped enterprises practice Devops and microservice transformation. The k8s container orchestration platform allows enterprises to move more business from traditional architectures to modern container-based infrastructures with more confidence. k8s solves container orchestration and applications. Issues such as publishing, but when the communication between services has changed from the previous call between memory to TCP-based network communication, the impact of the network on application services has become more huge and uncertain, based on traditional application architecture operation and maintenance The means cannot adapt and solve the huge and complex communication insights and troubleshooting between services. In order to solve such problems, the service mesh application was born and quickly became a hot topic of concern. The Istio project is the most important player in this ecosystem. Istio&amp;rsquo;s architecture is a typical management plane and data separation architecture. The choice of data plane is open, but Istio chooses Envoy as the data plane by default. The two popular stars joined forces to make Linkerd eclipsed almost at the same time. At this point in time, NGINX also briefly carried out the Nginmesh project, trying to make NGINX as the data plane of Istio, but eventually gave up at the end of 2018, why did you give up, this article will be mentioned later.&lt;/p&gt;
+&lt;p&gt;In addition to Istio&amp;rsquo;s selection of Envoy as the data plane, there are many projects based on Envoy, such as multiple Ingress Controller projects of k8s: Gloo, Contur, Ambassador. Istio&amp;rsquo;s own Ingress gateway and Egress gateway also choose Envoy. Take a look at the Envoy users listed on their official homepage and say that starlight is not too much. Note that F5 in the list is very interesting.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-endusers.jpg&#34; alt=&#34;&#34;&gt;
+(Envoy end user list)&lt;/p&gt;
+&lt;h2 id=&#34;envoy-born-for-the-times&#34;&gt;Envoy: born for the times&lt;/h2&gt;
+&lt;p&gt;Below I will look at the technical aspects of why Envoy is so valued by the community. It will be summarized from the following aspects:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Technical characteristics&lt;/li&gt;
+&lt;li&gt;Deployment architecture&lt;/li&gt;
+&lt;li&gt;Software Architecture&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;technical-characteristics&#34;&gt;Technical characteristics&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Interface and API&lt;/li&gt;
+&lt;li&gt;Dynamic&lt;/li&gt;
+&lt;li&gt;Scalability&lt;/li&gt;
+&lt;li&gt;Observability&lt;/li&gt;
+&lt;li&gt;Modernity&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;interface-and-api&#34;&gt;Interface and API&lt;/h4&gt;
+&lt;p&gt;When I first opened the configuration of Envoy, my first feeling was, God, how should such a product user configure and use. Under the intuitive experience, in an uncomplicated experimental environment, the number of lines of an Envoy&amp;rsquo;s actual configuration file actually reached 20,000 lines.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#  kubectl exec -it productpage-v1-7f4cc988c6-qxqjs -n istio-bookinfo -c istio-proxy -- sh
+$ curl http://127.0.0.1:15000/config_dump | wc -l
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  634k    0  634k    0     0  10.1M      0 --:--:-- --:--:-- --:--:-- 10.1M
+20550
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Although this is a dynamic configuration in the Istio environment, although there are ways to optimize it to reduce the actual configuration amount, or that we will not do such a large amount of configuration when using the static configuration method for configuration, but when we see the following actual The configuration structure output will feel that for such a software, it is obviously impractical to configure and maintain in a normal way. Its configuration is completely json structured and has a large number of descriptive configurations. Compared to NGINX and other such reverse For agent software, its configuration structure is too complicated.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-json.jpg&#34; alt=&#34;&#34;&gt;
+(Complex configuration structure)&lt;/p&gt;
+&lt;p&gt;Obviously, Envoy&amp;rsquo;s design is not designed for manual, so Envoy designed a large number of xDS protocol interfaces, users need to design an xDS server to implement all configuration processing, Envoy supports gRPC or REST to communicate with the server to update Own configuration. xDS is the general name of the Envoy DS (discover service) protocol, which can be divided into Listener DS (LDS), Route DS (RDS), Cluster DS (CDS), Endpoint DS (EDS), and Secret DS in order to ensure consistent configuration DS-ADS of polymerization and the like, may be more xDS view here . These interfaces are used to automatically generate various specific configuration objects. It can be seen that this is a highly dynamic runtime configuration. To use it well, you must develop a server with sufficient capabilities. Obviously this is not the design thinking of traditional reverse proxy software.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-xds.png&#34; alt=&#34;&#34;&gt;
+(Picture from &lt;a href=&#34;https://gist.github.com/nikhilsuvarna/bd0aa0ef01880270c13d145c61a4af22&#34;&gt;https://gist.github.com/nikhilsuvarna/bd0aa0ef01880270c13d145c61a4af22&lt;/a&gt; )&lt;/p&gt;
+&lt;h4 id=&#34;dynamic&#34;&gt;Dynamic&lt;/h4&gt;
+&lt;p&gt;As mentioned earlier, Envoy&amp;rsquo;s configuration relies heavily on interface automation to generate various configurations. These configurations can be modified by Runtime without reloading files. In modern application architectures, the life cycle of a service endpoint becomes shorter and its operation Uncertainty or resilience has become greater, so the ability to make runtime changes to the configuration without having to reload the configuration file is particularly valuable in modern application architectures, which is an important consideration for Istio&amp;rsquo;s choice of Envoy as the data plane. Envoy also has a hot restart capability, which makes it more elegant when an upgrade or a restart is necessary, and existing connections can be protected more.&lt;/p&gt;
+&lt;p&gt;In the Istio scenario, Envoy&amp;rsquo;s container runs two processes, one called pilot-agent and one is envoy-proxy itself. The pilot-agent is responsible for managing and starting Envoy, and generates an envoy under /etc/istio/proxy/ -rev0.json Initial configuration file, this file defines how Envoy should communicate with the pilot server to obtain the configuration, and use this configuration file to finally start the Envoy process. However, the final configuration of Envoy is not only the content in envoy-rev0.json, it contains all the dynamic configurations discovered through the xDS protocol mentioned above.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#  kubectl exec -it productpage-v1-7f4cc988c6-qxqjs -n istio-bookinfo -c istio-proxy -- sh
+$ ps -ef
+UID         PID   PPID  C STIME TTY          TIME CMD
+istio-p+      1      0  0 Jun25 ?        00:00:33 /usr/local/bin/pilot-agent proxy sidecar --domain istio-bookinfo.svc.cluster.local --serviceCluster productpage.istio-bookinfo --proxyLogLevel=warning --proxyComp
+istio-p+     14      1  0 Jun25 ?        00:05:31 /usr/local/bin/envoy -c etc/istio/proxy/envoy-rev0.json --restart-epoch 0 --drain-time-s 45 --parent-shutdown-time-s 60 --service-cluster productpage.istio-bookin
+istio-p+    142      0  0 15:38 pts/0    00:00:00 sh
+istio-p+    148    142  0 15:38 pts/0    00:00:00 ps -ef
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the envoy overall configuration dump of the following figure, you can see that the contents of bootstrap and other static and dynamic configurations are included:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-dump-config-json-struc.jpg.jpg&#34; alt=&#34;&#34;&gt;
+(Envoy configuration structure)&lt;/p&gt;
+&lt;p&gt;Combined with the following figure, you can see the basic Envoy configuration structure and its logic, whether it is an entrance listener (similar to F5&amp;rsquo;s VS and part of the profile configuration, NGINX&amp;rsquo;s listener and some Server paragraph configuration) or routing control logic (similar to F5 LTM policy, NGINX&amp;rsquo;s Various Locations matching, etc., or Clusters (similar to F5 pool, NGINX upstream), Endpoints (similar to F5 pool member, NGINX upstream server), and even SSL certificates can be automatically discovered from the service side through the interface&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-basic-objects-logic.png&#34; alt=&#34;&#34;&gt;
+(picture (From &lt;a href=&#34;https://gist.github.com/nikhilsuvarna/bd0aa0ef01880270c13d145c61a4af22&#34;&gt;https://gist.github.com/nikhilsuvarna/bd0aa0ef01880270c13d145c61a4af22&lt;/a&gt; )&lt;/p&gt;
+&lt;h4 id=&#34;scalability&#34;&gt;Scalability&lt;/h4&gt;
+&lt;p&gt;A lot of filters can be seen in the configuration of Envoy. These are the performance of its scalability. Envoy learned the architecture of F5 and NGINX, and used a lot of plug-ins to make it easier for developers to develop. From the start of listener, it supports the use of filter, and supports developers to develop L3, L4, L7 plug-ins to achieve protocol expansion and more control.&lt;/p&gt;
+&lt;p&gt;In practice, companies may not have as many C++ development reserves as languages ​​such as JavaScript, so Envoy also supports Lua and Webassembly extensions. This aspect eliminates the need to frequently recompile binaries and restart, and on the other hand reduces enterprise plug-in development. Difficulty, so that companies can use more Webassembly compatible languages ​​for plug-in writing, and then compile to Webassenmbly machine code to achieve efficient operation. At present, Envoy and Istio are still in the early stages of using Webassembly for expansion, and it will take some time to mature.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;concept-envoy-filter.png&#34; alt=&#34;&#34;&gt;
+(Picture from &lt;a href=&#34;https://www.servicemesher.com/istio-handbook/concepts/envoy.html&#34;&gt;https://www.servicemesher.com/istio-handbook/concepts/envoy.html&lt;/a&gt; )&lt;/p&gt;
+&lt;p&gt;As can be seen from the above figure, such a request processing structure is very close to the design idea of ​​the F5 TMOS system, and is similar to NGINX to a certain extent. Connections and requests correspond to different processing components at different protocol levels and stages, and these components are themselves extensible and programmable, which in turn enables flexible programming control of the data flow.&lt;/p&gt;
+&lt;h4 id=&#34;observability&#34;&gt;Observability&lt;/h4&gt;
+&lt;p&gt;It is said that Envoy is born with the characteristics of cloud native. One of the characteristics is the emphasis on observability. You can see the three observable components: logs, metrics, and tracing are all supported by Envoy by default.&lt;/p&gt;
+&lt;p&gt;Envoy allows users to define flexible log formats in flexible locations in a flexible manner. These changes can be delivered through dynamic configuration to achieve immediate effect, and allows the definition of sampling of logs. In Metrics, it provides many indicators that can be integrated with Prometheus. It is worth mentioning that Envoy allows the filter itself to expand these indicators. For example, in the filter such as current limiting or verification, the plug-in itself is allowed to define its own indicators to help users better. Use and quantify the operational status of the plugin. In terms of Tracing, Envoy supports integration with third parties such as zipkin, jaeger, datadog, lightStep, etc. Envoy can produce a uniform request ID and keep it spread throughout the network structure. It also supports external x-client-trace-id to achieve A description of the relationship topology between microservices.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-kiali.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Each span generated by Envoy contains the following data:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Set by the &amp;ndash;service-clusteroriginal service cluster information.&lt;/li&gt;
+&lt;li&gt;The start time and duration of the request.&lt;/li&gt;
+&lt;li&gt;Set by the &amp;ndash;service-nodeoriginal host information.&lt;/li&gt;
+&lt;li&gt;By x-envoy-downstream-service-clusterdownstream cluster header set.&lt;/li&gt;
+&lt;li&gt;HTTP request URL, method, protocol and user agent.&lt;/li&gt;
+&lt;li&gt;By custom_tagsanother custom label settings.&lt;/li&gt;
+&lt;li&gt;The upstream cluster name and address.&lt;/li&gt;
+&lt;li&gt;HTTP response status code.&lt;/li&gt;
+&lt;li&gt;GRPC response status and messages (if available).&lt;/li&gt;
+&lt;li&gt;Error flag when HTTP status is 5xx or GRPC status is not &amp;ldquo;OK&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;Track system-specific metadata.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;modernity&#34;&gt;Modernity&lt;/h4&gt;
+&lt;p&gt;In fact, it is obviously correct nonsense to say that Envoy has modernity. Envoy was born for modern application architecture. Here we mainly want to explain from several aspects that we can most easily feel. The first is its special structural design. In Envoy, it supports the use of iptables to intercept the traffic and do transparent processing. It can use getsockopt () to extract the original destination information in the NAT entry, and allow listeners to listen on the listener. The transferred port listener jumps to an unbound listener that actually matches the original destination information. Although from the perspective of a reverse proxy, this is a bit like F5&amp;rsquo;s VS internal jump, NGINX&amp;rsquo;s subrequest, but its biggest feature and ability lies in transparent connection, which is especially important in the deployment Pod sidecar mode, refer to specific principles herein .&lt;/p&gt;
+&lt;p&gt;For the gray-scale publishing, traffic mirroring, circuit breaker, global current limiting and other functions that are favorite for modern applications, its configuration is also very simple. Although F5/NGINX and other software can also accomplish similar tasks, they are native Envoy has greater advantages in terms of ease of configuration and ease of configuration.&lt;/p&gt;
+&lt;p&gt;Another manifestation of modernity is the support of the protocol. Look at the following supported protocols. Students who are familiar with application delivery and reverse proxy software may not help but express their admiration. The support of these protocols on the other hand shows Envoy’s A feature that is more oriented towards developers and SRE.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;gRPC&lt;/li&gt;
+&lt;li&gt;HTTP2&lt;/li&gt;
+&lt;li&gt;MongoDB&lt;/li&gt;
+&lt;li&gt;DynamoDB&lt;/li&gt;
+&lt;li&gt;Redis&lt;/li&gt;
+&lt;li&gt;Postgres&lt;/li&gt;
+&lt;li&gt;Kafka&lt;/li&gt;
+&lt;li&gt;Dubbo&lt;/li&gt;
+&lt;li&gt;Thrift&lt;/li&gt;
+&lt;li&gt;ZooKeeper&lt;/li&gt;
+&lt;li&gt;RockeMQ&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;deployment-architecture&#34;&gt;Deployment architecture&lt;/h3&gt;
+&lt;p&gt;After understanding the technical characteristics of Envoy, let&amp;rsquo;s look at Envoy from the perspective of deployment architecture.&lt;/p&gt;
+&lt;p&gt;Complete Sidecar model deployment, which is the biggest deployment feature of Envoy. The communication between services is completely transformed into the communication between Envoy agents, so that many non-business functions are removed from the service code to external proxy components. Envoy is responsible for network communication control Observable with flow. It can also be deployed as a simplified sidecar, which only acts as a proxy for the inbound direction of service without additional traffic manipulation. This structure is used in the external observability based on NGINX to achieve business observability
+&lt;img src=&#34;t1.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Hub type, which is the same as the Router-mesh type concept in NGINX&amp;rsquo;s MRA. All services use a centralized Envoy to communicate. This deployment structure is generally suitable for small and medium-sized services. Service flow can be directed by adapting to service registration. To Envoy
+&lt;img src=&#34;t2.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Envoy can also be used as an Ingress edge gateway or Egress gateway. In this scenario, Envoy is generally used for Ingress controller or API gateway. You can see that many such implementations like to use Envoy as the underlying layer, such as Gloo, Ambassador, etc.
+&lt;img src=&#34;t3.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The following deployment structure should be familiar to everyone. As an Edge gateway, Envoy also deploys an additional layer of microservice gateway (or proxy platform layer)
+&lt;img src=&#34;t5.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Finally, this is to integrate all forms of Envoy deployment. This architecture may be in the middle of the process of migrating services from traditional architecture to microservice architecture
+&lt;img src=&#34;t4.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Ok, take a look at how Envoy is used in Istio
+&lt;img src=&#34;t6.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;In summary, due to the cross-platform nature of Envoy, it has the same flexible deployment structure as NGINX, but in fact the deployment structure often has a strong relationship with the final configuration implementation mechanism, can the software&amp;rsquo;s ability adapt to the flexibility under this structure Implementation with simple configuration is the ultimate test. Objectively speaking, Envoy has an advantage in this respect.&lt;/p&gt;
+&lt;h3 id=&#34;software-architecture&#34;&gt;Software Architecture&lt;/h3&gt;
+&lt;p&gt;Envoy adopts a single-process multi-thread design structure, and the main thread is responsible for configuration updates and process signal processing. Requests are handled by multiple worker threads. In order to simplify and avoid processing complexity, a connection is always handled by one thread, which can minimize some lock operations caused by data sharing between threads. Envoy avoids state sharing between threads as much as possible, and designed the Thread Local Store mechanism for this purpose. In the log writing, the worker thread actually writes to the memory cache, and finally the file refresh thread is responsible for writing to the disk, which can improve efficiency to a certain extent. Overall, Envoy is still more focused on simplifying complexity and emphasizing flexibility, so unlike NGINX, it does not put the pursuit of performance in the first place, which can be obtained in the relevant official blog of Envoy verification.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-thread.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Similar to NGINX, Envoy is an asynchronous, non-blocking design, using an event-driven approach. Each thread is responsible for each listener, SO_REUSEPORT can also be used to share sockets, NGINX also has a similar mechanism.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;t7.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After the listener listens and starts processing, the connection will be processed by subsequent L3, 4, 7 and other filters according to the configuration.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;envoy-arch.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;f5nginx-the-sword-is-not-out&#34;&gt;F5/NGINX: the sword is not out&lt;/h2&gt;
+&lt;p&gt;After understanding the technical characteristics and architecture of Envoy, we return to the original point of this article. Envoy has been carrying the genes of modern application architecture from birth, does it mean that these front waves such as NGINX/F5 are out of date.&lt;/p&gt;
+&lt;p&gt;I remember the author of NGINX, Igor, at the F5 China 520 conference to explain why NGINX is so successful. He said that he did not expect to be so successful because the reason is that he developed the right software at the right time. We know that during the period around 2003, there was still no talk about distributed architecture and microservices. At that time, the main problem to be solved was stand-alone performance. Based on this background, NGINX is strict in terms of architecture design and code quality. Demanding performance. In terms of functionality, NGINX was originally a Web Server software, L7 reverse proxy is an extension of its capabilities, and L4 proxy capabilities increase even later. In view of this background, from the perspective of modern application architecture, there are indeed some Capability is more difficult to cover. Similarly, Envoy was born and developed in the era of modern application architecture. As Envoy self-explained, it refers to a large number of existing hardware and software reverse proxy and load balancing products. From the above technical analysis, it can also be seen that Envoy has many NGINX and F5 Architectural concept, it can be said that Envoy draws many essences from mature reverse proxy products, and fully considers the needs of modern application architecture when designing, it is also a correct software at the right time.&lt;/p&gt;
+&lt;p&gt;Under the microservices architecture, many problems have become how to control the communication and traffic insights between services. This is a typical application delivery field. As a frontier in this field, on the one hand, we must actively embrace and adapt to the new era of application architecture. On the one hand Need to innovate and continue to lead new directions. There have been two technological innovations in this field in history. The first was around 2006, when the topic of &amp;ldquo;load balancing was dead&amp;rdquo; was fired. The essence was that the market began to change at that time, and everyone was no longer satisfied with simple loads. Balanced, demand is derived from more complex scenarios such as application security, network optimization, application optimization, access control, and flow control. The concept of application delivery began to be proposed. It can be said that before 2006, the main concepts and technical directions of the market were based on The four-layer switch is the core concept of load balancing technology. Most players are traditional network manufacturers. The thinking and concepts are based on network switching. F5 is like a strange guy. The product design thinking is completely on another dimension. The TMOS V9 operating system, which has been released since 2004, has led the market since then, and no one has surpassed it for 10 years thereafter. The second technological innovation occurred around 2016. Affected by the cloud and microservices, software and lightweight became the mainstream of the market. At the same time, Devops thought means that the role of users has changed. The traditional design for network operation and maintenance personnel It began to become difficult to meet market demand. The field dominated by F5 has also undergone new changes in the market. Gartner no longer publishes magic quadrant analysis in the field of application delivery, and instead forms guidance in the way of Guide.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;F5-stock.jpeg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Looking at the present, history is always surprisingly similar.&lt;/p&gt;
+&lt;p&gt;The modern application architecture is developing rapidly, and a large number of applications are beginning to be micro-serviced. However, from the perspective of the overall chain of business access, Envoy cannot solve all problems, such as application security protection, complex enterprise protocols, and different needs caused by different organizational relationships. It can be seen that the application delivery products represented by F5/NGINX have also begun to actively realize product integration under the Devops tide. F5 has released a complete automated tool chain, from the product’s bootstrap to network configuration, to application service configuration, to the final Monitoring and telemetry have formed a complete interface, and use declarative interface to promote product management to a higher role crowd and management system. NGINX also builds its own API and Controller plane, and provides a declarative API interface to the outside world. Developers can better use the interface to integrate into their own control plane. These changes are for developers or SRE to better use F5/NGINX. For details, please refer to my &amp;ldquo;From Traditional ADC to Cloud Native ADC&amp;rdquo; &lt;a href=&#34;https://mp.weixin.qq.com/s?src=11&amp;amp;timestamp=1593224168&amp;amp;ver=2425&amp;amp;signature=znUdlLDdpbGGxWX7pZhH2uSVq1SAdQuloO09HIXssdQ15nRtWVOIgzlYTFmjOIUsDrqghPbSZM6vQI45TIqmINQKjposI7AfJ6jKQaEXm9KD4tEV5Bk9AF0RGuKvVuHI&amp;amp;new=1&#34;&gt;series of articles&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;slides-3.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After acquiring NGINX and Shape, F5 put forward a new view that will make full use of the widely accessible data plane capabilities, and use AI to further tap the data potential to help users better grasp and understand application behavior and performance, and provide references for business operations. , And feedback to component configuration and operation management to form a closed loop.&lt;/p&gt;
+&lt;p&gt;An important scenario for modern application delivery is still indispensable, that is, application security. Although Istio and other products have made many attempts in secure communication, identity, and strategy, application security itself is relatively lacking. F5 is a leading manufacturer in the field of WAF security Through the transfer of security capabilities to NGINX, a new NGINX APP Protect is formed, which uses its cross-platform capabilities to help users better manage application security capabilities in microservice scenarios and help enterprises better implement DevSecOps.&lt;/p&gt;
+&lt;p&gt;If we compare the technical features of Envoy with F5, we can see that F5 lacks scalability and modernity to a certain extent. F5 has good programming control capabilities, but it is relatively larger than the development of larger plug-ins. Insufficient, this and modernity can often be linked together. For example, if you want to make a complex 7-layer filter similar to Envoy for a very new protocol, it is impossible to achieve, although iRule or iRuleLX can do something to a certain extent. However, in any case, the final product form of F5 itself determines that F5&amp;rsquo;s BIGIP cannot be completely cross-platform, because it cannot run as a container. It is worth expecting that such morphological restrictions will be broken by F5&amp;rsquo;s next-generation TMOS system.&lt;/p&gt;
+&lt;p&gt;Service Mesh is the current popular technology direction. F5 builds an enterprise-level Aspen Mesh service mesh product based on Istio, which helps enterprises deploy and use Istio better and easier. Aspen mesh team members enter the Istio Technical Oversight Committee with only 7 positions and are responsible for the important responsibilities of Istio&amp;rsquo;s RFCs/Designs/APIs. Although Istio has absolute ecology and popularity in the field of service mesh, this does not mean that Istio is the only choice. In many cases, customers may want to adopt a more concise Service Mesh to achieve most of the required functions instead of deploying one. The entire complex Istio solution, NGINX Service Mesh (NSM) based on NGINX components will bring new choices to users, a more simple and easy to use Service Mesh product, this is the reason why we mentioned NGINX to terminate Nginmesh at the beginning of the article .&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Technology development is an inevitable process. In 2006, it evolved from traditional load balancing technology to application delivery. In addition to load balancing, it introduced many aspects such as security, access control, access control, and flow control. Around 2016, new technological changes have occurred in this field again. The emergence of a large number of new generation reverse proxy open source software has a new impact on traditional application delivery products. Active adaptation and change and innovation are the key to winning. Envoy has excellent capabilities as a new representative, but it is not a silver bullet to solve all problems. Envoy has a steeper learning curve and higher development and maintenance costs. For enterprises, they should choose the appropriate solution and Products to solve different problems in the architecture, to avoid catching the trend and let yourself fall into the trap.&lt;/p&gt;
+&lt;p&gt;F5 needs more to let developers understand the huge potential of TMOS system (especially the subversion of the next generation products in architecture and form), understand its excellent all-agent architecture and program control at any level, so that developers, SRE develops with F5 TMOS as a capability platform and middleware, and better utilizes F5&amp;rsquo;s own application delivery capabilities to quickly realize its own needs.&lt;/p&gt;
+&lt;p&gt;Finally, again quote a sentence from the homepage of the official Envoy website:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As microservice practitioners soon realized, most of the operational problems that arise when moving to a distributed architecture are ultimately based on two aspects: network and observability.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;And to ensure more reliable network delivery and better observability is the strength of Qianlang. Innovate, Qianlang.&lt;/p&gt;
+&lt;p&gt;Written at the end: No matter how the technology changes, the human factor is still the core, regardless of the company or the manufacturer, in such a wave of technology, it should have sufficient technical reserves, just like the traditional financial industry through the establishment of technology companies to seek transformation, Manufacturers also need to be transformed. F5 China&amp;rsquo;s SE has almost 100% passed the CKA certification. Regardless of the relative proportion or absolute number, it should be unique in the industry. The transformation is not only in products, but also in thinking.&lt;/p&gt;
+&lt;p&gt;Check more istio practice detail at my tech blog &lt;a href=&#34;https://imesh.club&#34;&gt;https://imesh.club&lt;/a&gt;&lt;/p&gt;
+</content>
     </item>
     
     <item>
-      <title>NGINX and oAuth2/OIDC series one</title>
+      <title>Security | NGINX and oAuth2/OIDC series one</title>
       <link>/posts/nginx-oauth2-oidc-series/</link>
       <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts/nginx-oauth2-oidc-series/</guid>
       <description>NGINX as different role in oAuth/OIDC</description>
+      <content>&lt;p&gt;Nowadays, the Internet has penetrated various life and business scenarios. Just like people have never been a simple individual in real life, we need to have many complicated relationship networks. The same is true of Internet applications, and it is now difficult to see which application can develop completely independently without having a relationship with its surroundings. Therefore, today&amp;rsquo;s applications are very particular about their own ecology, and they need to share a lot of information with each other. These complex relationships raise a very important issue: identity authentication, resource authorization, and account maintenance. Of course there is API authentication access control.&lt;/p&gt;
+&lt;p&gt;For example, in your daily life, you may need to use dozens of apps. Each of these apps has an independent account and password. You need to maintain different accounts and passwords. You may have one set of accounts for all apps in order to save trouble. Password, so after the application A was violently vaulted, you are forced to change all the passwords of the accounts of these dozens of apps. You may also be more concerned about the security of your account, so you use a fixed + changing password to combine dozens of APP accounts, which is very good, can help alleviate a large part of security issues, and at the same time reduce your password maintenance. Question (Is the memory okay), but these apps may not be able to follow the fixed + change mode you envisioned as you wish, some may only support numbers, some support numbers plus passwords, and some still It requires a minimum length and a more complicated combination, so you start to use a small book to record the password format of different applications (well, at least there was a stage where I did this, recorded in a description language on the computer, when forgotten At that time, go to find this hint in the computer).&lt;/p&gt;
+&lt;p&gt;Is there a better way?&lt;/p&gt;
+&lt;p&gt;If you trust a company that has done well in security and has a good reputation system, can you use this account to run the Internet? I believe we already have the answer. Today, we may have used it a lot of times. When you log in to the XX application, you are used to skip user registration and go to click &amp;ldquo;log in with ***&amp;rdquo;, in the pop-up interface Here is a very sacred point under &amp;ldquo;Agree&amp;rdquo;. So you no longer need to remember so many application accounts. This is actually a typical open authorization (Open Authorization) referred to as oAuth (current version is 2, also known as oAuth2).&lt;/p&gt;
+&lt;p&gt;Um, you seem to be lying to me. You have said so much, it seems to be all about authentication, why it is said to be Authorization. Yes, you are right, but I did not lie to you, but there are some silly problems that are not easy to distinguish. The original purpose of this oAuth design is to solve the problem of data access between interest groups, just like us As mentioned at the beginning, there is a problem of mutual access to a large amount of data between applications of different companies. For example, company A has developed an online photo printing application, but this company does not operate photo storage services. Your photos may exist in B, C, D. On the network disks of different companies (Yes, in order to take advantage of the early days, I did occupy a lot of the network disks of many companies. Later, some of their network disks used rogues to send a notice and couldn&amp;rsquo;t do anything. Fortunately, I used RAID1), so this caused problems. How do you send photos to this online printing company, download them from the BCD network disk and send them to them? Give the account number and password of the network disk to the printing company? Obviously these methods will not work. If you rely on downloading and uploading, it is estimated that you are too lazy to get it. If you are giving an account password, unless you are not sober.&lt;/p&gt;
+&lt;p&gt;For printing companies and network disk service providers, they also have similar troubles. If users are allowed to upload and download, the user experience is too bad, and they also maintain a whole set of such systems. Therefore, printing companies hope that there is a simple way to connect at the same time. BCD network disk company, as long as one of the users of these network disks agrees, it will automatically pull down the user photos from these network disks to print, and own 0 inventory. For the BCD network disk company, storing cold data alone is obviously not the purpose. Moreover, you are still in piao, you have to do tricks, so the network disk company also wants to dock these companies that print pictures, but for them It is necessary to solve the user&amp;rsquo;s security issues on accounts and photos.&lt;/p&gt;
+&lt;p&gt;So it can be seen that for these three different stakeholders, there is a desire to have something to solve their problems at the same time. This is authorization. When the user wants to print the photo, the printing company guides the customer to enter the network disk interface. The user is Log in to the network disk and authorize the network disk to allow which of my resources to be shared with the photo printing company. For example, share your beautiful photos to print, and the original photos are not allowed to be accessed by the printing company, which is very safe. So we can summarize:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589076716809-1024x441.jpg?v=1589076733&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;oAuth is used to solve such a scenario, so you can see that it is an authorization process. But you haven’t said why it was a certification at the beginning, hmmm. After all, I also spent a lot of time to learn it. It is also a process after finishing it. Just like this article, it is a series. Only the following articles can be finished:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;NGINX as (Client) role and resource service role proxy in oAuth, Authorization code mode (with oAuth proxy service)-this article&lt;/li&gt;
+&lt;li&gt;NGINX as (Client) role and resource service role proxy in oAuth, Authorization code mode (Without the help of oAuth proxy service)&lt;/li&gt;
+&lt;li&gt;NGINX authenticates and recognizes id_token in OIDC (Implicit mode)&lt;/li&gt;
+&lt;li&gt;NGINX acts as a resource service role in oAuth, proxy authentication and identity information recognition (Token introspection)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Why is authentication involved here? In fact, you will find that during the authorization process, the identity is obviously inescapable. The authorization must be based on a certain user, so the oAuth specification does not emphasize that you can’t do this. In addition to authorization, plus sometimes, we really do not need authorization scenarios, but want to reduce our account maintenance, use one company account to log in many products of other companies, so there are a lot of oAuth For authentication scenarios, of course, it is precisely because oAuth does not make many standardized definitions for authentication, which leads to different designs of programs of different companies when implementing authentication. There is no standard way to obtain user information. A common standard scope, based on this, OpenID Connect (OIDC) appeared. OIDC is based on oAuth. The communication process of several parties is the same. The difference is that OIDC is sending to IdP (the party that stores the account and performs verification). When the request is initiated, the openid tag will be brought in the scope. In the end, the information returned by the IdP will also carry an ID token (JWT) in addition to the oAuth normal access_token, and the application can use it as a login after getting this ID token. If you need more additional information, you can take the access_token and go to the userinfo endpoint to get more user information. In addition, OIDC is a protocol family and contains many other specifications, such as session management and registration discovery. Because oAuth and OIDC are very similar in communication mechanism, we often confuse the two. We often say that oAuth authentication should actually be oAuthZ, and OIDC is oAuthN.&lt;/p&gt;
+&lt;p&gt;Back to this article, in this article, we will follow the interaction of a standard oAuth authorization code mode to see what NGINX can help users do here, and why NGINX is needed to do such a thing.&lt;/p&gt;
+&lt;p&gt;First, we need to sort out the entire interaction process in the oAuth authorization code mode. In order to avoid the obscurity of RFC , let&amp;rsquo;s assume a scenario.&lt;/p&gt;
+&lt;p&gt;You are in a startup company, such as a company engaged in AI and big data (of course, it is not listed yet, it is listed, and you may not have time to read this article), your company uses a lot of cloud service examples, buy servers to engage in computer rooms , Engage in infrastructure, that is not a thing. You have used open source to build a lot of systems, and quickly put your business online. Everyone knows that open source systems have a great feature, which is friendly to developers. What does it mean, how is it convenient (that is, developers are lazy, non- To be straight&amp;hellip;), so you see that many open source systems don’t think about authentication, and you visit it after installing it. It seems that there is no account authentication as a matter of course. At first, it didn’t matter, because you were alone, what You have to do everything, as more and more systems, employees begin to increase, you need to make some restrictions on access to different systems for different people, and you are still going to go public, as a public company, your system There is no account, so it is unreasonable. Then you have some application development systems that need to connect to the github API. You need to allow only some advanced developers to access a private repo. And you have no time to build a new user management system yourself. Fortunately, these people have github accounts, so you can use these github accounts to do the simplest and fastest things. These requirements can be summarized as:&lt;/p&gt;
+&lt;p&gt;A function needs to be implemented on different systems to enable these systems to interface with github, and use the github account to determine whether employees can access a certain system
+Log in with the github account on the application development system, and apply for resource authorization from github to include the person’s repo and other information. If the person does not have the private repo permission, the natural application development system cannot obtain the private under the permission of this employee. repo content
+These requirements oAuth can help solve, but there is a problem. If you join the oAuth mechanism, you need to develop on the system. So many open source systems, the development language is different, and even some systems dare not rush to redevelop. It is actually very difficult to achieve and the workload is actually very large.&lt;/p&gt;
+&lt;p&gt;Before looking at what NGINX can do, let&amp;rsquo;s take a look at the oAuth process without NGINX and the above requirements.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589087602055-1024x534.jpg?v=1589087614&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;From the above process, it can be seen that for users, they log in and authorize once on github, and the browser makes two jumps. The really useful access_token is between the back-end application server and github. The user and the browser itself cannot see the content of this access_token, which is called the backend channel and is relatively safe. So what does the application do after getting this access_token?&lt;/p&gt;
+&lt;p&gt;-If it is limited to obtaining some basic information of the user, and the returned access_token is JWT, then the application server can obtain the content in the JWT by itself, so that the user information extraction is associated with some local user IDs, which can be used as Used for login (of course, if it is pure identity authentication and this joint login scenario, in fact, OIDC should still be considered). Of course, if the access_token here is opaque, then the application server also needs to do token introspection, that is, it needs to be verified again with the authorized party before the relevant information can be used.&lt;/p&gt;
+&lt;p&gt;-If it is not limited to obtaining user information, but to obtain additional resources, such as the need to obtain the person&amp;rsquo;s repo content, then the application server needs to access this access_token to access a github repo resource server (resource server and The authorization servers are not necessarily the same, and large-scale scenes are usually not the same) to obtain the person&amp;rsquo;s repo content, then the above picture becomes like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589088979883-1024x570.jpg?v=1589089012&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;So, you will find that the web application backend is very critical. It participates in the entire oAuth process and finally obtains the access_token. Imagine, as you said at the beginning of the company, many open source are developed in different languages. System, you have to transform to add this ability. At this time, you actually only want to decide based on the user&amp;rsquo;s information that the system must be logged in through the oAuth process before it can be accessed, or the system determines who can access based on the user name.&lt;/p&gt;
+&lt;p&gt;This work can actually be achieved by placing NGINX in front of the web application backend, which means that NGINX is allowed to participate in the oAuth authentication process on behalf of the backend application, and then NGINX can decide whether to allow or reject certain users based on access_token, or Transparently transmit user information to back-end applications for more processing.&lt;/p&gt;
+&lt;p&gt;Carefully observe the entire verification process above, which requires NGINX to participate in the construction of the jump return, and use the authorization code to construct the request to directly access the github authorization server. If these tasks are done purely on NGINX, it is actually very difficult. Development through njs is a way but requires the ability to authenticate JWT (so NGINX Plus does not need to install an oauth proxy service like the demo in this article, It can be realized by directly using the njs module + KV module + JWT module. For details, please refer to the second part of this series), but in fact, it can be achieved with the help of the ability of auth_request and an oAuth proxy, which means that we need to be in various The implementation code of the oAuth authentication process created on the open source system is abstracted to it, and a general one is involved. The oAuth proxy agent participates in this oAuth process, and finally the obtained access_token is parsed out. The relevant claims information is returned to NGINX, NGINX Based on this information, we will control whether to allow access to a resource, or transparently pass relevant user information to the final application. So its implementation logic is as follows:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589090989794-1024x566.jpg?v=1589091004&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The idea and principle of implementation (the following serial number has nothing to do with the figure):&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Configure NGINX to publish protected applications&lt;/li&gt;
+&lt;li&gt;Configure auth_request under the location section of the relevant application&lt;/li&gt;
+&lt;li&gt;In this way, when the request reaches NGINX, NGINX will initiate the sub-request authentication by auth_request&lt;/li&gt;
+&lt;li&gt;The sub-request will be proxy_pass to an interface of the oauth proxy service&lt;/li&gt;
+&lt;li&gt;According to the characteristics of auth_request, it is necessary for oauth proxy to return the relevant status code to indicate whether NGINX is released or returns 401&lt;/li&gt;
+&lt;li&gt;Therefore, after receiving the sub-request, the oauth proxy will determine whether the user has previously completed the relevant oauth authentication work. If the user has not logged in, or the validity period has expired, then the oauth proxy returns 401 (here depends on whether the user browser carries the oauth proxy Issued by a cookie information to check)&lt;/li&gt;
+&lt;li&gt;NGINX intercepts the status of 401, and implements the definition of error_page to send a 302 jump to the user&amp;rsquo;s browser if 401 is returned. The address of this jump is actually a special interface of oauth proxy used to trigger the subsequent oAuth process. The subsequent process is no different from normal oAuth.&lt;/li&gt;
+&lt;li&gt;After the oAuth proxy completes the entire oAuth process, it returns a 302 jump to the user browser, and this return will also carry the relevant cookie to allow it to revisit the protected application&lt;/li&gt;
+&lt;li&gt;After NGINX receives the request, it triggers auth_request again. auth_request sends the request to an interface of oauth proxy again. This visit carries the cookie in 8. This way, the oauth proxy knows who it is based on the cookie, and resolves its access_token to pass relevant claims. Put it in the response header and return to NGINX&lt;/li&gt;
+&lt;li&gt;Use auth_request_set to put the claims in the response header of the sub-request into variables and pass it to the parent request&lt;/li&gt;
+&lt;li&gt;NGINX judges whether to release based on these variables, or puts these user information in the request header to pass the content to the last protected application&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;There are many implementations of such an oauth proxy online, here is a brief list:
+&lt;a href=&#34;https://github.com/vouch/vouch-proxy&#34;&gt;vouch-proxy&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/oauth2-proxy/oauth2-proxy&#34;&gt;oauth2 proxy&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/jirutka/ngx-oauth&#34;&gt;oauth2 proxy by lua -implement proxy directly in lua, no need to install additional proxy service&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;demo&#34;&gt;Demo&lt;/h2&gt;
+&lt;p&gt;This demonstration uses NGINX plus and vouch-proxy to achieve. For the specific installation and configuration of vouch-proxy, please refer to its github directly, it is not complicated&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589093713142-1024x705.jpg?v=1589093738&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;In the actual demo, the web application backend actually has an intermediate NGINX to simulate, using return to return the content.&lt;/p&gt;
+&lt;p&gt;NGINX configuration:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;############entry for protected app http://authcode.imesh.club/personalinfo
+server {
+    listen 80;
+    server_name authcode.imesh.club;
+    #root /var/www/html/;
+
+    # send all requests to the `/validate` endpoint for authorization
+    auth_request /validate;
+
+    #The location is for auth_request subrequest
+    location = /validate {
+      # forward the /validate request to Vouch Proxy
+      proxy_pass http://127.0.0.1:9090/validate;
+
+      # be sure to pass the original host header
+      proxy_set_header Host $http_host;
+
+      # Vouch Proxy only acts on the request headers
+      proxy_pass_request_body off;
+      proxy_set_header Content-Length &amp;quot;&amp;quot;;
+
+      # optionally add X-Vouch-User as returned by Vouch Proxy along with the request
+      auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
+
+      # these return values are used by the @error401 call
+      auth_request_set $auth_resp_jwt $upstream_http_x_vouch_jwt;
+      auth_request_set $auth_resp_err $upstream_http_x_vouch_err;
+      auth_request_set $auth_resp_failcount $upstream_http_x_vouch_failcount;
+    }
+
+    # if validate returns `401 not authorized` then forward the request to the error401block
+    error_page 401 = @error401;
+
+    location @error401 {
+        # redirect to Vouch Proxy for login
+        return 302 http://vouch.imesh.club/login?url=$scheme://$http_host$request_uri&amp;amp;amp;vouch-failcount=$auth_resp_failcount&amp;amp;amp;X-Vouch-Token=$auth_resp_jwt&amp;amp;amp;error=$auth_resp_err;
+        # you usually *want* to redirect to Vouch running behind the same Nginx config proteced by https
+        # but to get started you can just forward the end user to the port that vouch is running on
+    }
+
+    # for the real service that being protected
+    location / {
+      # forward authorized requests to your service protectedapp.yourdomain.com
+     ##he backend real server also simiulated by this nginx
+      proxy_pass http://127.0.0.1:8080;
+      # you may need to set these variables in this block as per https://github.com/vouch/vouch-proxy/issues/26#issuecomment-425215810
+          auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
+          auth_request_set $auth_resp_x_vouch_idp_claims_avatar $upstream_http_x_vouch_idp_claims_avatar_url;
+          auth_request_set $auth_resp_x_vouch_idp_claims_company $upstream_http_x_vouch_idp_claims_company;
+          auth_request_set $auth_resp_x_vouch_idp_claims_blog $upstream_http_x_vouch_idp_claims_blog;
+
+      # set user header (usually an email)
+          proxy_set_header X-Vouch-User $auth_resp_x_vouch_user;
+      # optionally pass any custom claims you are tracking
+          proxy_set_header X-Vouch-IdP-Claims-company $auth_resp_x_vouch_idp_claims_company;
+          proxy_set_header X-Vouch-IdP-Claims-avatar $auth_resp_x_vouch_idp_claims_avatar;
+          proxy_set_header X-Vouch-IdP-Claims-blog $auth_resp_x_vouch_idp_claims_blog;
+    }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Simulation configuration of back-end applications&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;   server {
+        listen 8080;
+
+        location /personalinfo {
+            default_type text/html;
+            set $user $http_x_vouch_user;
+            set $avatar $http_x_vouch_idp_claims_avatar;
+            set $company $http_x_vouch_idp_claims_company;
+            set $blog $http_x_vouch_idp_claims_blog;
+            return 200 &#39;&amp;amp;lt;html&amp;gt;&amp;amp;lt;head&amp;gt;&amp;amp;lt;meta http-equiv=&amp;quot;Content-Type&amp;quot; content=&amp;quot;text/html; charset=utf-8&amp;quot; /&amp;gt;&amp;amp;lt;/head&amp;gt;&amp;amp;lt;h2&amp;gt;Your personal info:&amp;amp;lt;/h2&amp;gt;&amp;amp;lt;hr /&amp;gt;Name: $user &amp;amp;lt;br&amp;gt;avatar: $avatar &amp;amp;lt;br&amp;gt;company: $company &amp;amp;lt;br&amp;gt;blog:$blog &amp;amp;lt;/html&amp;gt;&#39;;
+        }
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Responsible for receiving the request configuration initiated by the client browser to the oauth proxy:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#######work for vouch login/auth
+server {
+    listen 80;
+    server_name vouch.imesh.club;
+    location / {
+       proxy_pass http://127.0.0.1:9090;
+       # be sure to pass the original host header
+       proxy_set_header Host vouch.imesh.club;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The effect of the visit process:
+&lt;img src=&#34;https://imesh.club/upload/2020/05/%E5%9B%BE%E7%89%87-1-1-653x1024.png?v=1589095217&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/%E5%9B%BE%E7%89%87-2-682x1024.png?v=1589095226&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589096005904.jpg?v=1589096014&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The first visit to &lt;a href=&#34;http://authcode.imesh.club/personalinfo&#34;&gt;http://authcode.imesh.club/personalinfo&lt;/a&gt;, the browser is automatically jumped to the vouch.imesh.club/login? interface, this jump is actually driven by NGINX&lt;/p&gt;
+&lt;p&gt;After receiving it, vouch.imesh.club processes it and asks the browser to jump to the github.com/authorize interface. Since it has not logged in on github, github jumps to the /login interface to let the user log in.&lt;/p&gt;
+&lt;p&gt;The login interface appears. After logging in, the authorization will be displayed. Clicking on the authorization will be redirected to vouch.imesh.club (the service address of oauth proxy), which actually returns the authorization code to the oauth poxy service.&lt;/p&gt;
+&lt;p&gt;After clicking the authorization, the browser will continue to jump. The github implementation will have the following jump prompt, which is actually the browser to jump to the callback interface of vouch.imesh.club:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/%E5%9B%BE%E7%89%87-3.png?v=1589095466&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After the callback interface of vouch.imesh.club is accessed, it will drive vouch to initiate access_token acquisition on the server side. At this time, the browser cannot capture it. When vouch has been obtained on the server, it returns a 302 to the browser again. This 302 requires the browser to officially access the application address, and is accompanied by the relevant cookie to the client browser:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589096907088.jpg?v=1589096914&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Finally completed the visit:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://imesh.club/upload/2020/05/1589097012011.jpg?v=1589097024&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;Summary&lt;/h2&gt;
+&lt;p&gt;Use NGINX&amp;rsquo;s auth_request function, and through clever configuration to use oauth proxy to achieve the complete authentication process of oAuth, and pass relevant user information to NGINX to achieve access control and information processing. Except for the back-end, all applications need to develop code to implement oauth verification, so that enterprises can quickly use third-party accounts to control user access&lt;/p&gt;
+&lt;h2 id=&#34;follow-up&#34;&gt;Follow up&lt;/h2&gt;
+&lt;p&gt;In this practice, the authorization code mode of oAuth is adopted, and the external oauth proxy service is used. If you do not want to rely on external services and want to implement on pure NGINX, you can refer to the second part of this series .&lt;/p&gt;
+&lt;p&gt;Check more oAuth posts of the series at my tech blog &lt;a href=&#34;https://imesh.club/?s=oauth&#34;&gt;https://imesh.club/?s=oauth&lt;/a&gt;&lt;/p&gt;
+</content>
     </item>
     
   </channel>

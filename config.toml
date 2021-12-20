@@ -1,50 +1,42 @@
-baseURL = "/"
+baseurl = "/"
 languageCode = "en-us"
-title = "apcj@f5 technical blog"
-theme = "hugo-whisper-theme"
-
-pygmentsCodeFences = true
-pygmentsCodefencesGuessSyntax = true
-pygmentsUseClasses = true
-
-[module]
-  [module.hugoVersion]
-    extended = true
-    min = "0.55.0"
-
-# Controls how many words are printed in the content summary on the docs homepage.
-# See https://gohugo.io/content-management/summaries/
-summaryLength = 30
-
-[[menu.main]]
-    name = "Home"
-    url = "/"
-    weight = 1
-
-[[menu.main]]
-    name = "Posts"
-    url = "/posts/"
-    weight = 2
+theme = "terminal"
+paginate = 5
 
 [params]
-  google_analytics_id=""
-  homepage_button_link = '/posts'
-  homepage_button_text = 'Posts'
-  homepage_intro = 'apcj@f5 technical articles from @codecowboydotio, @leonseong, @myf5, @shainsingh'
-  homepage_image = '/images/f5labs.svg'
+  contentTypeName = "posts"
+  themeColor = "orange"
+  showMenuItems = 2
+  showLanguageSelector = true
+  fullWidthTheme = true
+  centerTheme = true
+  showLastUpdated = true
+  enableGitInfo = true
 
-  ## You can enable to add anchor links to header elements
-  # enable_anchor_link = true
+[languages]
+  [languages.en]
+    title = "apcj@f5 blog"
+    subtitle = "Technical articles from the apcj@f5 team"
+    keywords = ""
+    copyright = ""
+    menuMore = "Show more"
+    readMore = "Read more"
+    readOtherPosts = "Read other posts"
 
-  [params.homepage_meta_tags]
-    meta_description = "Hugo Whisper is a documentation theme built with Hugo."
-    meta_og_title = "Hugo Whisper Theme"
-    meta_og_type = "website"
-    meta_og_url = "https://hugo-whisper.netlify.app"
-    meta_og_image = "https://raw.githubusercontent.com/JugglerX/hugo-whisper-theme/master/images/tn.png"
-    meta_og_description = "Hugo Whisper is a documentation theme built with Hugo."
-    meta_twitter_card = "summary"
+    [languages.en.params.logo]
+      logoText = "apcj@f5"
+      logoHomeLink = "/"
 
-  [params.logo]
-      mobile = "/images/logo-mobile.svg"
-      standard  = "/images/logo.svg"
+    [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "about"
+        name = "About"
+        url = "/about"
+      [[languages.en.menu.main]]
+        identifier = "posts"
+        name = "Posts"
+        url = "/posts"
+      [[languages.en.menu.main]]
+        identifier = "tags"
+        name = "Tags"
+        url = "/tags"

@@ -1,185 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Learning Istio | Securing Egress Traffic With mTLS - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Learning Istio | Securing Egress Traffic With mTLS :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where
+ application owners have to keep track of certificates for each of their applications applications written in different language/libraries have different ways of implementing mTLS connections  As an application owner, I would prefer to just deal with plain ol&#39; HTTP on port 80, and not have to modify the application to handle HTTPS or mTLS." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/learning-istio/securing-egress-traffic-with-mtls/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Learning Istio | Securing Egress Traffic With mTLS">
+<meta property="og:description" content="There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where
+ application owners have to keep track of certificates for each of their applications applications written in different language/libraries have different ways of implementing mTLS connections  As an application owner, I would prefer to just deal with plain ol&#39; HTTP on port 80, and not have to modify the application to handle HTTPS or mTLS." />
+<meta property="og:url" content="/posts/learning-istio/securing-egress-traffic-with-mtls/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+  <meta property="article:section" content="tech" />
+
+
+  <meta property="article:published_time" content="2021-10-12 15:59:45 &#43;1100 AEDT" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">Learning Istio | Securing Egress Traffic With mTLS</h1>
-<div class="content ">
-  <p>There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where</p>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-10-12
+        
+          [Updated: 2021-10-12]
+        
+      </span>
+    
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+    
+    #<a href="/tags/istio/">istio</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where</p>
 <ol>
 <li>application owners have to keep track of certificates for each of their applications</li>
 <li>applications written in different language/libraries have different ways of implementing mTLS connections</li>
@@ -189,14 +179,14 @@
 <li><a href="#common-ca">Istio cluster has the same root CA as the external service</a></li>
 <li><a href="#different-ca">Istio cluster has a different root CA from the external service</a></li>
 </ol>
-<h1 id="common-ca">Common CA</h1>
+<h1 id="common-ca">Common CA<a href="#common-ca" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>Many enterprises have root CAs they use to sign and verify all internal services. To ensure compliance, a good practice is to create an intermediate CA from the root CA, and plug that into the cluster when deploying Istio, as detailed <a href="https://istio.io/latest/docs/tasks/security/cert-management/plugin-ca-cert/">here</a>. For such scenarios, Istio supports <a href="https://istio.io/latest/docs/tasks/traffic-management/egress/egress-tls-origination/#tls-origination-for-egress-traffic">TLS origination for egress traffic</a>, and we can enable mTLS by setting the TLS mode in the <code>DestinationRule</code> to <code>ISTIO_MUTUAL</code> as documented <a href="https://istio.io/latest/docs/reference/config/networking/destination-rule/#ClientTLSSettings">here</a>. This tells the sidecar proxy to use a client certificate generated automatically by Istio (signed using the intermediate CA, hence the enterprise root CA) when calling the external service for mTLS authentication.</p>
 <p>To demonstrate this, I have deployed an external service <code>nginx-mtls.common-ca.local:8443</code> using an NGINX container running on a remote host <code>10.1.1.4</code>. mTLS authentication is enabled by configuring it to perform client SSL verification. The root CA specified for client SSL verification is also used to generated the server certificate for the NGINX server.</p>
 <blockquote>
 <p>See <a href="https://github.com/leonseng/nginx-mtls">leonseng/nginx-mtls</a> for more information on the external service</p>
 </blockquote>
 <p>I deployed a <code>curl</code> pod to mimic an application performing a <code>GET</code> request to the external service:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -222,8 +212,8 @@ spec:
         image: curlimages/curl
         name: curl
 EOF
-</code></pre></div><p>As Istio&rsquo;s <code>outboundTrafficPolicy</code> is set to <code>REGISTRY_ONLY</code>, a <code>ServiceEntry</code> is required to allow any applications in the cluster to reach the external service <code>nginx-mtls.common-ca.local</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+</code></pre><p>As Istio&rsquo;s <code>outboundTrafficPolicy</code> is set to <code>REGISTRY_ONLY</code>, a <code>ServiceEntry</code> is required to allow any applications in the cluster to reach the external service <code>nginx-mtls.common-ca.local</code>:</p>
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
@@ -240,15 +230,15 @@ spec:
   endpoints:
   - address: 10.1.1.4
 EOF
-</code></pre></div><p>As it is, the application is expected to supply the client certificate for the mTLS connection. Attempting to call the external service without the client certificate would result in a failed request:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
+</code></pre><p>As it is, the application is expected to supply the client certificate for the mTLS connection. Attempting to call the external service without the client certificate would result in a failed request:</p>
+<pre tabindex="0"><code>$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
   curl -s --resolve nginx-mtls.common-ca.local:8443:10.1.1.4 \
   https://nginx-mtls.common-ca.local:8443
 command terminated with exit code 35
-</code></pre></div><p>To enable mTLS, we need the following resources:</p>
+</code></pre><p>To enable mTLS, we need the following resources:</p>
 <ol>
 <li>A <code>DestinationRule</code> to initiate the mTLS connection on port <code>80</code>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -262,9 +252,9 @@ spec:
       tls:
         mode: ISTIO_MUTUAL
 EOF
-</code></pre></div></li>
+</code></pre></li>
 <li>Update the <code>ServiceEntry</code> with a new port entry for the HTTP port <code>80</code>, and a <code>targetPort</code> attribute set to the HTTPS port <code>8443</code>:
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
@@ -285,28 +275,28 @@ spec:
   endpoints:
   - address: 10.1.1.4
 EOF
-</code></pre></div></li>
+</code></pre></li>
 </ol>
 <p>The application will now be able to target the HTTP endpoint, leaving it to Istio to set up the mTLS connection on its behalf towards the external service:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
+<pre tabindex="0"><code>$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
   curl -s --resolve nginx-mtls.common-ca.local:80:10.1.1.4 \
   http://nginx-mtls.common-ca.local \
   | grep title
 &lt;title&gt;Welcome to nginx!&lt;/title&gt;
-</code></pre></div><h1 id="different-ca">Different CA</h1>
+</code></pre><h1 id="different-ca">Different CA<a href="#different-ca" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>There are cases where Istio is deployed with a CA certificate issued by a root CA different from the one used by the external service for client verification, or if Istio generated its own self-signed certificate. For mTLS to work in such scenarios, we would have to obtain client certificates signed by the enterprise&rsquo;s root CA, and configure Istio to use these client certificates when setting up the mTLS the connections.</p>
 <p>Istio provides at least two ways of handling the client certificates:</p>
 <ol>
 <li><a href="#common-client-certificate-for-all-applications">Common client certificate for all applications</a></li>
 <li><a href="#unique-client-certificate-for-each-application">Unique client certificate for each application</a></li>
 </ol>
-<h2 id="common-client-certificate-for-all-applications">Common client certificate for all applications</h2>
+<h2 id="common-client-certificate-for-all-applications">Common client certificate for all applications<a href="#common-client-certificate-for-all-applications" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>If the external service provider trusts the cluster, and thereby all applications hosted within the cluster, we would only need one client certificate and key pair for an egress gateway perform the mTLS connection on behalf of all applications within the cluster. This does require the deployment of an egress gateway (which is outside the scope of this post), and have all traffic to the external service routed via the egress gateway. Istio has a handy page on <a href="https://istio.io/latest/docs/tasks/traffic-management/egress/egress-gateway-tls-origination/#perform-mutual-tls-origination-with-an-egress-gateway">Perform mutual TLS origination with an egress gateway</a>, but there&rsquo;s quite a bit to unpack there.</p>
 <p>For this example use case, I have deployed another external service <code>nginx-mtls.diff-ca.local:9443</code> running on an NGINX container on the remote host <code>10.1.1.4</code>. The certificates for the server and for client verification are signed with a root CA different from the one used to create the intermediate CA for Istio.</p>
 <p>We first need to handle the connection between the application and the egress gateway, by directing traffic to the external server <code>nginx-mtls.diff-ca.local</code> via the egress gateway with:</p>
 <ol>
 <li>A <code>Gateway</code> on the egress gateway to listen for traffic to the external service (on port 443 because of the mTLS connection between the application and the egress gateway)
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -324,9 +314,9 @@ spec:
     tls:
         mode: ISTIO_MUTUAL
 EOF
-</code></pre></div></li>
+</code></pre></li>
 <li>A <code>VirtualService</code> to direct traffic to the external service via the egress gateway
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -348,9 +338,9 @@ spec:
         port:
           number: 443
 EOF
-</code></pre></div></li>
+</code></pre></li>
 <li>A <code>DestinationRule</code> to perform mTLS origination from application to the egress gateway, whilst preserving the SNI string towards the external service <code>nginx-mtls.diff-ca.local</code>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -367,20 +357,20 @@ spec:
           mode: ISTIO_MUTUAL
           sni: nginx-mtls.diff-ca.local
 EOF
-</code></pre></div></li>
+</code></pre></li>
 </ol>
 <p>For the second half of the connection, we need the egress gateway to route the traffic to the external service over an mTLS connection. First, we create a generic <code>Secret</code> to store the enterprise root CA, client certificate and key:</p>
 <blockquote>
 <p>Note that I&rsquo;ve created the <code>Secret</code> in the <code>istio-system</code> because that&rsquo;s where my egress gateway is deployed</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl -n istio-system create secret generic nginx-mtls-external \
+<pre tabindex="0"><code>kubectl -n istio-system create secret generic nginx-mtls-external \
   --from-file=tls.key=client.key \
   --from-file=tls.crt=client.crt \
   --from-file=ca.crt=enterpriseRootCA.pem
-</code></pre></div><p>Next, we define the following:</p>
+</code></pre><p>Next, we define the following:</p>
 <ol>
 <li>A <code>ServiceEntry</code> for the external service to allow traffic to leave the cluster
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
@@ -397,9 +387,9 @@ spec:
   endpoints:
   - address: 10.1.1.4
 EOF
-</code></pre></div></li>
+</code></pre></li>
 <li>Update the <code>VirtualService</code> defined earlier to redirect traffic hitting the egress gateway to now leave the cluster towards the external service (note the new <code>HTTPMatchRequest</code>)
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -431,12 +421,12 @@ spec:
         port:
           number: 9443
 EOF
-</code></pre></div></li>
+</code></pre></li>
 <li>A <code>DestinationRule</code> for the external service, with the client TLS mode set to <code>MUTUAL</code> for mTLS. The <code>Secret</code> containing the certificates and key is also referenced here to provide Istio sidecars with right files for setting up the mTLS connection.
 <blockquote>
 <p>Note that I&rsquo;ve defined the <code>DestinationRule</code> in the same namespace as where the <code>Secret</code> is defined in this example</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl -n istio-system apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl -n istio-system apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -454,20 +444,20 @@ spec:
         credentialName: nginx-mtls-external
         sni: nginx-mtls.diff-ca.local
 EOF
-</code></pre></div></li>
+</code></pre></li>
 </ol>
 <p>With all that in place, the application should now be able to access the external service that is expecting a client certificate signed with a different root CA from the cluster&rsquo;s CA</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
+<pre tabindex="0"><code>$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
   curl -s --resolve nginx-mtls.diff-ca.local:80:10.1.1.4 \
   http://nginx-mtls.diff-ca.local \
   | grep title
 &lt;title&gt;Welcome to nginx!&lt;/title&gt;
-</code></pre></div><h2 id="unique-client-certificate-for-each-application">Unique client certificate for each application</h2>
+</code></pre><h2 id="unique-client-certificate-for-each-application">Unique client certificate for each application<a href="#unique-client-certificate-for-each-application" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>If there is a requirement for each application to have unique client certificates, or managing an egress gateway sounds like a chore, one can leave the task of managing client certificates to the application owners.</p>
 <p>First, the cluster admin has to define the following:</p>
 <ol>
 <li>A <code>ServiceEntry</code> for the external service to allow traffic to leave the cluster
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
@@ -484,9 +474,9 @@ spec:
   endpoints:
   - address: 10.1.1.4
 EOF
-</code></pre></div></li>
+</code></pre></li>
 <li>A <code>VirtualService</code> to route traffic destined for the external service, and converting the HTTP port (<code>80</code>) to the HTTPS port (<code>9443</code>). Note that this is just a port number change, the protocol is still HTTP at this point.
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
@@ -503,9 +493,9 @@ spec:
         port:
           number: 9443
 EOF
-</code></pre></div></li>
+</code></pre></li>
 <li>A <code>DestinationRule</code> to perform mTLS connection, referencing the CA certificate, client certificate and key files in particular locations in the sidecar proxy. These files will be loaded into the sidecar proxy by the application owners in the following section.
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -522,23 +512,23 @@ spec:
         privateKey: /etc/certs/tls.key
         caCertificates: /etc/certs/ca.crt
 EOF
-</code></pre></div></li>
+</code></pre></li>
 </ol>
 <p>With the above set up, the application owners then have to provide the CA certificate, client certificate and key files for their applications:</p>
 <ol>
 <li>
 <p>Create a generic <code>Secret</code> to store the enterprise root CA, client certificate and key for the mTLS connection towards</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create secret generic nginx-mtls-external \
+<pre tabindex="0"><code>kubectl create secret generic nginx-mtls-external \
   --from-file=tls.key=app-client.key \
   --from-file=tls.crt=app-client.crt \
   --from-file=ca.crt=enterpriseCA.pem
-</code></pre></div></li>
+</code></pre></li>
 <li>
 <p>Add the following annotations to the <code>Pod</code> template in the <code>Deployment</code> to load the certs and key from the <code>Secret</code> into the pod&rsquo;s sidecar proxy in the directory specified by the <code>DestinationRule</code> from before (<code>/etc/certs/</code> in this case)</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">sidecar.istio.io/userVolume: &#39;[{&#34;name&#34;:&#34;client-certs&#34;, &#34;secret&#34;:{&#34;secretName&#34;:&#34;nginx-mtls-external&#34;}}]&#39;
-sidecar.istio.io/userVolumeMount: &#39;[{&#34;name&#34;:&#34;client-certs&#34;, &#34;mountPath&#34;:&#34;/etc/certs&#34;, &#34;readonly&#34;:true}]&#39;
-</code></pre></div><p>The <code>Deployment</code> manifest will look something like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>sidecar.istio.io/userVolume: '[{&quot;name&quot;:&quot;client-certs&quot;, &quot;secret&quot;:{&quot;secretName&quot;:&quot;nginx-mtls-external&quot;}}]'
+sidecar.istio.io/userVolumeMount: '[{&quot;name&quot;:&quot;client-certs&quot;, &quot;mountPath&quot;:&quot;/etc/certs&quot;, &quot;readonly&quot;:true}]'
+</code></pre><p>The <code>Deployment</code> manifest will look something like this:</p>
+<pre tabindex="0"><code>kubectl apply -f - &lt;&lt;EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -553,8 +543,8 @@ spec:
   template:
     metadata:
       annotations:
-        sidecar.istio.io/userVolume: &#39;[{&#34;name&#34;:&#34;client-certs&#34;, &#34;secret&#34;:{&#34;secretName&#34;:&#34;nginx-mtls-external&#34;}}]&#39;
-        sidecar.istio.io/userVolumeMount: &#39;[{&#34;name&#34;:&#34;client-certs&#34;, &#34;mountPath&#34;:&#34;/etc/certs&#34;, &#34;readonly&#34;:true}]&#39;
+        sidecar.istio.io/userVolume: '[{&quot;name&quot;:&quot;client-certs&quot;, &quot;secret&quot;:{&quot;secretName&quot;:&quot;nginx-mtls-external&quot;}}]'
+        sidecar.istio.io/userVolumeMount: '[{&quot;name&quot;:&quot;client-certs&quot;, &quot;mountPath&quot;:&quot;/etc/certs&quot;, &quot;readonly&quot;:true}]'
       labels:
         app: curl
     spec:
@@ -567,58 +557,81 @@ spec:
         image: curlimages/curl
         name: curl
 EOF
-</code></pre></div><p>You can verify that the certificates and key are mounted correctly using <code>istioctl pc secrets</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ istioctl pc secrets curl-55b48d797c-6f5h6 | grep /etc/certs
+</code></pre><p>You can verify that the certificates and key are mounted correctly using <code>istioctl pc secrets</code></p>
+<pre tabindex="0"><code>$ istioctl pc secrets curl-55b48d797c-6f5h6 | grep /etc/certs
 file-cert:/etc/certs/tls.crt~/etc/certs/tls.key     Cert Chain     ACTIVE     true           344012585647005735528648296646953979292086906406     2022-09-27T11:16:30Z     2021-09-27T11:16:30Z
 file-root:/etc/certs/ca.crt                         CA             ACTIVE     true           720903288241772125710852709688782830101643184205     2026-09-26T11:03:03Z     2021-09-27T11:03:03Z
-</code></pre></div></li>
+</code></pre></li>
 </ol>
 <p>Now, the application should be able to access the external service via HTTP on port <code>80</code>, and the sidecar proxy should initiate the mTLS connection on its behalf on the HTTPS port <code>9443</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec curl-55b48d797c-6f5h6 -c curl -- \
+<pre tabindex="0"><code>$ kubectl exec curl-55b48d797c-6f5h6 -c curl -- \
   curl -s --resolve nginx-mtls.diff-ca.local:80:10.1.1.4 \
   http://nginx-mtls.diff-ca.local \
   | grep title
 &lt;title&gt;Welcome to nginx!&lt;/title&gt;
-</code></pre></div>
-</div>
+</code></pre>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/kubernetes/sql-server-kubernetes/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Kubernetes | SQL Server on Kubernetes - Part 1</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/automation/terraform-maps/">
+                <span class="button__text">Automation | Terraform Maps</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

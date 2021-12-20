@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>kubernetes :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/tags/kubernetes/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="kubernetes">
+<meta property="og:description" content="" />
+<meta property="og:url" content="/tags/kubernetes/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
+
+  
+    <meta property="og:image" content="/img/favicon/orange.png">
+  
+
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+  <link href="/tags/kubernetes/index.xml" rel="alternate" type="application/rss+xml" title="apcj@f5 blog" />
+
+
+
+
+
+
+
+
+
+</head>
+<body class="orange">
+
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    apcj@f5
+  </div>
+</a>
+
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
+
+          <ul class="menu__sub-inner-more hidden">
+            
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+  
+  <div class="posts">
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&rsquo;t Service Entry Namespaced!?</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-09-04
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          I got a question on how we can restrict access to certain external endpoints on a per namespace basis. There was an idea to use Istio&rsquo;s egress gateway to control access to external endpoints, though I&rsquo;m not convinced that&rsquo;s a valid use case for an egress gateway today. So I went off to do some investigation, and found some options:
+ Specifying which namespaces can access certain hosts defined in the ServiceEntry Specifying which endpoints can be accessed from a namespace  But before that, a bit of back story of how we got here&hellip;
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-08-16
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          In this post, we will be testing Istio&rsquo;s ServiceEntry by accessing a PostgreDB database hosted externally from the Kubernetes cluster.
+Setup &ldquo;External&rdquo; PostgresDB service Since we are running the Kubernetes cluster locally in Docker containers using k3d, we can create an &ldquo;external&rdquo; service by running a PostgresDB Docker container on the same host and expose its ports to localhost.
+Create a local PostgresDB container database using Docker
+docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres Create a test database app_db
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-08-02
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
+Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
+Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
+kubectl -n bookinfo apply -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes.
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/ingress/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-08-02
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          In this series, we will be testing out several features in Istio with a local Kubernetes (k3s) cluster.
+Deploy k3s cluster First step is to deploy the k8s cluster with k3d - a wrapper to run k3s in docker. Start by creating a k3d config file:
+# k3d-istio.yaml apiVersion: k3d.io/v1alpha2 kind: Simple name: istio servers: 1 agents: 2 ports: # for exposing Istio ingress on localhost - port: 8080:80 nodeFilters: - loadbalancer - port: 8443:443 nodeFilters: - loadbalancer options: k3s: extraServerArgs: - --no-deploy=traefik  # we will be using Istio ingress instead Deploy the cluster with k3d
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/setup/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/eli5-kubernetes-custom-resources/">Kubernetes | ELI5: Kubernetes Custom Resources</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-07-18
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/eli5/">eli5</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          In this article, I will be using the process of building a house as an example to explain how Kubernetes Custom Resources work.
+ Imagine building a custom home, which is a highly detailed and laborious work, that you decided to just hire a home builder. The builder gives you a form to fill out details such as:
+ how many rooms do you need and what size should they be?
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/eli5-kubernetes-custom-resources/">Read more →</a>
+        </div>
+        
+      </div>
+    
+    <div class="pagination">
+  <div class="pagination__buttons">
+    
+      <span class="button previous">
+        <a href="/tags/kubernetes/">
+          <span class="button__icon">←</span>
+          <span class="button__text">Newer posts</span>
+        </a>
+      </span>
+    
+    
+  </div>
+</div>
+
+  </div>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

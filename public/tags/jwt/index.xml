@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>jwt on apcj@f5 technical blog</title>
+    <title>jwt on apcj@f5 blog</title>
     <link>/tags/jwt/</link>
-    <description>Recent content in jwt on apcj@f5 technical blog</description>
+    <description>Recent content in jwt on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 06 Nov 2021 21:32:16 +1100</lastBuildDate><atom:link href="/tags/jwt/index.xml" rel="self" type="application/rss+xml" />
@@ -15,6 +15,298 @@
       <guid>/posts/learning-istio/jwt-auth/</guid>
       <description>In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
  Is the JWT issued by the right party Is the client who they claim to be  The logic for the checks above are usually coded into the application.</description>
+      <content>&lt;p&gt;In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Is the JWT issued by the right party&lt;/li&gt;
+&lt;li&gt;Is the client who they claim to be&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The logic for the checks above are usually coded into the application.&lt;/p&gt;
+&lt;p&gt;Alternatively, as we will discover in this post, we can simplify the application by offloading this to Istio using the &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; and &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; resources.&lt;/p&gt;
+&lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;
+&lt;h2 id=&#34;test-application&#34;&gt;Test application&lt;/h2&gt;
+&lt;p&gt;For the test application, I will be using the &lt;a href=&#34;https://hub.docker.com/r/kennethreitz/httpbin/&#34;&gt;httpbin&lt;/a&gt; image as it exposes a &lt;code&gt;/headers&lt;/code&gt; endpoint which prints out the headers as seen by the application, allowing us to see the changes done by the sidecar proxy.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: apps/v1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Deployment
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  labels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  replicas: 1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    matchLabels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  template:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      labels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      containers:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      - image: kennethreitz/httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        name: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;---
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: v1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Service
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  labels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  ports:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - name: http  # this is important. See Additional Learnings below
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    port: 80
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    protocol: TCP
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    targetPort: 80
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;jwt-provider&#34;&gt;JWT provider&lt;/h2&gt;
+&lt;p&gt;The JWT used in most of the examples in this post is obtained from Auth0 via the &lt;a href=&#34;https://auth0.com/docs/authorization/flows/call-your-api-using-the-client-credentials-flow&#34;&gt;client credentials flow&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get access token&lt;/span&gt;
+$ BASE_URL&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;https://leonseng.au.auth0.com
+$ APP_CLIENT_ID&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client ID&amp;gt;
+$ APP_CLIENT_SECRET&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client secret&amp;gt;
+$ API_IDENTIFIER&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 API identifier&amp;gt;
+$ ACCESS_TOKEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s --request POST &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --url &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$BASE_URL&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth/token&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --header &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;content-type: application/x-www-form-urlencoded&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data grant_type&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;client_credentials &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data client_id&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$APP_CLIENT_ID &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data client_secret&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$APP_CLIENT_SECRET &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data audience&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$API_IDENTIFIER | jq -r .access_token&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Check content of JWT&lt;/span&gt;
+$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;kid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qv9xb5h9OYy-uJgVyDEyx&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636331240,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636331300,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database write:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;requestauthentication&#34;&gt;RequestAuthentication&lt;/h1&gt;
+&lt;p&gt;Istio&amp;rsquo;s &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; is responsible for validating the JWT in a request is signed by the expected issuer, and that the payload has not been tampered with.&lt;/p&gt;
+&lt;p&gt;Below is an example where we specify the JWT issuer and the JSON Web Key Set (JWKS) for JWT validation. The decoded JWT payload can be passed onto the application in a HTTP header via the &lt;code&gt;outputPayloadToHeader&lt;/code&gt; field, allowing application to access the trusted claim without having to perform token validation itself.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: RequestAuthentication
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: &amp;#34;httpbin-jwt-req-auth&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    matchLabels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  jwtRules:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - issuer: &amp;#34;https://leonseng.au.auth0.com/&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    jwksUri: &amp;#34;https://leonseng.au.auth0.com/.well-known/jwks.json&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    outputPayloadToHeader: x-jwt-payload
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here&amp;rsquo;s a test to show that our request with the right JWT can go through&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ RESPONSE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+$ echo $RESPONSE | jq .
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Content-Length&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;httpbin&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;User-Agent&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;curl/7.79.1-DEV&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Parentspanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;40f941f2847fb38d&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Sampled&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Spanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;7c93024a6eb09cf5&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Traceid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;38ab74cb85a129d240f941f2847fb38d&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Envoy-Attempt-Count&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Forwarded-Client-Cert&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;By=spiffe://cluster.local/ns/default/sa/default;Hash=dc1fd96b48b91947ef1bfeeb6a9755164343eb982eeb2d29373e3521a90350dc;Subject=\&amp;#34;\&amp;#34;;URI=spiffe://cluster.local/ns/default/sa/default&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Jwt-Payload&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;eyJpc3MiOiJodHRwczovL2xlb25zZW5nLmF1LmF1dGgwLmNvbS8iLCJzdWIiOiJRV1Bqd3ZtVlRMVkppUWVqY1BKaW0wQ0tSM3B4dGdkM0BjbGllbnRzIiwiYXVkIjoiaXN0aW8tand0LXRlc3QiLCJpYXQiOjE2MzY0MjkwODUsImV4cCI6MTYzNjUxNTQ4NSwiYXpwIjoiUVdQand2bVZUTFZKaVFlamNQSmltMENLUjNweHRnZDMiLCJzY29wZSI6InJlYWQ6ZGF0YWJhc2Ugd3JpdGU6ZGF0YWJhc2UiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see that the decoded payload is accessible by the application in the &lt;code&gt;X-Jwt-Payload&lt;/code&gt; header after performing a base64 decode&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ FORWARDED_PAYLOAD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $RESPONSE | jq -r &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.headers.&amp;#34;X-Jwt-Payload&amp;#34;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+$ echo $FORWARDED_PAYLOAD | base64 -d | jq .
+base64: invalid input
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636429085,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636515485,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database write:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Malformed, expired and JWT issued by other issuers will be rejected:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Malformed token&lt;/span&gt;
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer bad&amp;#34;&lt;/span&gt; httpbin/headers
+Jwt is not in the form of Header.Payload.Signature with two dots and &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; sections
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Expired token&lt;/span&gt;
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+Jwt is expired
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Valid JWT from another issuer - jwt.io&lt;/span&gt;
+INVALID_TOKEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.NHVaYe26MbtOYhSKkoKYdFVomg4i8ZJd8_-RU8VNbftc4TSMb4bXP3l3YlNWACwyXPGffz5aXHc6lty1Y2t4SWRqGteragsVdZufDn5BlnJl9pdR_kdVFUsra2rWKEofkZeIC4yWytE58sMIihvo9H1ScmmVwBcQP6XETqYd0aSHp1gOa9RdUPDvoXQ5oqygTqVtxaDr6wUFKrKItgBMzWIdNZ6y7O9E0DhEPTbE9rfBo6KTFsHAZnMg4k68CDp2woYIaXbmYTWcvbzIuHO7_37GT79XdIwkm95QJ7hYC9RiwrV7mesbY4PAahERJawntho0my942XheVLmGwLMBkQ
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$INVALID_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t have key to match kid or alg from Jwt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without JWT is expected to fail, but &lt;strong&gt;it didn&amp;rsquo;t&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s httpbin/headers
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Content-Length&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;httpbin&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;User-Agent&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;curl/7.79.1-DEV&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Parentspanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;de8e7a515c92e784&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Sampled&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Spanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a2994910ea2fd7f2&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Traceid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;11f49e2d3230c711de8e7a515c92e784&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Envoy-Attempt-Count&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Forwarded-Client-Cert&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;By=spiffe://cluster.local/ns/default/sa/default;Hash=b01278f0dac370955d49f07b1484118c6581fea591a3843d5ccd341ef7b872e6;Subject=\&amp;#34;\&amp;#34;;URI=spiffe://cluster.local/ns/default/sa/default&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This was unexpected to me, but it is a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;documented behaviour&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A request that does not contain any authentication credentials will be accepted but will not have any authenticated identity. To restrict access to authenticated requests only, this should be accompanied by an authorization rule.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;authorizationpolicy&#34;&gt;AuthorizationPolicy&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; further extends RBAC through the configuration of more granular rules, covering:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;#who-is-the-requester&#34;&gt;who is the requester&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#what-is-the-requester-trying-to-do&#34;&gt;what the requester is trying to do&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#additional-conditions-in-the-jwt&#34;&gt;additional conditions in the JWT&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Below is an example which we will be using&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: AuthorizationPolicy
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: httpbin-authz-policy
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    matchLabels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  rules:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - from:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - source:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        requestPrincipals: [&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    to:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - operation:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        methods: [&amp;#34;GET&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        paths: [&amp;#34;/headers&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    when:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - key: request.auth.claims[aud]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      values: [&amp;#34;httpbin&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - key: request.auth.claims[scope]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      values: [&amp;#34;write:database, fetch:email&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;A quick test to verify that it hasn&amp;rsquo;t broken our setup&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Content-Length&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;httpbin&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;User-Agent&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;curl/7.79.1-DEV&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Parentspanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;60c70087740ac4fa&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Sampled&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Spanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a4f01ac9e90d5ac5&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Traceid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;afcacf8ed3355d7160c70087740ac4fa&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Envoy-Attempt-Count&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Forwarded-Client-Cert&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;By=spiffe://cluster.local/ns/default/sa/default;Hash=72d075873d9fb6b17553f5b428fac8ad0168162e917b74f44c42b7e145267507;Subject=\&amp;#34;\&amp;#34;;URI=spiffe://cluster.local/ns/default/sa/default&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Jwt-Payload&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;eyJpc3MiOiJodHRwczovL2xlb25zZW5nLmF1LmF1dGgwLmNvbS8iLCJzdWIiOiJRV1Bqd3ZtVlRMVkppUWVqY1BKaW0wQ0tSM3B4dGdkM0BjbGllbnRzIiwiYXVkIjoiaXN0aW8tand0LXRlc3QiLCJpYXQiOjE2MzYzNzUxNDMsImV4cCI6MTYzNjQ2MTU0MywiYXpwIjoiUVdQand2bVZUTFZKaVFlamNQSmltMENLUjNweHRnZDMiLCJzY29wZSI6InJlYWQ6ZGF0YWJhc2Ugd3JpdGU6ZGF0YWJhc2UiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;who-is-the-requester&#34;&gt;Who is the requester&lt;/h2&gt;
+&lt;p&gt;The identity of the requester using JWT can be specified in the &lt;code&gt;requestPrincipals&lt;/code&gt; field as documented &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Source&#34;&gt;here&lt;/a&gt;. Istio constructs the identity from the JWT payload values in the format of &lt;code&gt;&amp;lt;iss&amp;gt;/&amp;lt;sub&amp;gt;&lt;/code&gt;. However, if you just want to enforce the presence of a valid JWT (regardless of the identity), &lt;code&gt;requestPrincipals&lt;/code&gt; can be set to &lt;code&gt;[*]&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;from:
+- source:
+    requestPrincipals: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;# iss/sub&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without a JWT or with a different user/subject will be denied&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# No JWT provided&lt;/span&gt;
+$ curl -s httpbin/headers
+RBAC: access denied
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# JWT with different user/subject&lt;/span&gt;
+$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;kid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qv9xb5h9OYy-uJgVyDEyx&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;uoPlJVCJID9UxJS1jdOMPcr9Gmz2TGgP@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636375387,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636461787,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;uoPlJVCJID9UxJS1jdOMPcr9Gmz2TGgP&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database write:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+RBAC: access denied
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;what-is-the-requester-trying-to-do&#34;&gt;What is the requester trying to do&lt;/h2&gt;
+&lt;p&gt;Next, we can &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Operation&#34;&gt;restrict which HTTP verbs and path a requester has access to&lt;/a&gt;. In our example, we are only allowing &lt;code&gt;GET&lt;/code&gt; requests to &lt;code&gt;/headers&lt;/code&gt; path&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;to:
+- operation:
+    methods: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+    paths: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/headers&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Request using another HTTP verb and/or accessing another path will not be allowed&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# POST to /post&lt;/span&gt;
+$ curl -s -X POST -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/post
+RBAC: access denied
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;additional-conditions-in-the-jwt&#34;&gt;Additional conditions in the JWT&lt;/h2&gt;
+&lt;p&gt;Lastly, Istio also enables the evaluation of additional &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/conditions/&#34;&gt;conditions against the JWT claims&lt;/a&gt;. The &lt;code&gt;AuthorizationPolicy&lt;/code&gt; applied is checking against the claims in the JWT payload&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;when:
+- key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;aud&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+  values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+- key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;scope&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+  values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;write:database&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this example, we send a request with the scope &lt;code&gt;read:database&lt;/code&gt;, which will be rejected as the &lt;code&gt;AuthorizationPolicy&lt;/code&gt; is expecting a &lt;code&gt;write:database&lt;/code&gt; scope&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;kid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qv9xb5h9OYy-uJgVyDEyx&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xYvKrg4QHLA5bsna0Hg1MYiD3itPY1gC@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636376574,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636462974,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xYvKrg4QHLA5bsna0Hg1MYiD3itPY1gC&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+$ curl -s -X POST -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/post
+RBAC: access denied
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h1 id=&#34;additional-learnings&#34;&gt;Additional learnings&lt;/h1&gt;
+&lt;p&gt;Here&amp;rsquo;s a list of things that were picked up during my tests that weren&amp;rsquo;t immediately intuitive:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Istio requires the port name in the &lt;code&gt;Service&lt;/code&gt; to be prefixed with the protocol as described &lt;a href=&#34;https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/&#34;&gt;here&lt;/a&gt;. Failing to adhere to the naming convention will break the authentication feature provided by the &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; resource. This can be caught by running &lt;code&gt;istioctl analyze&lt;/code&gt; in the application namespace, which reveals a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/analysis/ist0118/&#34;&gt;PortNameIsNotUnderNamingConvention&lt;/a&gt; message:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ istioctl analyze
+&amp;lt;snipped&amp;gt;
+Info &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;IST0118&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Service httpbin.default&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; Port name &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;port: 80, targetPort: 80&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t follow the naming convention of Istio port.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;Defining a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; alone does not stop requests without JWT, the requests just won&amp;rsquo;t have identities tied to them. Augment it with a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; to enforce the presence of JWT.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;scope&lt;/code&gt; field in a JWT can contain multiple scopes in a space delimited format,
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scope: read:database write:database
+&lt;/code&gt;&lt;/pre&gt;Fortunately, Istio recognizes that and separates the string into multiple scopes. This allows us to match individual scopes from the &lt;code&gt;scope&lt;/code&gt; field without having to do string manipulations.&lt;/li&gt;
+&lt;li&gt;To assist with troubleshooting, set the log level for the &lt;code&gt;jwt&lt;/code&gt; and &lt;code&gt;rbac&lt;/code&gt; loggers to &lt;code&gt;debug&lt;/code&gt;, which will produce more logs on JWT validation and RBAC enforcement in the application sidecar proxy.
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;istioctl proxy-config log &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;k get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;httpbin -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; --level jwt:debug rbac:debug
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</content>
     </item>
     
   </channel>

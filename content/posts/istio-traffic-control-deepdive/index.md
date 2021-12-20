@@ -1,5 +1,5 @@
 ---
-title: 'Istio sidecar iptables and traffic steering detail'
+title: 'Istio | Sidecar iptables and traffic steering detail'
 subtitle: 'Translate by google'
 summary: How istio manipulates the traffic.
 authors:

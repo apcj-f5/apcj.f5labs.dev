@@ -1,5 +1,5 @@
 +++
-title = "Terraform Maps"
+title = "Automation | Terraform Maps"
 date = "2021-09-26"
 aliases = ["terraform_maps"]
 tags = ["terraform", "iac"]

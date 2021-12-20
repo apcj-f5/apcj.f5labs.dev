@@ -1,5 +1,5 @@
 ---
-title: "Ephemeral Kubernetes Lab with IaC and GitOps"
+title: "Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps"
 date: 2021-12-08T09:05:42+11:00
 draft: false
 tags: ['aws', 'kubernetes', 'eks', 'terraform', 'iac', 'argocd', 'gitops']

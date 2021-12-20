@@ -1,185 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>NGINX and oAuth2/OIDC series one - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Security | NGINX and oAuth2/OIDC series one :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NGINX as different role in oAuth/OIDC" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/nginx-oauth2-oidc-series/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Security | NGINX and oAuth2/OIDC series one">
+<meta property="og:description" content="NGINX as different role in oAuth/OIDC" />
+<meta property="og:url" content="/posts/nginx-oauth2-oidc-series/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2020-05-10 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">NGINX and oAuth2/OIDC series one</h1>
-<div class="content ">
-  <p>Nowadays, the Internet has penetrated various life and business scenarios. Just like people have never been a simple individual in real life, we need to have many complicated relationship networks. The same is true of Internet applications, and it is now difficult to see which application can develop completely independently without having a relationship with its surroundings. Therefore, today&rsquo;s applications are very particular about their own ecology, and they need to share a lot of information with each other. These complex relationships raise a very important issue: identity authentication, resource authorization, and account maintenance. Of course there is API authentication access control.</p>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/nginx-oauth2-oidc-series/">Security | NGINX and oAuth2/OIDC series one</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2020-05-10
+        
+          [Updated: 2020-05-10]
+        
+      </span>
+    
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/nginx/">nginx</a>&nbsp;
+    
+    #<a href="/tags/oauth/">oAuth</a>&nbsp;
+    
+    #<a href="/tags/oidc/">OIDC</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>Nowadays, the Internet has penetrated various life and business scenarios. Just like people have never been a simple individual in real life, we need to have many complicated relationship networks. The same is true of Internet applications, and it is now difficult to see which application can develop completely independently without having a relationship with its surroundings. Therefore, today&rsquo;s applications are very particular about their own ecology, and they need to share a lot of information with each other. These complex relationships raise a very important issue: identity authentication, resource authorization, and account maintenance. Of course there is API authentication access control.</p>
 <p>For example, in your daily life, you may need to use dozens of apps. Each of these apps has an independent account and password. You need to maintain different accounts and passwords. You may have one set of accounts for all apps in order to save trouble. Password, so after the application A was violently vaulted, you are forced to change all the passwords of the accounts of these dozens of apps. You may also be more concerned about the security of your account, so you use a fixed + changing password to combine dozens of APP accounts, which is very good, can help alleviate a large part of security issues, and at the same time reduce your password maintenance. Question (Is the memory okay), but these apps may not be able to follow the fixed + change mode you envisioned as you wish, some may only support numbers, some support numbers plus passwords, and some still It requires a minimum length and a more complicated combination, so you start to use a small book to record the password format of different applications (well, at least there was a stage where I did this, recorded in a description language on the computer, when forgotten At that time, go to find this hint in the computer).</p>
 <p>Is there a better way?</p>
 <p>If you trust a company that has done well in security and has a good reputation system, can you use this account to run the Internet? I believe we already have the answer. Today, we may have used it a lot of times. When you log in to the XX application, you are used to skip user registration and go to click &ldquo;log in with ***&rdquo;, in the pop-up interface Here is a very sacred point under &ldquo;Agree&rdquo;. So you no longer need to remember so many application accounts. This is actually a typical open authorization (Open Authorization) referred to as oAuth (current version is 2, also known as oAuth2).</p>
@@ -229,12 +217,12 @@ These requirements oAuth can help solve, but there is a problem. If you join the
 <a href="https://github.com/vouch/vouch-proxy">vouch-proxy</a></p>
 <p><a href="https://github.com/oauth2-proxy/oauth2-proxy">oauth2 proxy</a></p>
 <p><a href="https://github.com/jirutka/ngx-oauth">oauth2 proxy by lua -implement proxy directly in lua, no need to install additional proxy service</a></p>
-<h2 id="demo">Demo</h2>
+<h2 id="demo">Demo<a href="#demo" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This demonstration uses NGINX plus and vouch-proxy to achieve. For the specific installation and configuration of vouch-proxy, please refer to its github directly, it is not complicated</p>
 <p><img src="https://imesh.club/upload/2020/05/1589093713142-1024x705.jpg?v=1589093738" alt=""></p>
 <p>In the actual demo, the web application backend actually has an intermediate NGINX to simulate, using return to return the content.</p>
 <p>NGINX configuration:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">############entry for protected app http://authcode.imesh.club/personalinfo
+<pre tabindex="0"><code>############entry for protected app http://authcode.imesh.club/personalinfo
 server {
     listen 80;
     server_name authcode.imesh.club;
@@ -253,7 +241,7 @@ server {
 
       # Vouch Proxy only acts on the request headers
       proxy_pass_request_body off;
-      proxy_set_header Content-Length &#34;&#34;;
+      proxy_set_header Content-Length &quot;&quot;;
 
       # optionally add X-Vouch-User as returned by Vouch Proxy along with the request
       auth_request_set $auth_resp_x_vouch_user $upstream_http_x_vouch_user;
@@ -294,8 +282,8 @@ server {
     }
 }
 
-</code></pre></div><p>Simulation configuration of back-end applications</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">   server {
+</code></pre><p>Simulation configuration of back-end applications</p>
+<pre tabindex="0"><code>   server {
         listen 8080;
 
         location /personalinfo {
@@ -304,11 +292,11 @@ server {
             set $avatar $http_x_vouch_idp_claims_avatar;
             set $company $http_x_vouch_idp_claims_company;
             set $blog $http_x_vouch_idp_claims_blog;
-            return 200 &#39;&amp;lt;html&gt;&amp;lt;head&gt;&amp;lt;meta http-equiv=&#34;Content-Type&#34; content=&#34;text/html; charset=utf-8&#34; /&gt;&amp;lt;/head&gt;&amp;lt;h2&gt;Your personal info:&amp;lt;/h2&gt;&amp;lt;hr /&gt;Name: $user &amp;lt;br&gt;avatar: $avatar &amp;lt;br&gt;company: $company &amp;lt;br&gt;blog:$blog &amp;lt;/html&gt;&#39;;
+            return 200 '&amp;lt;html&gt;&amp;lt;head&gt;&amp;lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;&amp;lt;/head&gt;&amp;lt;h2&gt;Your personal info:&amp;lt;/h2&gt;&amp;lt;hr /&gt;Name: $user &amp;lt;br&gt;avatar: $avatar &amp;lt;br&gt;company: $company &amp;lt;br&gt;blog:$blog &amp;lt;/html&gt;';
         }
     }
-</code></pre></div><p>Responsible for receiving the request configuration initiated by the client browser to the oauth proxy:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">#######work for vouch login/auth
+</code></pre><p>Responsible for receiving the request configuration initiated by the client browser to the oauth proxy:</p>
+<pre tabindex="0"><code>#######work for vouch login/auth
 server {
     listen 80;
     server_name vouch.imesh.club;
@@ -318,7 +306,7 @@ server {
        proxy_set_header Host vouch.imesh.club;
     }
 }
-</code></pre></div><p>The effect of the visit process:
+</code></pre><p>The effect of the visit process:
 <img src="https://imesh.club/upload/2020/05/%E5%9B%BE%E7%89%87-1-1-653x1024.png?v=1589095217" alt=""></p>
 <p><img src="https://imesh.club/upload/2020/05/%E5%9B%BE%E7%89%87-2-682x1024.png?v=1589095226" alt=""></p>
 <p><img src="https://imesh.club/upload/2020/05/1589096005904.jpg?v=1589096014" alt=""></p>
@@ -331,51 +319,67 @@ server {
 <p><img src="https://imesh.club/upload/2020/05/1589096907088.jpg?v=1589096914" alt=""></p>
 <p>Finally completed the visit:</p>
 <p><img src="https://imesh.club/upload/2020/05/1589097012011.jpg?v=1589097024" alt=""></p>
-<h2 id="summary">Summary</h2>
+<h2 id="summary">Summary<a href="#summary" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Use NGINX&rsquo;s auth_request function, and through clever configuration to use oauth proxy to achieve the complete authentication process of oAuth, and pass relevant user information to NGINX to achieve access control and information processing. Except for the back-end, all applications need to develop code to implement oauth verification, so that enterprises can quickly use third-party accounts to control user access</p>
-<h2 id="follow-up">Follow up</h2>
+<h2 id="follow-up">Follow up<a href="#follow-up" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In this practice, the authorization code mode of oAuth is adopted, and the external oauth proxy service is used. If you do not want to rely on external services and want to implement on pure NGINX, you can refer to the second part of this series .</p>
 <p>Check more oAuth posts of the series at my tech blog <a href="https://imesh.club/?s=oauth">https://imesh.club/?s=oauth</a></p>
 
-</div>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/f5-istio-work-together/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Istio | Enhancing ingress service capabilities</span>
+            </a>
+        </span>
+        
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

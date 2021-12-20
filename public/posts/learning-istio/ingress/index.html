@@ -1,283 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Learning Istio | Ingress - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Learning Istio | Ingress :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
+Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
+Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
+kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/learning-istio/ingress/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Learning Istio | Ingress">
+<meta property="og:description" content="In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
+Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
+Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
+kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes." />
+<meta property="og:url" content="/posts/learning-istio/ingress/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+  <meta property="article:section" content="tech" />
+
+
+  <meta property="article:published_time" content="2021-08-02 16:25:55 &#43;1000 AEST" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">Learning Istio | Ingress</h1>
-<div class="content ">
-  <p>In the previous <a href="/posts/learning-istio/01-setup/">post</a>, we deployed the <a href="https://istio.io/latest/docs/examples/bookinfo/#deploying-the-application">Bookinfo</a> application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.</p>
-<h1 id="kubernetes-ingress">Kubernetes Ingress</h1>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-08-02
+        
+          [Updated: 2021-08-02]
+        
+      </span>
+    
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+    
+    #<a href="/tags/istio/">istio</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>In the previous <a href="/posts/learning-istio/01-setup/">post</a>, we deployed the <a href="https://istio.io/latest/docs/examples/bookinfo/#deploying-the-application">Bookinfo</a> application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.</p>
+<h1 id="kubernetes-ingress">Kubernetes Ingress<a href="#kubernetes-ingress" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>Istio should handle <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/">Kubernetes Ingress</a> resource just fine as documented <a href="https://istio.io/latest/docs/tasks/traffic-management/ingress/kubernetes-ingress/">here</a>.</p>
 <p>Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation <code>kubernetes.io/ingress.class: istio</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">kubectl -n bookinfo apply -f - <span class="s">&lt;&lt;EOF
-</span><span class="s">apiVersion: networking.k8s.io/v1
-</span><span class="s">kind: Ingress
-</span><span class="s">metadata:
-</span><span class="s">  annotations:
-</span><span class="s">    kubernetes.io/ingress.class: istio
-</span><span class="s">  name: productpage-k8s-ingress
-</span><span class="s">spec:
-</span><span class="s">  rules:
-</span><span class="s">  - http:
-</span><span class="s">      paths:
-</span><span class="s">      - path: /productpage
-</span><span class="s">        pathType: Exact
-</span><span class="s">        backend:
-</span><span class="s">          service:
-</span><span class="s">            name: productpage
-</span><span class="s">            port:
-</span><span class="s">              number: 9080
-</span><span class="s">      - path: /static
-</span><span class="s">        pathType: Prefix
-</span><span class="s">        backend:
-</span><span class="s">          service:
-</span><span class="s">            name: productpage
-</span><span class="s">            port:
-</span><span class="s">              number: 9080
-</span><span class="s">      - path: /login
-</span><span class="s">        pathType: Exact
-</span><span class="s">        backend:
-</span><span class="s">          service:
-</span><span class="s">            name: productpage
-</span><span class="s">            port:
-</span><span class="s">              number: 9080
-</span><span class="s">      - path: /logout
-</span><span class="s">        pathType: Exact
-</span><span class="s">        backend:
-</span><span class="s">          service:
-</span><span class="s">            name: productpage
-</span><span class="s">            port:
-</span><span class="s">              number: 9080
-</span><span class="s">      - path: /api/v1/products
-</span><span class="s">        pathType: Prefix
-</span><span class="s">        backend:
-</span><span class="s">          service:
-</span><span class="s">            name: productpage
-</span><span class="s">            port:
-</span><span class="s">              number: 9080
-</span><span class="s">EOF</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">kubectl -n bookinfo apply -f - <span style="color:#e6db74">&lt;&lt;EOF
+</span><span style="color:#e6db74">apiVersion: networking.k8s.io/v1
+</span><span style="color:#e6db74">kind: Ingress
+</span><span style="color:#e6db74">metadata:
+</span><span style="color:#e6db74">  annotations:
+</span><span style="color:#e6db74">    kubernetes.io/ingress.class: istio
+</span><span style="color:#e6db74">  name: productpage-k8s-ingress
+</span><span style="color:#e6db74">spec:
+</span><span style="color:#e6db74">  rules:
+</span><span style="color:#e6db74">  - http:
+</span><span style="color:#e6db74">      paths:
+</span><span style="color:#e6db74">      - path: /productpage
+</span><span style="color:#e6db74">        pathType: Exact
+</span><span style="color:#e6db74">        backend:
+</span><span style="color:#e6db74">          service:
+</span><span style="color:#e6db74">            name: productpage
+</span><span style="color:#e6db74">            port:
+</span><span style="color:#e6db74">              number: 9080
+</span><span style="color:#e6db74">      - path: /static
+</span><span style="color:#e6db74">        pathType: Prefix
+</span><span style="color:#e6db74">        backend:
+</span><span style="color:#e6db74">          service:
+</span><span style="color:#e6db74">            name: productpage
+</span><span style="color:#e6db74">            port:
+</span><span style="color:#e6db74">              number: 9080
+</span><span style="color:#e6db74">      - path: /login
+</span><span style="color:#e6db74">        pathType: Exact
+</span><span style="color:#e6db74">        backend:
+</span><span style="color:#e6db74">          service:
+</span><span style="color:#e6db74">            name: productpage
+</span><span style="color:#e6db74">            port:
+</span><span style="color:#e6db74">              number: 9080
+</span><span style="color:#e6db74">      - path: /logout
+</span><span style="color:#e6db74">        pathType: Exact
+</span><span style="color:#e6db74">        backend:
+</span><span style="color:#e6db74">          service:
+</span><span style="color:#e6db74">            name: productpage
+</span><span style="color:#e6db74">            port:
+</span><span style="color:#e6db74">              number: 9080
+</span><span style="color:#e6db74">      - path: /api/v1/products
+</span><span style="color:#e6db74">        pathType: Prefix
+</span><span style="color:#e6db74">        backend:
+</span><span style="color:#e6db74">          service:
+</span><span style="color:#e6db74">            name: productpage
+</span><span style="color:#e6db74">            port:
+</span><span style="color:#e6db74">              number: 9080
+</span><span style="color:#e6db74">EOF</span>
 </code></pre></div><p>The application is now exposed through the Istio ingress gateway on port 80, which in turn is exposed on port 8080 via the k3d configuration. Verify that it is working by browsing to <a href="http://localhost:8080/productpage">http://localhost:8080/productpage</a></p>
 <p>To verify that the route has been configured on the Istio ingress gateway, first get the name of the <code>route</code> created by the Ingress:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ <span class="nv">ISTIO_INGRESS_GW_POD</span><span class="o">=</span><span class="k">$(</span>kubectl -n istio-system get pods -l <span class="nv">app</span><span class="o">=</span>istio-ingressgateway -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.items[*].metadata.name}&#39;</span><span class="k">)</span>
-$ istioctl proxy-config routes -n istio-system <span class="nv">$ISTIO_INGRESS_GW_POD</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ ISTIO_INGRESS_GW_POD<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>kubectl -n istio-system get pods -l app<span style="color:#f92672">=</span>istio-ingressgateway -o jsonpath<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;{.items[*].metadata.name}&#39;</span><span style="color:#66d9ef">)</span>
+$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
 NAME        DOMAINS     MATCH                  VIRTUAL SERVICE
 http.80     *           /productpage           -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
             *           /healthz/ready*
             *           /stats/prometheus*
 </code></pre></div><p>In the example above, we see <code>http.80</code> is the route created for our ingress matching <code>/productpage</code>. We can then print out the details of the route by name</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ istioctl proxy-config routes -n istio-system <span class="nv">$ISTIO_INGRESS_GW_POD</span> --name http.80 -o yaml
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD --name http.80 -o yaml
 - name: http.80
-  validateClusters: <span class="nb">false</span>
+  validateClusters: false
   virtualHosts:
   - domains:
-    - <span class="s1">&#39;*&#39;</span>
-    includeRequestAttemptCount: <span class="nb">true</span>
-    name: <span class="s1">&#39;*:80&#39;</span>
+    - <span style="color:#e6db74">&#39;*&#39;</span>
+    includeRequestAttemptCount: true
+    name: <span style="color:#e6db74">&#39;*:80&#39;</span>
     routes:
     - decorator:
         operation: productpage.bookinfo.svc.cluster.local:9080/productpage
       match:
-        caseSensitive: <span class="nb">true</span>
+        caseSensitive: true
         path: /productpage
       metadata:
         filterMetadata:
           istio:
             config: /apis/networking.istio.io/v1alpha3/namespaces/bookinfo/virtual-service/-productpage-k8s-ingress-istio-autogenerated-k8s-ingress
       route:
-        cluster: outbound<span class="p">|</span>9080<span class="o">||</span>productpage.bookinfo.svc.cluster.local
+        cluster: outbound|9080<span style="color:#f92672">||</span>productpage.bookinfo.svc.cluster.local
         maxGrpcTimeout: 0s
         retryPolicy:
-          hostSelectionRetryMaxAttempts: <span class="s2">&#34;5&#34;</span>
-          numRetries: <span class="m">2</span>
+          hostSelectionRetryMaxAttempts: <span style="color:#e6db74">&#34;5&#34;</span>
+          numRetries: <span style="color:#ae81ff">2</span>
           retriableStatusCodes:
-          - <span class="m">503</span>
+          - <span style="color:#ae81ff">503</span>
           retryHostPredicate:
           - name: envoy.retry_host_predicates.previous_hosts
           retryOn: connect-failure,refused-stream,unavailable,cancelled,retriable-status-codes
         timeout: 0s
 &lt;output truncated&gt;
 </code></pre></div><p>Alternatively, you can go all out and get a config dump from the ingress gateway (which is basically Envoy) by exposing the Envoy admin port <code>15000</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">k -n istio-system port-forward $ISTIO_INGRESS_GW_POD 15000
-</code></pre></div><p>and calling the <code>config_dump</code> API in a separate terminal</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">curl localhost:15000/config_dump
-</code></pre></div><h1 id="istio-gateway-and-virtual-service">Istio Gateway and Virtual Service</h1>
+<pre tabindex="0"><code>k -n istio-system port-forward $ISTIO_INGRESS_GW_POD 15000
+</code></pre><p>and calling the <code>config_dump</code> API in a separate terminal</p>
+<pre tabindex="0"><code>curl localhost:15000/config_dump
+</code></pre><h1 id="istio-gateway-and-virtual-service">Istio Gateway and Virtual Service<a href="#istio-gateway-and-virtual-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>Istio offers the <code>Gateway</code> and <code>VirtualService</code> CRDs for better control of ingress traffic.</p>
 <p>We start by deploying the <code>Gateway</code> and <code>VirtualService</code> resources</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl -n bookinfo apply -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl -n bookinfo apply -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -291,7 +285,7 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - &#34;*&#34;
+    - &quot;*&quot;
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
@@ -299,7 +293,7 @@ metadata:
   name: bookinfo
 spec:
   hosts:
-  - &#34;*&#34;
+  - &quot;*&quot;
   gateways:
   - bookinfo-gateway
   http:
@@ -320,8 +314,8 @@ spec:
         port:
           number: 9080
 EOF
-</code></pre></div><p>Verify that the appropriate routes are created:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
+</code></pre><p>Verify that the appropriate routes are created:</p>
+<pre tabindex="0"><code>$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
 NAME        DOMAINS     MATCH                  VIRTUAL SERVICE
 http.80     *           /productpage           -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
 http.80     *           /static/*              -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
@@ -335,22 +329,22 @@ http.80     *           /logout                bookinfo.bookinfo
 http.80     *           /api/v1/products*      bookinfo.bookinfo
             *           /healthz/ready*
             *           /stats/prometheus*
-</code></pre></div><p>Notice that we now have 2 sets of routes, 1 from Kubernetes Ingress and another from the Istio VirtualService. According to Envoy&rsquo;s <a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/route_matching">route matching</a> rules, they are evaluated in order, so the routes introduced by the Ingress resource still has priority.</p>
+</code></pre><p>Notice that we now have 2 sets of routes, 1 from Kubernetes Ingress and another from the Istio VirtualService. According to Envoy&rsquo;s <a href="https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/route_matching">route matching</a> rules, they are evaluated in order, so the routes introduced by the Ingress resource still has priority.</p>
 <p>Let&rsquo;s verify this by changing the target port for /productpage in the <code>productpage-k8s-ingress</code> Ingress to something else</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl -n bookinfo patch ingress productpage-k8s-ingress -p &#39;{
-  &#34;spec&#34;: {
-    &#34;rules&#34;: [
+<pre tabindex="0"><code>kubectl -n bookinfo patch ingress productpage-k8s-ingress -p '{
+  &quot;spec&quot;: {
+    &quot;rules&quot;: [
       {
-        &#34;http&#34;: {
-          &#34;paths&#34;: [
+        &quot;http&quot;: {
+          &quot;paths&quot;: [
             {
-              &#34;path&#34;: &#34;/productpage&#34;,
-              &#34;pathType&#34;: &#34;Exact&#34;,
-              &#34;backend&#34;: {
-                &#34;service&#34;: {
-                  &#34;name&#34;: &#34;productpage&#34;,
-                  &#34;port&#34;: {
-                    &#34;number&#34;: 10080
+              &quot;path&quot;: &quot;/productpage&quot;,
+              &quot;pathType&quot;: &quot;Exact&quot;,
+              &quot;backend&quot;: {
+                &quot;service&quot;: {
+                  &quot;name&quot;: &quot;productpage&quot;,
+                  &quot;port&quot;: {
+                    &quot;number&quot;: 10080
                   }
                 }
               }
@@ -360,57 +354,80 @@ http.80     *           /api/v1/products*      bookinfo.bookinfo
       }
     ]
   }
-}&#39;
-</code></pre></div><p>Attempting to browse to <a href="http://localhost:8080/productpage">http://localhost:8080/productpage</a> will now fail as expected since the <code>productpage-k8s-ingress</code> Ingress configuration is wrong.</p>
+}'
+</code></pre><p>Attempting to browse to <a href="http://localhost:8080/productpage">http://localhost:8080/productpage</a> will now fail as expected since the <code>productpage-k8s-ingress</code> Ingress configuration is wrong.</p>
 <p>Now that we have observed this behaviour of Envoy route matching, we can remove the <code>productpage-k8s-ingress</code> Ingress, and have Istio&rsquo;s Gateway and VirtualService to take effect</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl -n bookinfo delete ingress productpage-k8s-ingress
-</code></pre></div><p>The <a href="http://localhost:8080/productpage">productpage</a> should now work again.</p>
-<h1 id="learnings">Learnings</h1>
+<pre tabindex="0"><code>kubectl -n bookinfo delete ingress productpage-k8s-ingress
+</code></pre><p>The <a href="http://localhost:8080/productpage">productpage</a> should now work again.</p>
+<h1 id="learnings">Learnings<a href="#learnings" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <ul>
 <li>Istio can handle Kubernetes Ingress once the <code>kubernetes.io/ingress.class: istio</code> annotation has been added</li>
 <li>Viewing the Ingress gateway routes</li>
 <li>Ingress gateway route matching behaviour</li>
 </ul>
 
-</div>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/development/nginx-unit/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Development | NGINX Unit</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/learning-istio/setup/">
+                <span class="button__text">Learning Istio | Setup</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

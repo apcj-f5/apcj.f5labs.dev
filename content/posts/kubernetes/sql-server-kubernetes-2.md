@@ -1,5 +1,5 @@
 +++
-title = "SQL Server on Kubernetes - Part 2"
+title = "Kubernetes | SQL Server on Kubernetes - Part 2"
 date = "2021-12-01"
 aliases = ["sql_server"]
 tags = ["kubernetes", "containers", "databases"]

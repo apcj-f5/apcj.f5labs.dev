@@ -1,253 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>SQL Server on Kubernetes - Part 1 - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Kubernetes | SQL Server on Kubernetes - Part 1 :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Intro Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster. Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it. I decided to give it a go recently on Kubernetes, and get it all working.
+This is part one, where I deploy SQL server without persistent storage. In part two, I will discuss using persistent storage." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/kubernetes/sql-server-kubernetes/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Kubernetes | SQL Server on Kubernetes - Part 1">
+<meta property="og:description" content="Intro Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster. Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it. I decided to give it a go recently on Kubernetes, and get it all working.
+This is part one, where I deploy SQL server without persistent storage. In part two, I will discuss using persistent storage." />
+<meta property="og:url" content="/posts/kubernetes/sql-server-kubernetes/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+  <meta property="article:section" content="kubernetes" />
+
+  <meta property="article:section" content="software" />
+
+  <meta property="article:section" content="dev" />
+
+
+  <meta property="article:published_time" content="2021-11-01 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">SQL Server on Kubernetes - Part 1</h1>
-<div class="content ">
-  <h1 id="intro">Intro</h1>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/kubernetes/sql-server-kubernetes/">Kubernetes | SQL Server on Kubernetes - Part 1</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-11-01
+        
+          [Updated: 2021-11-01]
+        
+      </span>
+    
+    
+      <span class="post-author">:: map[name:codecowboy.io]</span>
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+    
+    #<a href="/tags/containers/">containers</a>&nbsp;
+    
+    #<a href="/tags/databases/">databases</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="intro">Intro<a href="#intro" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>Recently, I&rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster.
 Ever since Microsoft&rsquo;s SQL Server was released on Linux some years ago, I&rsquo;ve been fascinated with it.
 I decided to give it a go recently on Kubernetes, and get it all working.</p>
 <p>This is part one, where I deploy SQL server without persistent storage.
 In part two, I will discuss using persistent storage.</p>
-<h2 id="why-databases">Why databases?</h2>
+<h2 id="why-databases">Why databases?<a href="#why-databases" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>There is a lot of debate about whether or not you <em>should</em> run databases on kubernetes or not. If you&rsquo;re operating in a public cloud environment, this is much more clear cut to my mind than if you&rsquo;re not. If you are, then it may be better to use a service from a cloud provider where infrastructure is taken care of for you. It&rsquo;s just easier.</p>
 <p>If you are not operating in a public cloud environment, then running on kubernetes gives you the resilience and abstraction from infrastructure that is as close as you can get to running in a public cloud. This is very useful in disconnected environments and environments where you cannot access public cloud (yes they do exist).</p>
 <p>Suffice to say, there are reasons that you may want to do this.</p>
-<h2 id="why-sql-server">Why SQL server?</h2>
+<h2 id="why-sql-server">Why SQL server?<a href="#why-sql-server" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>SQL server is ubiquitous. It is the database that a lot of applications use. As applications get either refactored or shifted to kubernetes, it is reasonable to assume that there will be instances where running a SQL server database on kubernetes is needed.</p>
-<h2 id="secret">Secret</h2>
+<h2 id="secret">Secret<a href="#secret" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In order to get the database up and running, you will need to have a secret.
 This is the initial SA password that is used for the database.
 The easiest way to do this is to create an opaque secret.</p>
 <p>The command below creates an opaque secret with a password that is complex enough to start the database.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">kubectl create secret generic mssql --from-literal<span class="o">=</span><span class="nv">SA_PASSWORD</span><span class="o">=</span><span class="s2">&#34;MyC0m9l&amp;xP@ssw0rd&#34;</span> --namespace<span class="o">=</span>mssql
-</code></pre></div><h2 id="manifests">Manifests</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">kubectl create secret generic mssql --from-literal<span style="color:#f92672">=</span>SA_PASSWORD<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;MyC0m9l&amp;xP@ssw0rd&#34;</span> --namespace<span style="color:#f92672">=</span>mssql
+</code></pre></div><h2 id="manifests">Manifests<a href="#manifests" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The manifests for deploying SQL server are relatively simple.
 The pages <a href="https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-overview?view=sql-server-ver15">here</a> give a really good overview of the general installation and command line options available for SQL Server on linux. These can be converted to manifest files.</p>
-<h3 id="namespace">Namespace</h3>
+<h3 id="namespace">Namespace<a href="#namespace" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>First we create a namespace. Technically, you don&rsquo;t need to do this and can run everything in the default namespace, but for neatness sake, I always think it&rsquo;s worth creating a separate namespace.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Yaml" data-lang="Yaml"><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Namespace</span><span class="w">
-</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
-</span><span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
-</span></code></pre></div><h3 id="pods">Pods</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Namespace</span>
+<span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mssql</span>
+  <span style="color:#f92672">labels</span>:
+    <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mssql</span>
+</code></pre></div><h3 id="pods">Pods<a href="#pods" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Create a deployment for SQL server. I am creating a deployment rather than a statefulset for demonstration purposes.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Yaml" data-lang="Yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
-</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
-</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
-</span><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Recreate</span><span class="w">
-</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
-</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span><span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
-</span><span class="w">      </span><span class="nt">securityContext</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="m">1000</span><span class="w">
-</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
-</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
-</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">mcr.microsoft.com/mssql/rhel/server:2019-latest</span><span class="w">
-</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">1433</span><span class="w">
-</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-port</span><span class="w">
-</span><span class="w">          </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
-</span><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MSSQL_PID</span><span class="w">
-</span><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Developer&#34;</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ACCEPT_EULA</span><span class="w">
-</span><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Y&#34;</span><span class="w">
-</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MSSQL_SA_PASSWORD</span><span class="w">
-</span><span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w">
-</span><span class="w">            </span><span class="nt">secretKeyRef</span><span class="p">:</span><span class="w">
-</span><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
-</span><span class="w">              </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">SA_PASSWORD</span><span class="w">
-</span></code></pre></div><h4 id="environment-variables">Environment variables</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">apps/v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Deployment</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mssql-a</span>
+  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">mssql</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">replicas</span>: <span style="color:#ae81ff">1</span>
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">matchLabels</span>:
+      <span style="color:#f92672">app</span>: <span style="color:#ae81ff">mssql-a</span>
+  <span style="color:#f92672">strategy</span>:
+    <span style="color:#f92672">type</span>: <span style="color:#ae81ff">Recreate</span>
+  <span style="color:#f92672">template</span>:
+    <span style="color:#f92672">metadata</span>:
+      <span style="color:#f92672">labels</span>:
+        <span style="color:#f92672">app</span>: <span style="color:#ae81ff">mssql-a</span>
+    <span style="color:#f92672">spec</span>:
+      <span style="color:#f92672">terminationGracePeriodSeconds</span>: <span style="color:#ae81ff">10</span>
+      <span style="color:#f92672">securityContext</span>:
+        <span style="color:#f92672">fsGroup</span>: <span style="color:#ae81ff">1000</span>
+      <span style="color:#f92672">containers</span>:
+      - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mssql</span>
+        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">mcr.microsoft.com/mssql/rhel/server:2019-latest</span>
+        <span style="color:#f92672">ports</span>:
+        - <span style="color:#f92672">containerPort</span>: <span style="color:#ae81ff">1433</span>
+          <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mssql-port</span>
+          <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+        <span style="color:#f92672">env</span>:
+        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">MSSQL_PID</span>
+          <span style="color:#f92672">value</span>: <span style="color:#e6db74">&#34;Developer&#34;</span>
+        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">ACCEPT_EULA</span>
+          <span style="color:#f92672">value</span>: <span style="color:#e6db74">&#34;Y&#34;</span>
+        - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">MSSQL_SA_PASSWORD</span>
+          <span style="color:#f92672">valueFrom</span>:
+            <span style="color:#f92672">secretKeyRef</span>:
+              <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mssql</span>
+              <span style="color:#f92672">key</span>: <span style="color:#ae81ff">SA_PASSWORD</span>
+</code></pre></div><h4 id="environment-variables">Environment variables<a href="#environment-variables" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
 <p>The environment variables that can be used to configure MSSQL server are listed <a href="https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables?view=sql-server-ver15">here</a>.</p>
 <p>In the manifest above, I am using three variables.</p>
 <ul>
@@ -255,131 +253,154 @@ The pages <a href="https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-o
 <li>ACCEPT_EULA: Accept the End User License Agreement</li>
 <li>MSSQL_SA_PASSWORD: The SA password for the database. In my case, this refers to the secret that I created earlier</li>
 </ul>
-<h3 id="service">Service</h3>
+<h3 id="service">Service<a href="#service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Create a service that can be used to expose the pods that we created above. The service is named <strong>mssql-a</strong> purely because I may have more than one database that i want to expose.</p>
 <p>This service exposes the database pods on port 1433, the default SQL server port.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Yaml" data-lang="Yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
-</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Service</span><span class="w">
-</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
-</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
-</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
-</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
-</span><span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w">
-</span><span class="w">    </span>- <span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
-</span><span class="w">      </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">1433</span><span class="w">
-</span><span class="w">      </span><span class="nt">targetPort</span><span class="p">:</span><span class="w"> </span><span class="m">1433</span><span class="w">
-</span></code></pre></div><h3 id="persistent-storage">Persistent Storage</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Yaml" data-lang="Yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Service</span>
+<span style="color:#f92672">metadata</span>:
+  <span style="color:#f92672">name</span>: <span style="color:#ae81ff">mssql-a</span>
+  <span style="color:#f92672">namespace</span>: <span style="color:#ae81ff">mssql</span>
+<span style="color:#f92672">spec</span>:
+  <span style="color:#f92672">selector</span>:
+    <span style="color:#f92672">app</span>: <span style="color:#ae81ff">mssql-a</span>
+  <span style="color:#f92672">ports</span>:
+    - <span style="color:#f92672">protocol</span>: <span style="color:#ae81ff">TCP</span>
+      <span style="color:#f92672">port</span>: <span style="color:#ae81ff">1433</span>
+      <span style="color:#f92672">targetPort</span>: <span style="color:#ae81ff">1433</span>
+</code></pre></div><h3 id="persistent-storage">Persistent Storage<a href="#persistent-storage" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>I&rsquo;ll cover this piece in a second blog post, because it deserves its own topic entirely.</p>
 <p>The database manifest works but will store data locally only. This means that it is only useful for development purposes. If the pod is restarted for any reason, data will be lost.</p>
-<h2 id="client-side-tools">Client side tools</h2>
+<h2 id="client-side-tools">Client side tools<a href="#client-side-tools" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Install client side tools to connect to the database.</p>
 <p>There is a really good document <a href="https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-red-hat?view=sql-server-ver15">here</a> that describes how to install the client side utilities in order to connect to your database.</p>
 <p>I use fedora, so am using the instructions for RHEL8 (close enough)</p>
 <p>Use curl to install the microsoft repository on your system.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">sudo curl -o /etc/yum.repos.d/msprod.repo https://packages.microsoft.com/config/rhel/8/prod.repo
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">sudo curl -o /etc/yum.repos.d/msprod.repo https://packages.microsoft.com/config/rhel/8/prod.repo
 </code></pre></div><p>Install the client side tooling and the unix ODBC client</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">sudo yum install -y mssql-tools unixODBC-devel
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">sudo yum install -y mssql-tools unixODBC-devel
 </code></pre></div><p>Add the SQL tools to your default path and load the path into the current environment.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$PATH:/opt/mssql-tools/bin&#34;&#39;</span> &gt;&gt; ~/.bash_profile
-<span class="nb">echo</span> <span class="s1">&#39;export PATH=&#34;$PATH:/opt/mssql-tools/bin&#34;&#39;</span> &gt;&gt; ~/.bashrc
-<span class="nb">source</span> ~/.bashrc
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">echo <span style="color:#e6db74">&#39;export PATH=&#34;$PATH:/opt/mssql-tools/bin&#34;&#39;</span> &gt;&gt; ~/.bash_profile
+echo <span style="color:#e6db74">&#39;export PATH=&#34;$PATH:/opt/mssql-tools/bin&#34;&#39;</span> &gt;&gt; ~/.bashrc
+source ~/.bashrc
 </code></pre></div><p>Test your database.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">sqlcmd -S localhost -U SA -P <span class="s1">&#39;&lt;YourPassword&gt;&#39;</span>
-</code></pre></div><h2 id="port-forward-from-local-machine-to-database">Port forward from local machine to database</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">sqlcmd -S localhost -U SA -P <span style="color:#e6db74">&#39;&lt;YourPassword&gt;&#39;</span>
+</code></pre></div><h2 id="port-forward-from-local-machine-to-database">Port forward from local machine to database<a href="#port-forward-from-local-machine-to-database" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>As I have not created any ingress for my database, the easiest way for me to get connectivity is to port forward directly to it.
 I can use the command below to port forward from my local workstation to my database.</p>
 <p>First I need to get the pod name of my database in order to port forward to it.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">kubectl get pods -n mssql
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">kubectl get pods -n mssql
 
 NAME                       READY   STATUS    RESTARTS   AGE
-mssql-a-8469f884f7-rrbx9   1/1     Running   <span class="m">0</span>          18m
+mssql-a-8469f884f7-rrbx9   1/1     Running   <span style="color:#ae81ff">0</span>          18m
 </code></pre></div><p>I can then use the port-forward command to forward a local port to the pod port so that I can perform some testing and check that my database actually works.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">kubectl port-forward mssql-a-&lt;pod&gt; 1433:1433 -n mssql --address 0.0.0.0
-</code></pre></div><h2 id="database-connect-and-test">Database connect and test</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">kubectl port-forward mssql-a-&lt;pod&gt; 1433:1433 -n mssql --address 0.0.0.0
+</code></pre></div><h2 id="database-connect-and-test">Database connect and test<a href="#database-connect-and-test" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Once everything has been created on the kubernetes side of the house, we can connect to the database and see that it is available.</p>
 <p>I can connect to my database using the password I set originally. As I have port forwarded to my cluster, no ingress is needed. This is useful for testing.</p>
 <p>I create a database named <strong>foo</strong></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># sqlcmd -S localhost -U SA -P &#39;MyC0m9l&amp;xP@ssw0rd&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># sqlcmd -S localhost -U SA -P &#39;MyC0m9l&amp;xP@ssw0rd&#39;</span>
 1&gt; create database foo
 2&gt; go
 </code></pre></div><p>If I select the names of all databases from the sys.Database table, I can see that the last entry is my database <strong>foo</strong>.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">sys</span><span class="p">.</span><span class="n">Databases</span><span class="w">
-</span><span class="w"></span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="k">go</span><span class="w">
-</span><span class="w"></span><span class="n">name</span><span class="w">
-</span><span class="w"></span><span class="c1">--------------------------------------------------------------------------------------------------------------------------------
-</span><span class="c1"></span><span class="n">master</span><span class="w">
-</span><span class="w"></span><span class="n">tempdb</span><span class="w">
-</span><span class="w"></span><span class="n">model</span><span class="w">
-</span><span class="w"></span><span class="n">msdb</span><span class="w">
-</span><span class="w"></span><span class="n">foo</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="p">(</span><span class="mi">5</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="p">)</span><span class="w">
-</span></code></pre></div><p>I can switch to the <strong>foo</strong> database and being to use it.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> name <span style="color:#66d9ef">from</span> sys.Databases
+<span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">go</span>
+name
+<span style="color:#75715e">--------------------------------------------------------------------------------------------------------------------------------
+</span><span style="color:#75715e"></span>master
+tempdb
+model
+msdb
+foo
+
+(<span style="color:#ae81ff">5</span> <span style="color:#66d9ef">rows</span> affected)
+</code></pre></div><p>I can switch to the <strong>foo</strong> database and being to use it.
 I create a table and insert a single line of data into my newly created database.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="n">use</span><span class="w"> </span><span class="n">foo</span><span class="w">
-</span><span class="w"></span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="k">go</span><span class="w">
-</span><span class="w"></span><span class="n">Changed</span><span class="w"> </span><span class="k">database</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="s1">&#39;foo&#39;</span><span class="p">.</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">bar</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="nb">INT</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span><span class="w">
-</span><span class="w"></span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="k">go</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">bar</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;test&#39;</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="k">go</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="p">)</span><span class="w">
-</span></code></pre></div><p>If I select all of the data from my table <strong>bar</strong> I can see the single line of data that I inserted above.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="mi">1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">bar</span><span class="w">
-</span><span class="w"></span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="k">go</span><span class="w">
-</span><span class="w"></span><span class="n">id</span><span class="w">          </span><span class="n">name</span><span class="w">
-</span><span class="w"></span><span class="c1">----------- --------------------------------------------------
-</span><span class="c1"></span><span class="w">          </span><span class="mi">1</span><span class="w"> </span><span class="n">test</span><span class="w">
-</span></code></pre></div><p>I have a functional database that is running on kubernetes!</p>
-<h2 id="conclusion">Conclusion</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;</span> use foo
+<span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">go</span>
+Changed <span style="color:#66d9ef">database</span> context <span style="color:#66d9ef">to</span> <span style="color:#e6db74">&#39;foo&#39;</span>.
+
+<span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> bar (id INT, name VARCHAR(<span style="color:#ae81ff">50</span>))
+<span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">go</span>
+
+<span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> bar <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#39;test&#39;</span>)
+<span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">go</span>
+
+(<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">rows</span> affected)
+</code></pre></div><p>If I select all of the data from my table <strong>bar</strong> I can see the single line of data that I inserted above.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#ae81ff">1</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> bar
+<span style="color:#ae81ff">2</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">go</span>
+id          name
+<span style="color:#75715e">----------- --------------------------------------------------
+</span><span style="color:#75715e"></span>          <span style="color:#ae81ff">1</span> test
+</code></pre></div><p>I have a functional database that is running on kubernetes!</p>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Running databases on kubernetes isn&rsquo;t that difficult. There are reasons that you want to do this.
 The difficult part about this is the ephemeral nature of pods on kubernetes and how to handle persistent storage with databases.
 This is the topic of my next post, where I will show how to use persistent storage to make your databases on kubernetes more robust.</p>
 
-</div>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/learning-istio/jwt-auth/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Learning Istio | JWT Auth</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">
+                <span class="button__text">Learning Istio | Securing Egress Traffic With mTLS</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

@@ -1,5 +1,5 @@
 +++
-title = "Small Containers for fun "
+title = "Kubernetes | Small Containers for fun "
 date = "2021-07-09"
 aliases = ["smallest_container"]
 tags = ["containers", "minimal"]

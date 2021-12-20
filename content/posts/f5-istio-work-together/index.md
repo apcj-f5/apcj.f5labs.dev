@@ -1,5 +1,5 @@
 ---
-title: 'F5 BIG-IP links Istio to enhance ingress service capabilities'
+title: 'Istio | Enhancing ingress service capabilities'
 subtitle: 'Translate by google'
 summary: F5 make istio works better
 authors:

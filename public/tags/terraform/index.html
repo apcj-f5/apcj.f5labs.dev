@@ -1,151 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>terraform - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>terraform :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/tags/terraform/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="terraform">
+<meta property="og:description" content="" />
+<meta property="og:url" content="/tags/terraform/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+  <link href="/tags/terraform/index.xml" rel="alternate" type="application/rss+xml" title="apcj@f5 blog" />
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-list'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
-
+    </div>
     
-    
-    
-    
-
-    
-    
-
-<span class="overview">Overview</span>
-<h1 class="title">terraform</h1>
-<div class="content">
-  
-</div>
-
-
-<div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a></h2>
-  <p>I&rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&rsquo;m used to is a no-go. I need a setup that meets the following requirements:
- Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &ldquo;just the way I left it there last night&rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post.</p>
-</div>
-
-
-<div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/posts/automation/terraform-maps/">Terraform Maps</a></h2>
-  <p>Intro I&rsquo;ve been doing a lot with terraform lately, and I&rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&rsquo;s essentially the same resource. Why should I do this? There has to be a better way.</p>
-</div>
-
-
-<div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a></h2>
-  <p>I have had basic experience playing with Terraform to instantiate resources in Kubernetes and AWS, but my previous attempts left me with a thought, how do I implement this at work and scale it up to the team?
-Terraform creates a local state file which seems like a pain to share around a team. This is when I found out about remote backends. And this is my attempt to learn Terraform S3 backend.</p>
-</div>
-
-
-
-
+      <div class="menu-trigger">menu</div>
     
   </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          <ul class="menu__sub-inner-more hidden">
+            
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
           </ul>
+        </ul>
+      
+    
+
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+  
+  <div class="posts">
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-12-08
+          </span>
+          
         </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/aws/">aws</a>&nbsp;
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/eks/">eks</a>&nbsp;
+            
+            #<a href="/tags/terraform/">terraform</a>&nbsp;
+            
+            #<a href="/tags/iac/">iac</a>&nbsp;
+            
+            #<a href="/tags/argocd/">argocd</a>&nbsp;
+            
+            #<a href="/tags/gitops/">gitops</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          I&rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&rsquo;m used to is a no-go. I need a setup that meets the following requirements:
+ Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &ldquo;just the way I left it there last night&rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post.
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Read more →</a>
+        </div>
+        
       </div>
-    </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/automation/terraform-maps/">Automation | Terraform Maps</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-09-26
+          </span>
+          
+            <span class="post-author">:: map[name:codecowboy.io]</span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/terraform/">terraform</a>&nbsp;
+            
+            #<a href="/tags/iac/">iac</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          Intro I&rsquo;ve been doing a lot with terraform lately, and I&rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&rsquo;s essentially the same resource. Why should I do this? There has to be a better way.
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/automation/terraform-maps/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-terraform-s3-backend/">Automation | Learning Terraform S3 Backend</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-06-11
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/aws/">aws</a>&nbsp;
+            
+            #<a href="/tags/s3/">s3</a>&nbsp;
+            
+            #<a href="/tags/terraform/">terraform</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          I have had basic experience playing with Terraform to instantiate resources in Kubernetes and AWS, but my previous attempts left me with a thought, how do I implement this at work and scale it up to the team?
+Terraform creates a local state file which seems like a pain to share around a team. This is when I found out about remote backends. And this is my attempt to learn Terraform S3 backend.
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-terraform-s3-backend/">Read more →</a>
+        </div>
+        
+      </div>
+    
+    <div class="pagination">
+  <div class="pagination__buttons">
+    
+    
   </div>
 </div>
 
-  
+  </div>
+
+  </div>
 
   
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

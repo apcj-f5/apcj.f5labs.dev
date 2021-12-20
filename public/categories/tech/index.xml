@@ -1,20 +1,140 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>tech on apcj@f5 technical blog</title>
+    <title>tech on apcj@f5 blog</title>
     <link>/categories/tech/</link>
-    <description>Recent content in tech on apcj@f5 technical blog</description>
+    <description>Recent content in tech on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="/categories/tech/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Ephemeral Kubernetes Lab with IaC and GitOps</title>
+      <title>Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps</title>
       <link>/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</link>
       <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
       
       <guid>/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</guid>
       <description>I&amp;rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&amp;rsquo;m used to is a no-go. I need a setup that meets the following requirements:
  Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &amp;ldquo;just the way I left it there last night&amp;rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post.</description>
+      <content>&lt;p&gt;I&amp;rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&amp;rsquo;m used to is a no-go. I need a setup that meets the following requirements:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Simple to create and tear down&lt;/li&gt;
+&lt;li&gt;Applications must be pre-deployed when the cluster is up, as close to &amp;ldquo;just the way I left it there last night&amp;rdquo; as possible&lt;/li&gt;
+&lt;li&gt;cost $0 when the setup has been switched off&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I eventually settled on the idea of an ephemeral Kubernetes lab environment using &lt;a href=&#34;#infrastructure-as-code-using-terraform&#34;&gt;Infrastructure as Code (IaC)&lt;/a&gt; and &lt;a href=&#34;#k8s-resource-management-via-gitops-using-argo-cd&#34;&gt;GitOps&lt;/a&gt; practices, which I will cover in this post. You can follow along by cross referencing the code found here:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/leonseng/terraform-everything/tree/master/eks-gitops&#34;&gt;https://github.com/leonseng/terraform-everything/tree/master/eks-gitops&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;infrastructure-as-code-using-terraform&#34;&gt;Infrastructure as Code using Terraform&lt;/h1&gt;
+&lt;p&gt;Starting with the Kubernetes cluster, using a managed Kubernetes offering makes sense for me as my current focus is on Kubernetes applications.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If cluster customization is of importance, one can deploy Kubernetes on the cloud computes using tools like &lt;a href=&#34;https://github.com/kubernetes/kops&#34;&gt;kops&lt;/a&gt; or &lt;a href=&#34;https://github.com/kubernetes-sigs/kubespray&#34;&gt;kubespray&lt;/a&gt;, similarly adopting IaC practices detailed below.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I went with &lt;a href=&#34;https://aws.amazon.com/eks/&#34;&gt;EKS&lt;/a&gt; as I am more familiar with AWS. An EKS cluster (or any other managed Kubernetes offerings in the public cloud) has a lot of dependencies on other cloud resources, such as computes, gateways, security policies and more. Rather than figuring out &lt;em&gt;when&lt;/em&gt; to create &lt;em&gt;what&lt;/em&gt;, &lt;a href=&#34;https://www.terraform.io/&#34;&gt;Terraform&lt;/a&gt; can be used to define all the cloud resources needed for a functional EKS cluster in a declarative manner. In addition, Terraform modules such as &lt;a href=&#34;https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest&#34;&gt;vpc&lt;/a&gt; and &lt;a href=&#34;https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest&#34;&gt;eks&lt;/a&gt; can be used to further abstract away the web of dependencies. All it takes is a couple of Terraform modules and some data sources to create the cluster, as seen here:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/eks.tf&#34;&gt;https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/eks.tf&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;With the cluster sorted, I turn my attention to deploying Kubernetes resources/applications in the cluster.&lt;/p&gt;
+&lt;h1 id=&#34;k8s-resource-management-via-gitops-using-argo-cd&#34;&gt;K8s resource management via GitOps using Argo CD&lt;/h1&gt;
+&lt;p&gt;It&amp;rsquo;s instinctive to start running &lt;code&gt;kubectl&lt;/code&gt; commands to deploy Kubernetes resources that make up your application in the cluster, but keeping track of them gets harder overtime. If the cluster is to be rebuilt on a regular basis, we&amp;rsquo;d best hope we have a record of what&amp;rsquo;s deployed in it, and what better option than storing the Kubernetes manifests in a Git repository where the IaC definitions are also stored. With the desired state of applications in Git, the next step is ensuring the cluster state reflects the desired state. This is where GitOps comes in.&lt;/p&gt;
+&lt;p&gt;GitOps can be briefly described as an automated workflow that ensures the state of the cluster and its applications matches the desired state from the source of truth, or Git repositories in the case. GitOps achieves this with one of the two patterns below:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Changes are &lt;strong&gt;pushed&lt;/strong&gt; to the cluster&lt;/p&gt;
+&lt;p&gt;Continuous deployment workflow applies the resource manifests on our cluster whenever there are changes in the Git repository. This can be done using simple Bash scripts, or orchestration tools like Ansible. A problem arises when there are multiple deployment workflows targeting the same cluster. As each workflow may not have a complete view of the cluster, it could lead to an inconsistent state in the cluster.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Changes are &lt;strong&gt;pulled&lt;/strong&gt; into the cluster&lt;/p&gt;
+&lt;p&gt;Officially the preferred pattern in &lt;a href=&#34;https://opengitops.dev/blog/1.0-announcement/&#34;&gt;OpenGitOps v1.0.0&lt;/a&gt; - an agent in the cluster continuously polls the desired state from a remote Git repository, and applies the changes in the cluster. &lt;a href=&#34;https://argo-cd.readthedocs.io/en/stable/%5D&#34;&gt;Argo CD&lt;/a&gt; and &lt;a href=&#34;https://fluxcd.io/docs/&#34;&gt;Flux&lt;/a&gt; are two popular GitOps tools that employs this pattern.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;For this article, I will be using Argo CD, mainly for its explicit support for the &lt;a href=&#34;#the-one-app-to-rule-them-all&#34;&gt;App of Apps pattern&lt;/a&gt; which I will cover in a section further down.&lt;/p&gt;
+&lt;h2 id=&#34;argo-cd-applications&#34;&gt;Argo CD Applications&lt;/h2&gt;
+&lt;p&gt;In Argo CD, a Kubernetes application are defined via an &lt;a href=&#34;https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#applications&#34;&gt;&lt;code&gt;Application&lt;/code&gt; custom resource (CR)&lt;/a&gt;. An &lt;code&gt;Application&lt;/code&gt; CR provides Argo CD with the following information:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;source&lt;/strong&gt;: the Git repository, revision and path to where the collection of Kubernetes resource manifests are stored&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;destination&lt;/strong&gt;: the target cluster (Argo CD supports multi-cluster GitOps) and namespace to apply/deploy Kubernetes resource manifests in&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;An &lt;code&gt;Application&lt;/code&gt; CR can be as simple as this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guestbook
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The diagram below shows how an application is deployed with Argo CD:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/images/argocd-basic.png&#34; alt=&#34;Basic Argo CD workflow&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;User creates/modifies and uploads Kubernetes resource manifests (e.g. Deployment, ConfigMap, Service etc) for an application into a Git repository.&lt;/li&gt;
+&lt;li&gt;(&lt;strong&gt;manual step in cluster&lt;/strong&gt;) User deploys an &lt;code&gt;Application&lt;/code&gt; CR.&lt;/li&gt;
+&lt;li&gt;Argo CD inspects &lt;code&gt;Application&lt;/code&gt; CR to discover the Git repository.&lt;/li&gt;
+&lt;li&gt;Argo CD pulls the Kubernetes resource manifests from the Git repository.&lt;/li&gt;
+&lt;li&gt;Argo CD applies/deploys the Kubernetes resource manifests into the target cluster and namespace per the &lt;code&gt;Application&lt;/code&gt; CR.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;And just like that, our application deployment has been turned into code. Pretty cool! But we can do better&amp;hellip;&lt;/p&gt;
+&lt;h2 id=&#34;the-one-app-to-rule-them-all&#34;&gt;The One App To Rule Them All&lt;/h2&gt;
+&lt;p&gt;The previous workflow still involves a manual step on the cluster - creating the &lt;code&gt;Application&lt;/code&gt; CR in the cluster. If the user forgets or makes a mistake, the state of the cluster will not reflect the desired state defined in the Git repository. In order to deal with such scenarios, let&amp;rsquo;s turn to the &lt;a href=&#34;https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern&#34;&gt;App of Apps pattern&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Remember that an &lt;code&gt;Application&lt;/code&gt; CR just points the agent to where the Kubernetes resource manifests are, there&amp;rsquo;s no limitation on what kind of resources it supports. Naturally, this can be extended to other &lt;code&gt;Application&lt;/code&gt; CRs! Here&amp;rsquo;s how it works:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/images/argocd-app-of-apps.png&#34; alt=&#34;Argo CD app of apps workflow&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s start with the &lt;!-- raw HTML omitted --&gt;&lt;strong&gt;red&lt;/strong&gt;&lt;!-- raw HTML omitted --&gt; flow that shows the bootstrapping:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;User creates a bootstrap Git repository to store &lt;code&gt;Application&lt;/code&gt; CRs for the actual applications we want to deploy.&lt;/li&gt;
+&lt;li&gt;User deploys a bootstrap &lt;code&gt;Application&lt;/code&gt; CR on the cluster.&lt;/li&gt;
+&lt;li&gt;Argo CD inspects the bootstrap &lt;code&gt;Application&lt;/code&gt; CR to discover the bootstrap Git repository.&lt;/li&gt;
+&lt;li&gt;Argo CD agent starts monitoring the Git repository for new &lt;code&gt;Application&lt;/code&gt; CRs.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Once the cluster has been bootstrapped (which only has to be done once when the cluster is being set up), let&amp;rsquo;s go through the &lt;!-- raw HTML omitted --&gt;&lt;strong&gt;green&lt;/strong&gt;&lt;!-- raw HTML omitted --&gt; flow to see how applications are deployed/modified:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;User creates/modifies and uploads Kubernetes resource manifests (e.g. Deployment, ConfigMap, Service etc) for an application into an application Git repository.&lt;/li&gt;
+&lt;li&gt;User creates/modifies and uploads an &lt;code&gt;Application&lt;/code&gt; CR for the above application into the bootstrap Git repository.&lt;/li&gt;
+&lt;li&gt;Argo CD discovers new &lt;code&gt;Application&lt;/code&gt; CR in the bootstrap Git repository.&lt;/li&gt;
+&lt;li&gt;Argo CD deploys the &lt;code&gt;Application&lt;/code&gt; CR in the cluster, and from it, discover the application Git repository.&lt;/li&gt;
+&lt;li&gt;Argo CD pulls the Kubernetes resource manifests from the application Git repository&lt;/li&gt;
+&lt;li&gt;Argo CD applies the Kubernetes resource manifests into the target cluster and namespace per the &lt;code&gt;Application&lt;/code&gt; CR.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Using the App of Apps pattern means we only have to maintain the desired state of our applications through Git, and Argo CD would automatically apply the desired state in the cluster.&lt;/p&gt;
+&lt;p&gt;Phew&amp;hellip; that was a lot to take in 😅. Hopefully we are now in the right head space to move on to the next section where we automate the bootstrapping via Terraform.&lt;/p&gt;
+&lt;h2 id=&#34;terraforming-gitops&#34;&gt;Terraforming GitOps&lt;/h2&gt;
+&lt;p&gt;To integrate this GitOps workflow and the App of Apps pattern with the &lt;a href=&#34;#infrastructure-as-code-with-terraform&#34;&gt;IaC&lt;/a&gt; definitions, we use Terraform to:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Install Argo CD in the cluster&lt;/p&gt;
+&lt;p&gt;I found two Terraform providers which can manage Kubernetes resources:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://registry.terraform.io/providers/hashicorp/kubernetes/latest&#34;&gt;kubernetes&lt;/a&gt; - officially supported by HashiCorp, but requires Kubernetes resources to be defined in the Terraform&amp;rsquo;s syntax HCL instead of YAML. It also does not support defining a CRD and any corresponding CRs within the same Terraform project, as the CRD won&amp;rsquo;t exist when Terraform is processing the CRs in the planning stage.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://registry.terraform.io/providers/gavinbunney/kubectl/latest&#34;&gt;kubectl&lt;/a&gt; - allows you to work in YAML and supports overwriting namespaces in the manifest. However, when performing &lt;code&gt;terraform destroy&lt;/code&gt;, it does not seem to wait for resources to be fully deleted before marking them as destroyed (see &lt;a href=&#34;https://github.com/gavinbunney/terraform-provider-kubectl/issues/109&#34;&gt;issue&lt;/a&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Neither of them are perfect, but I&amp;rsquo;m inclined to use the &lt;a href=&#34;https://registry.terraform.io/providers/hashicorp/kubernetes/latest&#34;&gt;kubernetes&lt;/a&gt; provider for the official support, and deviate when it doesn&amp;rsquo;t work.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Bootstrap the cluster with an &lt;code&gt;Application&lt;/code&gt; CR to utilize the App of Apps pattern.&lt;/p&gt;
+&lt;p&gt;As explained earlier, this &lt;code&gt;Application&lt;/code&gt; CR (see &lt;a href=&#34;https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/bootstrap-app.yaml.tpl&#34;&gt;manifest&lt;/a&gt;) is responsible for defining the deployment of all other applications that we actually want running in our cluster. It simply points to a repository that looks something like this:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/argocd-apps&#34;&gt;https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/argocd-apps&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;where there are two applications to be deployed - &lt;a href=&#34;https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/httpbin&#34;&gt;httpbin&lt;/a&gt; and &lt;a href=&#34;https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/nginx&#34;&gt;nginx&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The full Terraform file can be seen here:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/argocd.tf&#34;&gt;https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/argocd.tf&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;finale&#34;&gt;Finale&lt;/h1&gt;
+&lt;p&gt;With the Terraform files and application manifests in their respective Git repositories, we can kick off the deployment with the Terraform commands&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;terraform init
+terraform apply -auto-approve
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And at the end of the day, shutting it down is as easy as running&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;terraform destroy -auto-approve
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Is it perfect? No. I need to be conscious of storing my application manifests in Git, which will slow me down. And occasionally, the destroy process fails due to some orphaned cloud resources (work in progress). But what I have now is an on/off button for my Kubernetes lab in the cloud, which should keep the IT department of my back 😁.&lt;/p&gt;
+</content>
     </item>
     
     <item>
@@ -25,6 +145,298 @@
       <guid>/posts/learning-istio/jwt-auth/</guid>
       <description>In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
  Is the JWT issued by the right party Is the client who they claim to be  The logic for the checks above are usually coded into the application.</description>
+      <content>&lt;p&gt;In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Is the JWT issued by the right party&lt;/li&gt;
+&lt;li&gt;Is the client who they claim to be&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The logic for the checks above are usually coded into the application.&lt;/p&gt;
+&lt;p&gt;Alternatively, as we will discover in this post, we can simplify the application by offloading this to Istio using the &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; and &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; resources.&lt;/p&gt;
+&lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;
+&lt;h2 id=&#34;test-application&#34;&gt;Test application&lt;/h2&gt;
+&lt;p&gt;For the test application, I will be using the &lt;a href=&#34;https://hub.docker.com/r/kennethreitz/httpbin/&#34;&gt;httpbin&lt;/a&gt; image as it exposes a &lt;code&gt;/headers&lt;/code&gt; endpoint which prints out the headers as seen by the application, allowing us to see the changes done by the sidecar proxy.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: apps/v1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Deployment
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  labels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  replicas: 1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    matchLabels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  template:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      labels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      containers:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      - image: kennethreitz/httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        name: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;---
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: v1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Service
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  labels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  ports:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - name: http  # this is important. See Additional Learnings below
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    port: 80
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    protocol: TCP
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    targetPort: 80
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;jwt-provider&#34;&gt;JWT provider&lt;/h2&gt;
+&lt;p&gt;The JWT used in most of the examples in this post is obtained from Auth0 via the &lt;a href=&#34;https://auth0.com/docs/authorization/flows/call-your-api-using-the-client-credentials-flow&#34;&gt;client credentials flow&lt;/a&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get access token&lt;/span&gt;
+$ BASE_URL&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;https://leonseng.au.auth0.com
+$ APP_CLIENT_ID&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client ID&amp;gt;
+$ APP_CLIENT_SECRET&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client secret&amp;gt;
+$ API_IDENTIFIER&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 API identifier&amp;gt;
+$ ACCESS_TOKEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s --request POST &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --url &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;$BASE_URL&lt;span style=&#34;color:#e6db74&#34;&gt;/oauth/token&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --header &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;content-type: application/x-www-form-urlencoded&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data grant_type&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;client_credentials &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data client_id&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$APP_CLIENT_ID &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data client_secret&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$APP_CLIENT_SECRET &lt;span style=&#34;color:#ae81ff&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;&lt;/span&gt;  --data audience&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;$API_IDENTIFIER | jq -r .access_token&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Check content of JWT&lt;/span&gt;
+$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;kid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qv9xb5h9OYy-uJgVyDEyx&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636331240,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636331300,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database write:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;requestauthentication&#34;&gt;RequestAuthentication&lt;/h1&gt;
+&lt;p&gt;Istio&amp;rsquo;s &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; is responsible for validating the JWT in a request is signed by the expected issuer, and that the payload has not been tampered with.&lt;/p&gt;
+&lt;p&gt;Below is an example where we specify the JWT issuer and the JSON Web Key Set (JWKS) for JWT validation. The decoded JWT payload can be passed onto the application in a HTTP header via the &lt;code&gt;outputPayloadToHeader&lt;/code&gt; field, allowing application to access the trusted claim without having to perform token validation itself.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: RequestAuthentication
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: &amp;#34;httpbin-jwt-req-auth&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    matchLabels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  jwtRules:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - issuer: &amp;#34;https://leonseng.au.auth0.com/&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    jwksUri: &amp;#34;https://leonseng.au.auth0.com/.well-known/jwks.json&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    outputPayloadToHeader: x-jwt-payload
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here&amp;rsquo;s a test to show that our request with the right JWT can go through&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ RESPONSE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+$ echo $RESPONSE | jq .
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Content-Length&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;httpbin&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;User-Agent&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;curl/7.79.1-DEV&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Parentspanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;40f941f2847fb38d&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Sampled&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Spanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;7c93024a6eb09cf5&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Traceid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;38ab74cb85a129d240f941f2847fb38d&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Envoy-Attempt-Count&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Forwarded-Client-Cert&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;By=spiffe://cluster.local/ns/default/sa/default;Hash=dc1fd96b48b91947ef1bfeeb6a9755164343eb982eeb2d29373e3521a90350dc;Subject=\&amp;#34;\&amp;#34;;URI=spiffe://cluster.local/ns/default/sa/default&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Jwt-Payload&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;eyJpc3MiOiJodHRwczovL2xlb25zZW5nLmF1LmF1dGgwLmNvbS8iLCJzdWIiOiJRV1Bqd3ZtVlRMVkppUWVqY1BKaW0wQ0tSM3B4dGdkM0BjbGllbnRzIiwiYXVkIjoiaXN0aW8tand0LXRlc3QiLCJpYXQiOjE2MzY0MjkwODUsImV4cCI6MTYzNjUxNTQ4NSwiYXpwIjoiUVdQand2bVZUTFZKaVFlamNQSmltMENLUjNweHRnZDMiLCJzY29wZSI6InJlYWQ6ZGF0YWJhc2Ugd3JpdGU6ZGF0YWJhc2UiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see that the decoded payload is accessible by the application in the &lt;code&gt;X-Jwt-Payload&lt;/code&gt; header after performing a base64 decode&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ FORWARDED_PAYLOAD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $RESPONSE | jq -r &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.headers.&amp;#34;X-Jwt-Payload&amp;#34;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+$ echo $FORWARDED_PAYLOAD | base64 -d | jq .
+base64: invalid input
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636429085,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636515485,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database write:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Malformed, expired and JWT issued by other issuers will be rejected:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Malformed token&lt;/span&gt;
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer bad&amp;#34;&lt;/span&gt; httpbin/headers
+Jwt is not in the form of Header.Payload.Signature with two dots and &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; sections
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Expired token&lt;/span&gt;
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+Jwt is expired
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# Valid JWT from another issuer - jwt.io&lt;/span&gt;
+INVALID_TOKEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.NHVaYe26MbtOYhSKkoKYdFVomg4i8ZJd8_-RU8VNbftc4TSMb4bXP3l3YlNWACwyXPGffz5aXHc6lty1Y2t4SWRqGteragsVdZufDn5BlnJl9pdR_kdVFUsra2rWKEofkZeIC4yWytE58sMIihvo9H1ScmmVwBcQP6XETqYd0aSHp1gOa9RdUPDvoXQ5oqygTqVtxaDr6wUFKrKItgBMzWIdNZ6y7O9E0DhEPTbE9rfBo6KTFsHAZnMg4k68CDp2woYIaXbmYTWcvbzIuHO7_37GT79XdIwkm95QJ7hYC9RiwrV7mesbY4PAahERJawntho0my942XheVLmGwLMBkQ
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$INVALID_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t have key to match kid or alg from Jwt
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without JWT is expected to fail, but &lt;strong&gt;it didn&amp;rsquo;t&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s httpbin/headers
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Content-Length&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;httpbin&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;User-Agent&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;curl/7.79.1-DEV&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Parentspanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;de8e7a515c92e784&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Sampled&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Spanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a2994910ea2fd7f2&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Traceid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;11f49e2d3230c711de8e7a515c92e784&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Envoy-Attempt-Count&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Forwarded-Client-Cert&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;By=spiffe://cluster.local/ns/default/sa/default;Hash=b01278f0dac370955d49f07b1484118c6581fea591a3843d5ccd341ef7b872e6;Subject=\&amp;#34;\&amp;#34;;URI=spiffe://cluster.local/ns/default/sa/default&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This was unexpected to me, but it is a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;documented behaviour&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A request that does not contain any authentication credentials will be accepted but will not have any authenticated identity. To restrict access to authenticated requests only, this should be accompanied by an authorization rule.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;authorizationpolicy&#34;&gt;AuthorizationPolicy&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; further extends RBAC through the configuration of more granular rules, covering:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;#who-is-the-requester&#34;&gt;who is the requester&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#what-is-the-requester-trying-to-do&#34;&gt;what the requester is trying to do&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#additional-conditions-in-the-jwt&#34;&gt;additional conditions in the JWT&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Below is an example which we will be using&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: AuthorizationPolicy
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: httpbin-authz-policy
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    matchLabels:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      app: httpbin
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  rules:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - from:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - source:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        requestPrincipals: [&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    to:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - operation:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        methods: [&amp;#34;GET&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        paths: [&amp;#34;/headers&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    when:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - key: request.auth.claims[aud]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      values: [&amp;#34;httpbin&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - key: request.auth.claims[scope]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      values: [&amp;#34;write:database, fetch:email&amp;#34;]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;A quick test to verify that it hasn&amp;rsquo;t broken our setup&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Content-Length&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;httpbin&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;User-Agent&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;curl/7.79.1-DEV&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Parentspanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;60c70087740ac4fa&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Sampled&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Spanid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;a4f01ac9e90d5ac5&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-B3-Traceid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;afcacf8ed3355d7160c70087740ac4fa&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Envoy-Attempt-Count&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Forwarded-Client-Cert&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;By=spiffe://cluster.local/ns/default/sa/default;Hash=72d075873d9fb6b17553f5b428fac8ad0168162e917b74f44c42b7e145267507;Subject=\&amp;#34;\&amp;#34;;URI=spiffe://cluster.local/ns/default/sa/default&amp;#34;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;X-Jwt-Payload&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;eyJpc3MiOiJodHRwczovL2xlb25zZW5nLmF1LmF1dGgwLmNvbS8iLCJzdWIiOiJRV1Bqd3ZtVlRMVkppUWVqY1BKaW0wQ0tSM3B4dGdkM0BjbGllbnRzIiwiYXVkIjoiaXN0aW8tand0LXRlc3QiLCJpYXQiOjE2MzYzNzUxNDMsImV4cCI6MTYzNjQ2MTU0MywiYXpwIjoiUVdQand2bVZUTFZKaVFlamNQSmltMENLUjNweHRnZDMiLCJzY29wZSI6InJlYWQ6ZGF0YWJhc2Ugd3JpdGU6ZGF0YWJhc2UiLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;who-is-the-requester&#34;&gt;Who is the requester&lt;/h2&gt;
+&lt;p&gt;The identity of the requester using JWT can be specified in the &lt;code&gt;requestPrincipals&lt;/code&gt; field as documented &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Source&#34;&gt;here&lt;/a&gt;. Istio constructs the identity from the JWT payload values in the format of &lt;code&gt;&amp;lt;iss&amp;gt;/&amp;lt;sub&amp;gt;&lt;/code&gt;. However, if you just want to enforce the presence of a valid JWT (regardless of the identity), &lt;code&gt;requestPrincipals&lt;/code&gt; can be set to &lt;code&gt;[*]&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;from:
+- source:
+    requestPrincipals: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;# iss/sub&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without a JWT or with a different user/subject will be denied&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# No JWT provided&lt;/span&gt;
+$ curl -s httpbin/headers
+RBAC: access denied
+
+&lt;span style=&#34;color:#75715e&#34;&gt;# JWT with different user/subject&lt;/span&gt;
+$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;kid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qv9xb5h9OYy-uJgVyDEyx&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;uoPlJVCJID9UxJS1jdOMPcr9Gmz2TGgP@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636375387,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636461787,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;uoPlJVCJID9UxJS1jdOMPcr9Gmz2TGgP&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database write:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+RBAC: access denied
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;what-is-the-requester-trying-to-do&#34;&gt;What is the requester trying to do&lt;/h2&gt;
+&lt;p&gt;Next, we can &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Operation&#34;&gt;restrict which HTTP verbs and path a requester has access to&lt;/a&gt;. In our example, we are only allowing &lt;code&gt;GET&lt;/code&gt; requests to &lt;code&gt;/headers&lt;/code&gt; path&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;to:
+- operation:
+    methods: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+    paths: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/headers&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Request using another HTTP verb and/or accessing another path will not be allowed&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# POST to /post&lt;/span&gt;
+$ curl -s -X POST -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/post
+RBAC: access denied
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;additional-conditions-in-the-jwt&#34;&gt;Additional conditions in the JWT&lt;/h2&gt;
+&lt;p&gt;Lastly, Istio also enables the evaluation of additional &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/conditions/&#34;&gt;conditions against the JWT claims&lt;/a&gt;. The &lt;code&gt;AuthorizationPolicy&lt;/code&gt; applied is checking against the claims in the JWT payload&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;when:
+- key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;aud&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+  values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+- key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;scope&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+  values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;write:database&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this example, we send a request with the scope &lt;code&gt;read:database&lt;/code&gt;, which will be rejected as the &lt;code&gt;AuthorizationPolicy&lt;/code&gt; is expecting a &lt;code&gt;write:database&lt;/code&gt; scope&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;kid&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;qv9xb5h9OYy-uJgVyDEyx&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iss&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com/&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;sub&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xYvKrg4QHLA5bsna0Hg1MYiD3itPY1gC@clients&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;aud&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;iat&amp;#34;&lt;/span&gt;: 1636376574,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;exp&amp;#34;&lt;/span&gt;: 1636462974,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;azp&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;xYvKrg4QHLA5bsna0Hg1MYiD3itPY1gC&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;scope&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;read:database&amp;#34;&lt;/span&gt;,
+  &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+$ curl -s -X POST -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/post
+RBAC: access denied
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h1 id=&#34;additional-learnings&#34;&gt;Additional learnings&lt;/h1&gt;
+&lt;p&gt;Here&amp;rsquo;s a list of things that were picked up during my tests that weren&amp;rsquo;t immediately intuitive:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Istio requires the port name in the &lt;code&gt;Service&lt;/code&gt; to be prefixed with the protocol as described &lt;a href=&#34;https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/&#34;&gt;here&lt;/a&gt;. Failing to adhere to the naming convention will break the authentication feature provided by the &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; resource. This can be caught by running &lt;code&gt;istioctl analyze&lt;/code&gt; in the application namespace, which reveals a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/analysis/ist0118/&#34;&gt;PortNameIsNotUnderNamingConvention&lt;/a&gt; message:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ istioctl analyze
+&amp;lt;snipped&amp;gt;
+Info &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;IST0118&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Service httpbin.default&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; Port name &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;port: 80, targetPort: 80&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t follow the naming convention of Istio port.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;li&gt;Defining a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; alone does not stop requests without JWT, the requests just won&amp;rsquo;t have identities tied to them. Augment it with a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; to enforce the presence of JWT.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;scope&lt;/code&gt; field in a JWT can contain multiple scopes in a space delimited format,
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scope: read:database write:database
+&lt;/code&gt;&lt;/pre&gt;Fortunately, Istio recognizes that and separates the string into multiple scopes. This allows us to match individual scopes from the &lt;code&gt;scope&lt;/code&gt; field without having to do string manipulations.&lt;/li&gt;
+&lt;li&gt;To assist with troubleshooting, set the log level for the &lt;code&gt;jwt&lt;/code&gt; and &lt;code&gt;rbac&lt;/code&gt; loggers to &lt;code&gt;debug&lt;/code&gt;, which will produce more logs on JWT validation and RBAC enforcement in the application sidecar proxy.
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;istioctl proxy-config log &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;k get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;httpbin -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; --level jwt:debug rbac:debug
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</content>
     </item>
     
     <item>
@@ -35,6 +447,407 @@
       <guid>/posts/learning-istio/securing-egress-traffic-with-mtls/</guid>
       <description>There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where
  application owners have to keep track of certificates for each of their applications applications written in different language/libraries have different ways of implementing mTLS connections  As an application owner, I would prefer to just deal with plain ol&#39; HTTP on port 80, and not have to modify the application to handle HTTPS or mTLS.</description>
+      <content>&lt;p&gt;There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;application owners have to keep track of certificates for each of their applications&lt;/li&gt;
+&lt;li&gt;applications written in different language/libraries have different ways of implementing mTLS connections&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;As an application owner, I would prefer to just deal with plain ol&#39; HTTP on port &lt;code&gt;80&lt;/code&gt;, and not have to modify the application to handle HTTPS or mTLS. Fortunately, Istio has some in-built capabilities to alleviate the pain points. In this post, I will be covering two scenarios:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;#common-ca&#34;&gt;Istio cluster has the same root CA as the external service&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#different-ca&#34;&gt;Istio cluster has a different root CA from the external service&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;common-ca&#34;&gt;Common CA&lt;/h1&gt;
+&lt;p&gt;Many enterprises have root CAs they use to sign and verify all internal services. To ensure compliance, a good practice is to create an intermediate CA from the root CA, and plug that into the cluster when deploying Istio, as detailed &lt;a href=&#34;https://istio.io/latest/docs/tasks/security/cert-management/plugin-ca-cert/&#34;&gt;here&lt;/a&gt;. For such scenarios, Istio supports &lt;a href=&#34;https://istio.io/latest/docs/tasks/traffic-management/egress/egress-tls-origination/#tls-origination-for-egress-traffic&#34;&gt;TLS origination for egress traffic&lt;/a&gt;, and we can enable mTLS by setting the TLS mode in the &lt;code&gt;DestinationRule&lt;/code&gt; to &lt;code&gt;ISTIO_MUTUAL&lt;/code&gt; as documented &lt;a href=&#34;https://istio.io/latest/docs/reference/config/networking/destination-rule/#ClientTLSSettings&#34;&gt;here&lt;/a&gt;. This tells the sidecar proxy to use a client certificate generated automatically by Istio (signed using the intermediate CA, hence the enterprise root CA) when calling the external service for mTLS authentication.&lt;/p&gt;
+&lt;p&gt;To demonstrate this, I have deployed an external service &lt;code&gt;nginx-mtls.common-ca.local:8443&lt;/code&gt; using an NGINX container running on a remote host &lt;code&gt;10.1.1.4&lt;/code&gt;. mTLS authentication is enabled by configuring it to perform client SSL verification. The root CA specified for client SSL verification is also used to generated the server certificate for the NGINX server.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;See &lt;a href=&#34;https://github.com/leonseng/nginx-mtls&#34;&gt;leonseng/nginx-mtls&lt;/a&gt; for more information on the external service&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I deployed a &lt;code&gt;curl&lt;/code&gt; pod to mimic an application performing a &lt;code&gt;GET&lt;/code&gt; request to the external service:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: curl
+  name: curl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: curl
+  template:
+    metadata:
+      labels:
+        app: curl
+    spec:
+      containers:
+      - command:
+        - tail
+        args:
+        - -f
+        - /dev/null
+        image: curlimages/curl
+        name: curl
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As Istio&amp;rsquo;s &lt;code&gt;outboundTrafficPolicy&lt;/code&gt; is set to &lt;code&gt;REGISTRY_ONLY&lt;/code&gt;, a &lt;code&gt;ServiceEntry&lt;/code&gt; is required to allow any applications in the cluster to reach the external service &lt;code&gt;nginx-mtls.common-ca.local&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: nginx-mtls-common-ca
+spec:
+  hosts:
+  - nginx-mtls.common-ca.local
+  location: MESH_EXTERNAL
+  ports:
+  - number: 8443
+    name: https
+    protocol: HTTPS
+  resolution: STATIC
+  endpoints:
+  - address: 10.1.1.4
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As it is, the application is expected to supply the client certificate for the mTLS connection. Attempting to call the external service without the client certificate would result in a failed request:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
+  curl -s --resolve nginx-mtls.common-ca.local:8443:10.1.1.4 \
+  https://nginx-mtls.common-ca.local:8443
+command terminated with exit code 35
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To enable mTLS, we need the following resources:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A &lt;code&gt;DestinationRule&lt;/code&gt; to initiate the mTLS connection on port &lt;code&gt;80&lt;/code&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: nginx-mtls-common-ca
+spec:
+  host: nginx-mtls.common-ca.local
+  trafficPolicy:
+    portLevelSettings:
+    - port:
+        number: 80
+      tls:
+        mode: ISTIO_MUTUAL
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;Update the &lt;code&gt;ServiceEntry&lt;/code&gt; with a new port entry for the HTTP port &lt;code&gt;80&lt;/code&gt;, and a &lt;code&gt;targetPort&lt;/code&gt; attribute set to the HTTPS port &lt;code&gt;8443&lt;/code&gt;:
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: nginx-mtls-common-ca
+spec:
+  hosts:
+  - nginx-mtls.common-ca.local
+  location: MESH_EXTERNAL
+  ports:
+  - number: 80
+    name: http-port
+    protocol: HTTP
+    targetPort: 8443
+  - number: 8443
+    name: https
+    protocol: TLS
+  resolution: STATIC
+  endpoints:
+  - address: 10.1.1.4
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The application will now be able to target the HTTP endpoint, leaving it to Istio to set up the mTLS connection on its behalf towards the external service:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
+  curl -s --resolve nginx-mtls.common-ca.local:80:10.1.1.4 \
+  http://nginx-mtls.common-ca.local \
+  | grep title
+&amp;lt;title&amp;gt;Welcome to nginx!&amp;lt;/title&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;different-ca&#34;&gt;Different CA&lt;/h1&gt;
+&lt;p&gt;There are cases where Istio is deployed with a CA certificate issued by a root CA different from the one used by the external service for client verification, or if Istio generated its own self-signed certificate. For mTLS to work in such scenarios, we would have to obtain client certificates signed by the enterprise&amp;rsquo;s root CA, and configure Istio to use these client certificates when setting up the mTLS the connections.&lt;/p&gt;
+&lt;p&gt;Istio provides at least two ways of handling the client certificates:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;#common-client-certificate-for-all-applications&#34;&gt;Common client certificate for all applications&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#unique-client-certificate-for-each-application&#34;&gt;Unique client certificate for each application&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;common-client-certificate-for-all-applications&#34;&gt;Common client certificate for all applications&lt;/h2&gt;
+&lt;p&gt;If the external service provider trusts the cluster, and thereby all applications hosted within the cluster, we would only need one client certificate and key pair for an egress gateway perform the mTLS connection on behalf of all applications within the cluster. This does require the deployment of an egress gateway (which is outside the scope of this post), and have all traffic to the external service routed via the egress gateway. Istio has a handy page on &lt;a href=&#34;https://istio.io/latest/docs/tasks/traffic-management/egress/egress-gateway-tls-origination/#perform-mutual-tls-origination-with-an-egress-gateway&#34;&gt;Perform mutual TLS origination with an egress gateway&lt;/a&gt;, but there&amp;rsquo;s quite a bit to unpack there.&lt;/p&gt;
+&lt;p&gt;For this example use case, I have deployed another external service &lt;code&gt;nginx-mtls.diff-ca.local:9443&lt;/code&gt; running on an NGINX container on the remote host &lt;code&gt;10.1.1.4&lt;/code&gt;. The certificates for the server and for client verification are signed with a root CA different from the one used to create the intermediate CA for Istio.&lt;/p&gt;
+&lt;p&gt;We first need to handle the connection between the application and the egress gateway, by directing traffic to the external server &lt;code&gt;nginx-mtls.diff-ca.local&lt;/code&gt; via the egress gateway with:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A &lt;code&gt;Gateway&lt;/code&gt; on the egress gateway to listen for traffic to the external service (on port 443 because of the mTLS connection between the application and the egress gateway)
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: istio-egressgateway
+spec:
+  selector:
+    istio: egressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - nginx-mtls.diff-ca.local
+    tls:
+        mode: ISTIO_MUTUAL
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;A &lt;code&gt;VirtualService&lt;/code&gt; to direct traffic to the external service via the egress gateway
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: direct-nginx-mtls-through-egress-gateway
+spec:
+  hosts:
+  - nginx-mtls.diff-ca.local
+  gateways:
+  - mesh
+  http:
+  - match:
+    - gateways:
+      - mesh
+      port: 80
+    route:
+    - destination:
+        host: istio-egressgateway.istio-system.svc.cluster.local
+        subset: nginx-mtls
+        port:
+          number: 443
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;A &lt;code&gt;DestinationRule&lt;/code&gt; to perform mTLS origination from application to the egress gateway, whilst preserving the SNI string towards the external service &lt;code&gt;nginx-mtls.diff-ca.local&lt;/code&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: egressgateway-for-nginx-mtls
+spec:
+  host: istio-egressgateway.istio-system.svc.cluster.local
+  subsets:
+  - name: nginx-mtls
+    trafficPolicy:
+      portLevelSettings:
+      - port:
+          number: 443
+        tls:
+          mode: ISTIO_MUTUAL
+          sni: nginx-mtls.diff-ca.local
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;For the second half of the connection, we need the egress gateway to route the traffic to the external service over an mTLS connection. First, we create a generic &lt;code&gt;Secret&lt;/code&gt; to store the enterprise root CA, client certificate and key:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Note that I&amp;rsquo;ve created the &lt;code&gt;Secret&lt;/code&gt; in the &lt;code&gt;istio-system&lt;/code&gt; because that&amp;rsquo;s where my egress gateway is deployed&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n istio-system create secret generic nginx-mtls-external \
+  --from-file=tls.key=client.key \
+  --from-file=tls.crt=client.crt \
+  --from-file=ca.crt=enterpriseRootCA.pem
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Next, we define the following:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A &lt;code&gt;ServiceEntry&lt;/code&gt; for the external service to allow traffic to leave the cluster
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: nginx-mtls-diff-ca
+spec:
+  hosts:
+  - nginx-mtls.diff-ca.local
+  location: MESH_EXTERNAL
+  ports:
+  - number: 9443
+    name: https
+    protocol: TLS
+  resolution: STATIC
+  endpoints:
+  - address: 10.1.1.4
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;Update the &lt;code&gt;VirtualService&lt;/code&gt; defined earlier to redirect traffic hitting the egress gateway to now leave the cluster towards the external service (note the new &lt;code&gt;HTTPMatchRequest&lt;/code&gt;)
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: direct-nginx-mtls-through-egress-gateway
+spec:
+  hosts:
+  - nginx-mtls.diff-ca.local
+  gateways:
+  - istio-egressgateway
+  - mesh
+  http:
+  - match:
+    - gateways:
+      - mesh
+      port: 80
+    route:
+    - destination:
+        host: istio-egressgateway.istio-system.svc.cluster.local
+        subset: nginx-mtls
+        port:
+          number: 443
+  - match:
+    - gateways:
+      - istio-egressgateway
+      port: 443
+    route:
+    - destination:
+        host: nginx-mtls.diff-ca.local
+        port:
+          number: 9443
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;A &lt;code&gt;DestinationRule&lt;/code&gt; for the external service, with the client TLS mode set to &lt;code&gt;MUTUAL&lt;/code&gt; for mTLS. The &lt;code&gt;Secret&lt;/code&gt; containing the certificates and key is also referenced here to provide Istio sidecars with right files for setting up the mTLS connection.
+&lt;blockquote&gt;
+&lt;p&gt;Note that I&amp;rsquo;ve defined the &lt;code&gt;DestinationRule&lt;/code&gt; in the same namespace as where the &lt;code&gt;Secret&lt;/code&gt; is defined in this example&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n istio-system apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: originate-tls-for-nginx-mtls
+spec:
+  host: nginx-mtls.diff-ca.local
+  trafficPolicy:
+    loadBalancer:
+      simple: ROUND_ROBIN
+    portLevelSettings:
+    - port:
+        number: 9443
+      tls:
+        mode: MUTUAL
+        credentialName: nginx-mtls-external
+        sni: nginx-mtls.diff-ca.local
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;With all that in place, the application should now be able to access the external service that is expecting a client certificate signed with a different root CA from the cluster&amp;rsquo;s CA&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec curl-5fd94f6d69-526vq -c curl -- \
+  curl -s --resolve nginx-mtls.diff-ca.local:80:10.1.1.4 \
+  http://nginx-mtls.diff-ca.local \
+  | grep title
+&amp;lt;title&amp;gt;Welcome to nginx!&amp;lt;/title&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;unique-client-certificate-for-each-application&#34;&gt;Unique client certificate for each application&lt;/h2&gt;
+&lt;p&gt;If there is a requirement for each application to have unique client certificates, or managing an egress gateway sounds like a chore, one can leave the task of managing client certificates to the application owners.&lt;/p&gt;
+&lt;p&gt;First, the cluster admin has to define the following:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A &lt;code&gt;ServiceEntry&lt;/code&gt; for the external service to allow traffic to leave the cluster
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: nginx-mtls-diff-ca
+spec:
+  hosts:
+  - nginx-mtls.diff-ca.local
+  location: MESH_EXTERNAL
+  ports:
+  - number: 9443
+    name: https
+    protocol: HTTPS
+  resolution: STATIC
+  endpoints:
+  - address: 10.1.1.4
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;A &lt;code&gt;VirtualService&lt;/code&gt; to route traffic destined for the external service, and converting the HTTP port (&lt;code&gt;80&lt;/code&gt;) to the HTTPS port (&lt;code&gt;9443&lt;/code&gt;). Note that this is just a port number change, the protocol is still HTTP at this point.
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nginx-mtls-diff-ca
+spec:
+  hosts:
+  - nginx-mtls.diff-ca.local
+  http:
+  - match:
+    - port: 80
+    route:
+    - destination:
+        host: nginx-mtls.diff-ca.local
+        port:
+          number: 9443
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;A &lt;code&gt;DestinationRule&lt;/code&gt; to perform mTLS connection, referencing the CA certificate, client certificate and key files in particular locations in the sidecar proxy. These files will be loaded into the sidecar proxy by the application owners in the following section.
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: nginx-mtls-diff-ca
+spec:
+  host: nginx-mtls.diff-ca.local
+  trafficPolicy:
+    portLevelSettings:
+    - port:
+        number: 9443
+      tls:
+        mode: MUTUAL
+        clientCertificate: /etc/certs/tls.crt
+        privateKey: /etc/certs/tls.key
+        caCertificates: /etc/certs/ca.crt
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;With the above set up, the application owners then have to provide the CA certificate, client certificate and key files for their applications:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Create a generic &lt;code&gt;Secret&lt;/code&gt; to store the enterprise root CA, client certificate and key for the mTLS connection towards&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl create secret generic nginx-mtls-external \
+  --from-file=tls.key=app-client.key \
+  --from-file=tls.crt=app-client.crt \
+  --from-file=ca.crt=enterpriseCA.pem
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Add the following annotations to the &lt;code&gt;Pod&lt;/code&gt; template in the &lt;code&gt;Deployment&lt;/code&gt; to load the certs and key from the &lt;code&gt;Secret&lt;/code&gt; into the pod&amp;rsquo;s sidecar proxy in the directory specified by the &lt;code&gt;DestinationRule&lt;/code&gt; from before (&lt;code&gt;/etc/certs/&lt;/code&gt; in this case)&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;sidecar.istio.io/userVolume: &#39;[{&amp;quot;name&amp;quot;:&amp;quot;client-certs&amp;quot;, &amp;quot;secret&amp;quot;:{&amp;quot;secretName&amp;quot;:&amp;quot;nginx-mtls-external&amp;quot;}}]&#39;
+sidecar.istio.io/userVolumeMount: &#39;[{&amp;quot;name&amp;quot;:&amp;quot;client-certs&amp;quot;, &amp;quot;mountPath&amp;quot;:&amp;quot;/etc/certs&amp;quot;, &amp;quot;readonly&amp;quot;:true}]&#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;Deployment&lt;/code&gt; manifest will look something like this:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: curl
+  name: curl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: curl
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/userVolume: &#39;[{&amp;quot;name&amp;quot;:&amp;quot;client-certs&amp;quot;, &amp;quot;secret&amp;quot;:{&amp;quot;secretName&amp;quot;:&amp;quot;nginx-mtls-external&amp;quot;}}]&#39;
+        sidecar.istio.io/userVolumeMount: &#39;[{&amp;quot;name&amp;quot;:&amp;quot;client-certs&amp;quot;, &amp;quot;mountPath&amp;quot;:&amp;quot;/etc/certs&amp;quot;, &amp;quot;readonly&amp;quot;:true}]&#39;
+      labels:
+        app: curl
+    spec:
+      containers:
+      - command:
+        - tail
+        args:
+        - -f
+        - /dev/null
+        image: curlimages/curl
+        name: curl
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can verify that the certificates and key are mounted correctly using &lt;code&gt;istioctl pc secrets&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ istioctl pc secrets curl-55b48d797c-6f5h6 | grep /etc/certs
+file-cert:/etc/certs/tls.crt~/etc/certs/tls.key     Cert Chain     ACTIVE     true           344012585647005735528648296646953979292086906406     2022-09-27T11:16:30Z     2021-09-27T11:16:30Z
+file-root:/etc/certs/ca.crt                         CA             ACTIVE     true           720903288241772125710852709688782830101643184205     2026-09-26T11:03:03Z     2021-09-27T11:03:03Z
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Now, the application should be able to access the external service via HTTP on port &lt;code&gt;80&lt;/code&gt;, and the sidecar proxy should initiate the mTLS connection on its behalf on the HTTPS port &lt;code&gt;9443&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec curl-55b48d797c-6f5h6 -c curl -- \
+  curl -s --resolve nginx-mtls.diff-ca.local:80:10.1.1.4 \
+  http://nginx-mtls.diff-ca.local \
+  | grep title
+&amp;lt;title&amp;gt;Welcome to nginx!&amp;lt;/title&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;</content>
     </item>
     
     <item>
@@ -45,6 +858,216 @@
       <guid>/posts/learning-istio/why-isnt-service-entry-namespaced/</guid>
       <description>I got a question on how we can restrict access to certain external endpoints on a per namespace basis. There was an idea to use Istio&amp;rsquo;s egress gateway to control access to external endpoints, though I&amp;rsquo;m not convinced that&amp;rsquo;s a valid use case for an egress gateway today. So I went off to do some investigation, and found some options:
  Specifying which namespaces can access certain hosts defined in the ServiceEntry Specifying which endpoints can be accessed from a namespace  But before that, a bit of back story of how we got here&amp;hellip;</description>
+      <content>&lt;p&gt;I got a question on how we can restrict access to certain external endpoints on a per namespace basis. There was an idea to use Istio&amp;rsquo;s &lt;code&gt;egress gateway&lt;/code&gt; to control access to external endpoints, though I&amp;rsquo;m not convinced that&amp;rsquo;s a valid &lt;a href=&#34;https://istio.io/latest/docs/tasks/traffic-management/egress/egress-gateway/#use-case&#34;&gt;use case for an &lt;code&gt;egress gateway&lt;/code&gt;&lt;/a&gt; today. So I went off to do some investigation, and found some options:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;#exportto&#34;&gt;Specifying which namespaces can access certain hosts defined in the &lt;code&gt;ServiceEntry&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#sidecar-resource&#34;&gt;Specifying which endpoints can be accessed from a namespace&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;But before that, a bit of back story of how we got here&amp;hellip;&lt;/p&gt;
+&lt;h2 id=&#34;a-naive-beginning&#34;&gt;A naive beginning&lt;/h2&gt;
+&lt;p&gt;First, I updated Istio &lt;code&gt;outboundTrafficPolicy&lt;/code&gt; to &lt;code&gt;REGISTRY_ONLY&lt;/code&gt; so that we need to EXPLICITLY allow connectivity to external endpoints&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;istioctl install --set profile=demo --set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY -y
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To test the access restriction, I deployed a &lt;code&gt;debian&lt;/code&gt; pod in the &lt;code&gt;default&lt;/code&gt; namespace&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl create deployment debian --image debian --replicas=1 -- tail -f /dev/null
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and tried running &lt;code&gt;apt update&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec -it debian-8484c5df49-9x7lt -- bash
+Defaulting container name to debian.
+Use &#39;kubectl describe pod/debian-8484c5df49-9x7lt -n default&#39; to see all of the containers in this pod.
+root@debian-8484c5df49-9x7lt:/#
+root@debian-8484c5df49-9x7lt:/# apt-get update
+Err:1 http://security.debian.org/debian-security bullseye-security InRelease
+  502  Bad Gateway [IP: 151.101.130.132 80]
+Err:2 http://deb.debian.org/debian bullseye InRelease
+  502  Bad Gateway [IP: 151.101.30.132 80]
+Err:3 http://deb.debian.org/debian bullseye-updates InRelease
+  502  Bad Gateway [IP: 151.101.30.132 80]
+Reading package lists... Done
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+N: Updating from such a repository can&#39;t be done securely, and is therefore disabled by default.
+E: The repository &#39;http://security.debian.org/debian-security bullseye-security InRelease&#39; is not signed.
+E: Failed to fetch http://security.debian.org/debian-security/dists/bullseye-security/InRelease  502  Bad Gateway [IP: 151.101.130.132 80]
+E: Failed to fetch http://deb.debian.org/debian/dists/bullseye/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+E: The repository &#39;http://deb.debian.org/debian bullseye InRelease&#39; is not signed.
+N: Updating from such a repository can&#39;t be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+E: Failed to fetch http://deb.debian.org/debian/dists/bullseye-updates/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+E: The repository &#39;http://deb.debian.org/debian bullseye-updates InRelease&#39; is not signed.
+N: Updating from such a repository can&#39;t be done securely, and is therefore disabled by default.
+N: See apt-secure(8) manpage for repository creation and user configuration details.
+root@debian-8484c5df49-9x7lt:/#
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;As expected the command fails when &lt;code&gt;apt update&lt;/code&gt; tries to reach external endpoints &lt;code&gt;security.debian.org&lt;/code&gt; and &lt;code&gt;deb.debian.org&lt;/code&gt;, due to the endpoints not being defined in the registry.&lt;/p&gt;
+&lt;p&gt;I then created a &lt;code&gt;ServiceEntry&lt;/code&gt; matching the two hostnames&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl create -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: debian-org
+spec:
+  hosts:
+  - security.debian.org
+  - deb.debian.org
+  location: MESH_EXTERNAL
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  resolution: DNS
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and re-ran &lt;code&gt;apt update&lt;/code&gt;. This time it ran successfully as expected.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec -it debian-8484c5df49-9x7lt -- bash
+Defaulting container name to debian.
+Use &#39;kubectl describe pod/debian-8484c5df49-9x7lt -n default&#39; to see all of the containers in this pod.
+root@debian-8484c5df49-9x7lt:/# apt update
+Hit:1 http://security.debian.org/debian-security bullseye-security InRelease
+Get:2 http://deb.debian.org/debian bullseye InRelease [113 kB]
+Get:3 http://deb.debian.org/debian bullseye-updates InRelease [36.8 kB]
+Get:4 http://deb.debian.org/debian bullseye/main amd64 Packages [8178 kB]
+Fetched 8327 kB in 3s (2812 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+root@debian-8484c5df49-9x7lt:/#
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now, I thought this would be the end of the story. All I have to do is to only allow cluster admins the permissions for creating &lt;code&gt;ServiceEntry&lt;/code&gt; resources, and developers would have to engage cluster admins to get access to external resources!&lt;/p&gt;
+&lt;h2 id=&#34;plot-twist&#34;&gt;Plot twist&lt;/h2&gt;
+&lt;p&gt;But I figured this came to me too easily&amp;hellip; they should have figured it out without asking for help. So, I tried repeating the test from another namespace &lt;code&gt;newguy&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl create ns newguy
+kubectl label namespace newguy istio-injection=enabled
+kubectl -n newguy create deployment debian --image debian --replicas=1 -- tail -f /dev/null
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Lo and behold, when I run &lt;code&gt;apt update&lt;/code&gt; in this container, it worked&amp;hellip; when I thought it shouldn&amp;rsquo;t&amp;hellip;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl -n newguy exec -it debian-8484c5df49-dpf2h -- bash
+Defaulting container name to debian.
+Use &#39;kubectl describe pod/debian-8484c5df49-dpf2h -n newguy&#39; to see all of the containers in this pod.
+root@debian-8484c5df49-dpf2h:/# apt update
+Get:1 http://deb.debian.org/debian bullseye InRelease [113 kB]
+Get:2 http://deb.debian.org/debian bullseye-updates InRelease [36.8 kB]
+Get:3 http://deb.debian.org/debian bullseye/main amd64 Packages [8178 kB]
+Get:4 http://security.debian.org/debian-security bullseye-security InRelease [44.1 kB]
+Get:5 http://security.debian.org/debian-security bullseye-security/main amd64 Packages [29.4 kB]
+Fetched 8401 kB in 3s (3267 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+root@debian-8484c5df49-dpf2h:/#
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Turns out that by default, many of Istio&amp;rsquo;s resources are translated to configurations which are applied to the sidecar proxies in all namespaces. Here&amp;rsquo;s one from Istio&amp;rsquo;s &lt;a href=&#34;https://istio.io/latest/docs/reference/config/networking/service-entry/&#34;&gt;ServiceEntry&lt;/a&gt; documentation:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The &amp;lsquo;exportTo&amp;rsquo; field allows for control over the visibility of a service declaration to other namespaces in the mesh. By default, a service is exported to all namespaces.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So, that means by default, my &lt;code&gt;newguy:debian&lt;/code&gt; pod contains configuration to get to the &lt;code&gt;*.debian.org&lt;/code&gt; hosts from the &lt;code&gt;ServiceEntry&lt;/code&gt; definition in the default namespace. I want the opposite of that - I don&amp;rsquo;t want the &lt;code&gt;istio-proxy&lt;/code&gt; in the &lt;code&gt;newguy&lt;/code&gt; namespace to pick up configuration defined in other namespaces.&lt;/p&gt;
+&lt;p&gt;Now that we&amp;rsquo;ve established our problem, let&amp;rsquo;s set out to explore the options:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&#34;#exportto&#34;&gt;Specifying which namespaces can access certain hosts defined in the &lt;code&gt;ServiceEntry&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#sidecar-resource&#34;&gt;Specifying which endpoints can be accessed from a namespace&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;exportto&#34;&gt;exportTo&lt;/h2&gt;
+&lt;p&gt;The most direct way is to use the &lt;code&gt;exportTo&lt;/code&gt; attribute in &lt;code&gt;ServiceEntry&lt;/code&gt; to specify the namespaces in which pods are allowed to access the external endpoints. To achieve that, I updated the &lt;code&gt;ServiceEntry&lt;/code&gt; to only export to the namespace in which it&amp;rsquo;s defined, or just &lt;code&gt;&amp;quot;.&amp;quot;&lt;/code&gt;:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: debian-org
+spec:
+  exportTo:
+  - &amp;quot;.&amp;quot;
+  hosts:
+  - security.debian.org
+  - deb.debian.org
+  location: MESH_EXTERNAL
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  resolution: DNS
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The container in the &lt;code&gt;newguy&lt;/code&gt; namespace is no longer able to access the endpoints:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl -n newguy exec debian-8484c5df49-dpf2h -- apt update
+Defaulted container &amp;quot;debian&amp;quot; out of: debian, istio-proxy, istio-init (init)
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Err:1 http://deb.debian.org/debian bullseye InRelease
+  502  Bad Gateway [IP: 151.101.30.132 80]
+Err:2 http://deb.debian.org/debian bullseye-updates InRelease
+  502  Bad Gateway [IP: 151.101.30.132 80]
+Err:3 http://security.debian.org/debian-security bullseye-security InRelease
+  502  Bad Gateway [IP: 151.101.2.132 80]
+Reading package lists...
+E: The repository &#39;http://deb.debian.org/debian bullseye InRelease&#39; is no longer signed.
+E: Failed to fetch http://deb.debian.org/debian/dists/bullseye/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+E: Failed to fetch http://deb.debian.org/debian/dists/bullseye-updates/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+E: The repository &#39;http://deb.debian.org/debian bullseye-updates InRelease&#39; is no longer signed.
+E: Failed to fetch http://security.debian.org/debian-security/dists/bullseye-security/InRelease  502  Bad Gateway [IP: 151.101.2.132 80]
+E: The repository &#39;http://security.debian.org/debian-security bullseye-security InRelease&#39; is no longer signed.
+command terminated with exit code 100
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;sidecar-resource&#34;&gt;Sidecar resource&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;exportTo&lt;/code&gt; attribute presents a per &lt;code&gt;ServiceEntry&lt;/code&gt; way of controlling access. To achieve a per namespace way of access control, we can turn to the &lt;code&gt;Sidecar&lt;/code&gt;. No, not the &lt;code&gt;istio-proxy&lt;/code&gt; sidecars that come with pods. I&amp;rsquo;m talking about the &lt;a href=&#34;https://istio.io/latest/docs/reference/config/networking/sidecar/&#34;&gt;Sidecar&lt;/a&gt; custom resource.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;By default, Istio will program all sidecar proxies in the mesh with the necessary configuration required to reach every workload instance in the mesh, as well as accept traffic on all the ports associated with the workload. The Sidecar configuration provides a way to fine tune the set of ports, protocols that the proxy will accept when forwarding traffic to and from the workload. In addition, it is possible to restrict the set of services that the proxy can reach when forwarding outbound traffic from workload instances.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;To demonstrate, I created the following &lt;code&gt;Sidecar&lt;/code&gt; definition in the &lt;code&gt;newguy&lt;/code&gt; namespace which only allows egress traffic only to other workloads in the same namespace as well as to services in the &lt;code&gt;istio-system&lt;/code&gt; namespace.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n newguy create -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: default
+spec:
+  egress:
+  - hosts:
+    - &amp;quot;./*&amp;quot;
+    - &amp;quot;istio-system/*&amp;quot;
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;When I try running &lt;code&gt;apt update&lt;/code&gt; in the &lt;code&gt;newguy&lt;/code&gt; namespace again:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl -n newguy exec debian-8484c5df49-dpf2h -- apt update
+Defaulting container name to debian.
+Use &#39;kubectl describe pod/debian-8484c5df49-dpf2h -n newguy&#39; to see all of the containers in this pod.
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Err:1 http://security.debian.org/debian-security bullseye-security InRelease
+  502  Bad Gateway [IP: 151.101.66.132 80]
+Err:2 http://deb.debian.org/debian bullseye InRelease
+  502  Bad Gateway [IP: 151.101.30.132 80]
+Err:3 http://deb.debian.org/debian bullseye-updates InRelease
+  502  Bad Gateway [IP: 151.101.30.132 80]
+Reading package lists...
+E: The repository &#39;http://security.debian.org/debian-security bullseye-security InRelease&#39; is no longer signed.
+E: Failed to fetch http://security.debian.org/debian-security/dists/bullseye-security/InRelease  502  Bad Gateway [IP: 151.101.66.132 80]
+E: Failed to fetch http://deb.debian.org/debian/dists/bullseye/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+E: The repository &#39;http://deb.debian.org/debian bullseye InRelease&#39; is no longer signed.
+E: Failed to fetch http://deb.debian.org/debian/dists/bullseye-updates/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+E: The repository &#39;http://deb.debian.org/debian bullseye-updates InRelease&#39; is no longer signed.
+command terminated with exit code 100
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;It fails as expected! And when I add the two hostnames in the egress hosts list of the &lt;code&gt;Sidecar&lt;/code&gt; resource:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n newguy apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: default
+spec:
+  egress:
+  - hosts:
+    - &amp;quot;./*&amp;quot;
+    - &amp;quot;istio-system/*&amp;quot;
+    - &amp;quot;default/security.debian.org&amp;quot;
+    - &amp;quot;default/deb.debian.org&amp;quot;
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;apt update&lt;/code&gt; now runs successfully!&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl -n newguy exec debian-8484c5df49-dpf2h -- apt update
+Defaulting container name to debian.
+Use &#39;kubectl describe pod/debian-8484c5df49-dpf2h -n newguy&#39; to see all of the containers in this pod.
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Hit:1 http://security.debian.org/debian-security bullseye-security InRelease
+Hit:2 http://deb.debian.org/debian bullseye InRelease
+Hit:3 http://deb.debian.org/debian bullseye-updates InRelease
+Reading package lists...
+Building dependency tree...
+Reading state information...
+All packages are up to date.
+$
+&lt;/code&gt;&lt;/pre&gt;</content>
     </item>
     
     <item>
@@ -57,6 +1080,73 @@
 Setup &amp;ldquo;External&amp;rdquo; PostgresDB service Since we are running the Kubernetes cluster locally in Docker containers using k3d, we can create an &amp;ldquo;external&amp;rdquo; service by running a PostgresDB Docker container on the same host and expose its ports to localhost.
 Create a local PostgresDB container database using Docker
 docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres Create a test database app_db</description>
+      <content>&lt;p&gt;In this post, we will be testing Istio&amp;rsquo;s &lt;a href=&#34;https://istio.io/latest/docs/reference/config/networking/service-entry/&#34;&gt;ServiceEntry&lt;/a&gt; by accessing a PostgreDB database hosted externally from the Kubernetes cluster.&lt;/p&gt;
+&lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;
+&lt;h2 id=&#34;external-postgresdb-service&#34;&gt;&amp;ldquo;External&amp;rdquo; PostgresDB service&lt;/h2&gt;
+&lt;p&gt;Since we are running the Kubernetes cluster locally in Docker containers using &lt;code&gt;k3d&lt;/code&gt;, we can create an &amp;ldquo;external&amp;rdquo; service by running a &lt;code&gt;PostgresDB&lt;/code&gt; Docker container on the same host and expose its ports to localhost.&lt;/p&gt;
+&lt;p&gt;Create a local PostgresDB container database using Docker&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Create a test database &lt;code&gt;app_db&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;docker exec -u postgres -it postgres createdb app_db
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This service should be accessible within the cluster at &lt;code&gt;host.k3d.internal:5432&lt;/code&gt; (See &lt;a href=&#34;https://k3d.io/faq/faq/#how-to-access-services-like-a-database-running-on-my-docker-host-machine&#34;&gt;k3d FAQ&lt;/a&gt; for more information on &lt;code&gt;host.k3d.internal&lt;/code&gt;)&lt;/p&gt;
+&lt;h2 id=&#34;postgres-client&#34;&gt;Postgres client&lt;/h2&gt;
+&lt;p&gt;To test the externally hosted service, we will use &lt;a href=&#34;https://www.pgcli.com/&#34;&gt;pgcli&lt;/a&gt; to open a connection towards the database. I have published an image &lt;a href=&#34;https://hub.docker.com/r/leonseng/pgcli-docker&#34;&gt;leonseng/pgcli-docker&lt;/a&gt; on &lt;a href=&#34;https://hub.docker.com/&#34;&gt;Dockerhub&lt;/a&gt;, which contains the &lt;code&gt;pgcli&lt;/code&gt; binary for the purpose of this test.&lt;/p&gt;
+&lt;p&gt;Create a deployment with the image&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl create deployment pgcli --image leonseng/pgcli-docker:3.1.0 -- sleep 36000
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Assuming the namespace has been labelled with &lt;code&gt;istio-injection=enabled&lt;/code&gt;, the pod should come up with 2 containers - one for &lt;code&gt;pgcli-docker&lt;/code&gt;, another for &lt;code&gt;istio-proxy&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl get pods pgcli-6d678b54fb-v8fpp
+NAME                     READY   STATUS    RESTARTS   AGE
+pgcli-6d678b54fb-v8fpp   2/2     Running   0          30m
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Try initial connection to the PostgresDB external to the Kubernetes cluster&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec &amp;lt;pgcli_pod&amp;gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
+server closed the connection unexpectedly
+        This probably means the server terminated abnormally
+        before or while processing the request.
+
+command terminated with exit code 1
+$
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Connection fails as expected due to missing entry in the registry for the external service. Looking at logs of &lt;code&gt;istio-proxy&lt;/code&gt; confirms that traffic is being sent to the &lt;code&gt;BlackHoleCluster&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl logs &amp;lt;pgcli_pod&amp;gt; -c istio-proxy --tail 50 -f
+[2021-08-16T00:47:49.898Z] &amp;quot;- - -&amp;quot; 0 UH - - &amp;quot;-&amp;quot; 0 0 0 - &amp;quot;-&amp;quot; &amp;quot;-&amp;quot; &amp;quot;-&amp;quot; &amp;quot;-&amp;quot; &amp;quot;-&amp;quot; BlackHoleCluster - 172.17.0.1:5432 10.42.0.10:35742 - -
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;service-entry&#34;&gt;Service Entry&lt;/h1&gt;
+&lt;p&gt;Create a &lt;code&gt;ServiceEntry&lt;/code&gt; which registers the PostgresDB service at &lt;code&gt;host.k3d.internal:5432&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl create -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: postgresdb
+spec:
+  hosts:
+  - host.k3d.internal
+  location: MESH_EXTERNAL
+  ports:
+  - number: 5432
+    name: postgres
+    protocol: TCP
+  resolution: DNS
+EOF
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Once the &lt;code&gt;ServiceEntry&lt;/code&gt; has been created, the &lt;code&gt;pgcli&lt;/code&gt; client is now able to connect to the PostgresDB&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl exec &amp;lt;pgcli_pod&amp;gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
+Server: PostgreSQL 13.3 (Debian 13.3-1.pgdg100+1)
+Version: 3.1.0
+Chat: https://gitter.im/dbcli/pgcli
+Home: http://pgcli.com
+postgres@host:app_db&amp;gt; quit
+Goodbye!
+$
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This successful connection is also logged on the &lt;code&gt;istio-proxy&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[2021-08-16T00:57:32.037Z] &amp;quot;- - -&amp;quot; 0 - - - &amp;quot;-&amp;quot; 452 880 30823 - &amp;quot;-&amp;quot; &amp;quot;-&amp;quot; &amp;quot;-&amp;quot; &amp;quot;-&amp;quot; &amp;quot;172.17.0.1:5432&amp;quot; outbound|5432||host.k3d.internal 10.42.0.10:40108 172.17.0.1:5432 10.42.0.10:40106 - -
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Digging deeper into the &lt;code&gt;istio-proxy&lt;/code&gt; configuration will show the relevant &lt;code&gt;Envoy&lt;/code&gt; objects created by this &lt;code&gt;ServiceEntry&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ istioctl proxy-config listeners pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
+0.0.0.0       5432  ALL                                                                      Cluster: outbound|5432||host.k3d.internal
+
+$ istioctl proxy-config clusters pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
+host.k3d.internal                                       5432      -          outbound      STRICT_DNS
+
+$ istioctl proxy-config endpoints pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
+172.17.0.1:5432                  HEALTHY     OK                outbound|5432||host.k3d.internal
+&lt;/code&gt;&lt;/pre&gt;</content>
     </item>
     
     <item>
@@ -69,6 +1159,199 @@ docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 
 Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
 Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
 kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes.</description>
+      <content>&lt;p&gt;In the previous &lt;a href=&#34;/posts/learning-istio/01-setup/&#34;&gt;post&lt;/a&gt;, we deployed the &lt;a href=&#34;https://istio.io/latest/docs/examples/bookinfo/#deploying-the-application&#34;&gt;Bookinfo&lt;/a&gt; application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.&lt;/p&gt;
+&lt;h1 id=&#34;kubernetes-ingress&#34;&gt;Kubernetes Ingress&lt;/h1&gt;
+&lt;p&gt;Istio should handle &lt;a href=&#34;https://kubernetes.io/docs/concepts/services-networking/ingress/&#34;&gt;Kubernetes Ingress&lt;/a&gt; resource just fine as documented &lt;a href=&#34;https://istio.io/latest/docs/tasks/traffic-management/ingress/kubernetes-ingress/&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation &lt;code&gt;kubernetes.io/ingress.class: istio&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl -n bookinfo apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: networking.k8s.io/v1
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Ingress
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  annotations:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    kubernetes.io/ingress.class: istio
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: productpage-k8s-ingress
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  rules:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - http:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      paths:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      - path: /productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        pathType: Exact
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        backend:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          service:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            name: productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            port:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              number: 9080
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      - path: /static
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        pathType: Prefix
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        backend:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          service:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            name: productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            port:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              number: 9080
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      - path: /login
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        pathType: Exact
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        backend:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          service:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            name: productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            port:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              number: 9080
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      - path: /logout
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        pathType: Exact
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        backend:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          service:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            name: productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            port:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              number: 9080
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      - path: /api/v1/products
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        pathType: Prefix
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        backend:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          service:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            name: productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            port:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              number: 9080
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The application is now exposed through the Istio ingress gateway on port 80, which in turn is exposed on port 8080 via the k3d configuration. Verify that it is working by browsing to &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;http://localhost:8080/productpage&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;To verify that the route has been configured on the Istio ingress gateway, first get the name of the &lt;code&gt;route&lt;/code&gt; created by the Ingress:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ ISTIO_INGRESS_GW_POD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;kubectl -n istio-system get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;istio-ingressgateway -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
+NAME        DOMAINS     MATCH                  VIRTUAL SERVICE
+http.80     *           /productpage           -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
+            *           /healthz/ready*
+            *           /stats/prometheus*
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the example above, we see &lt;code&gt;http.80&lt;/code&gt; is the route created for our ingress matching &lt;code&gt;/productpage&lt;/code&gt;. We can then print out the details of the route by name&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD --name http.80 -o yaml
+- name: http.80
+  validateClusters: false
+  virtualHosts:
+  - domains:
+    - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;*&amp;#39;&lt;/span&gt;
+    includeRequestAttemptCount: true
+    name: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;*:80&amp;#39;&lt;/span&gt;
+    routes:
+    - decorator:
+        operation: productpage.bookinfo.svc.cluster.local:9080/productpage
+      match:
+        caseSensitive: true
+        path: /productpage
+      metadata:
+        filterMetadata:
+          istio:
+            config: /apis/networking.istio.io/v1alpha3/namespaces/bookinfo/virtual-service/-productpage-k8s-ingress-istio-autogenerated-k8s-ingress
+      route:
+        cluster: outbound|9080&lt;span style=&#34;color:#f92672&#34;&gt;||&lt;/span&gt;productpage.bookinfo.svc.cluster.local
+        maxGrpcTimeout: 0s
+        retryPolicy:
+          hostSelectionRetryMaxAttempts: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;5&amp;#34;&lt;/span&gt;
+          numRetries: &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+          retriableStatusCodes:
+          - &lt;span style=&#34;color:#ae81ff&#34;&gt;503&lt;/span&gt;
+          retryHostPredicate:
+          - name: envoy.retry_host_predicates.previous_hosts
+          retryOn: connect-failure,refused-stream,unavailable,cancelled,retriable-status-codes
+        timeout: 0s
+&amp;lt;output truncated&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Alternatively, you can go all out and get a config dump from the ingress gateway (which is basically Envoy) by exposing the Envoy admin port &lt;code&gt;15000&lt;/code&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;k -n istio-system port-forward $ISTIO_INGRESS_GW_POD 15000
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and calling the &lt;code&gt;config_dump&lt;/code&gt; API in a separate terminal&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl localhost:15000/config_dump
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;istio-gateway-and-virtual-service&#34;&gt;Istio Gateway and Virtual Service&lt;/h1&gt;
+&lt;p&gt;Istio offers the &lt;code&gt;Gateway&lt;/code&gt; and &lt;code&gt;VirtualService&lt;/code&gt; CRDs for better control of ingress traffic.&lt;/p&gt;
+&lt;p&gt;We start by deploying the &lt;code&gt;Gateway&lt;/code&gt; and &lt;code&gt;VirtualService&lt;/code&gt; resources&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: bookinfo-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - &amp;quot;*&amp;quot;
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: bookinfo
+spec:
+  hosts:
+  - &amp;quot;*&amp;quot;
+  gateways:
+  - bookinfo-gateway
+  http:
+  - match:
+    - uri:
+        exact: /productpage
+    - uri:
+        prefix: /static
+    - uri:
+        exact: /login
+    - uri:
+        exact: /logout
+    - uri:
+        prefix: /api/v1/products
+    route:
+    - destination:
+        host: productpage
+        port:
+          number: 9080
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Verify that the appropriate routes are created:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
+NAME        DOMAINS     MATCH                  VIRTUAL SERVICE
+http.80     *           /productpage           -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
+http.80     *           /static/*              -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
+http.80     *           /login                 -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
+http.80     *           /logout                -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
+http.80     *           /api/v1/products/*     -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
+http.80     *           /productpage           bookinfo.bookinfo
+http.80     *           /static*               bookinfo.bookinfo
+http.80     *           /login                 bookinfo.bookinfo
+http.80     *           /logout                bookinfo.bookinfo
+http.80     *           /api/v1/products*      bookinfo.bookinfo
+            *           /healthz/ready*
+            *           /stats/prometheus*
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Notice that we now have 2 sets of routes, 1 from Kubernetes Ingress and another from the Istio VirtualService. According to Envoy&amp;rsquo;s &lt;a href=&#34;https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/route_matching&#34;&gt;route matching&lt;/a&gt; rules, they are evaluated in order, so the routes introduced by the Ingress resource still has priority.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s verify this by changing the target port for /productpage in the &lt;code&gt;productpage-k8s-ingress&lt;/code&gt; Ingress to something else&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n bookinfo patch ingress productpage-k8s-ingress -p &#39;{
+  &amp;quot;spec&amp;quot;: {
+    &amp;quot;rules&amp;quot;: [
+      {
+        &amp;quot;http&amp;quot;: {
+          &amp;quot;paths&amp;quot;: [
+            {
+              &amp;quot;path&amp;quot;: &amp;quot;/productpage&amp;quot;,
+              &amp;quot;pathType&amp;quot;: &amp;quot;Exact&amp;quot;,
+              &amp;quot;backend&amp;quot;: {
+                &amp;quot;service&amp;quot;: {
+                  &amp;quot;name&amp;quot;: &amp;quot;productpage&amp;quot;,
+                  &amp;quot;port&amp;quot;: {
+                    &amp;quot;number&amp;quot;: 10080
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}&#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Attempting to browse to &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;http://localhost:8080/productpage&lt;/a&gt; will now fail as expected since the &lt;code&gt;productpage-k8s-ingress&lt;/code&gt; Ingress configuration is wrong.&lt;/p&gt;
+&lt;p&gt;Now that we have observed this behaviour of Envoy route matching, we can remove the &lt;code&gt;productpage-k8s-ingress&lt;/code&gt; Ingress, and have Istio&amp;rsquo;s Gateway and VirtualService to take effect&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n bookinfo delete ingress productpage-k8s-ingress
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;productpage&lt;/a&gt; should now work again.&lt;/p&gt;
+&lt;h1 id=&#34;learnings&#34;&gt;Learnings&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Istio can handle Kubernetes Ingress once the &lt;code&gt;kubernetes.io/ingress.class: istio&lt;/code&gt; annotation has been added&lt;/li&gt;
+&lt;li&gt;Viewing the Ingress gateway routes&lt;/li&gt;
+&lt;li&gt;Ingress gateway route matching behaviour&lt;/li&gt;
+&lt;/ul&gt;
+</content>
     </item>
     
     <item>
@@ -79,11 +1362,164 @@ kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io
       <guid>/posts/learning-istio/setup/</guid>
       <description>In this series, we will be testing out several features in Istio with a local Kubernetes (k3s) cluster.
 Deploy k3s cluster First step is to deploy the k8s cluster with k3d - a wrapper to run k3s in docker. Start by creating a k3d config file:
-# k3d-istio.yamlapiVersion:k3d.io/v1alpha2kind:Simplename:istioservers:1agents:2ports:# for exposing Istio ingress on localhost- port:8080:80nodeFilters:- loadbalancer- port:8443:443nodeFilters:- loadbalanceroptions:k3s:extraServerArgs:- --no-deploy=traefik # we will be using Istio ingress insteadDeploy the cluster with k3d</description>
+# k3d-istio.yaml apiVersion: k3d.io/v1alpha2 kind: Simple name: istio servers: 1 agents: 2 ports: # for exposing Istio ingress on localhost - port: 8080:80 nodeFilters: - loadbalancer - port: 8443:443 nodeFilters: - loadbalancer options: k3s: extraServerArgs: - --no-deploy=traefik  # we will be using Istio ingress instead Deploy the cluster with k3d</description>
+      <content>&lt;p&gt;In this series, we will be testing out several features in Istio with a local Kubernetes (k3s) cluster.&lt;/p&gt;
+&lt;h1 id=&#34;deploy-k3s-cluster&#34;&gt;Deploy k3s cluster&lt;/h1&gt;
+&lt;p&gt;First step is to deploy the k8s cluster with &lt;a href=&#34;https://k3d.io/&#34;&gt;k3d&lt;/a&gt; - a wrapper to run k3s in docker. Start by creating a k3d config file:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# k3d-istio.yaml&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;k3d.io/v1alpha2&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;kind&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Simple&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;istio&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;servers&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;agents&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
+
+&lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+  &lt;span style=&#34;color:#75715e&#34;&gt;# for exposing Istio ingress on localhost&lt;/span&gt;
+  - &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;8080&lt;/span&gt;:&lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;nodeFilters&lt;/span&gt;:
+      - &lt;span style=&#34;color:#ae81ff&#34;&gt;loadbalancer&lt;/span&gt;
+  - &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;8443&lt;/span&gt;:&lt;span style=&#34;color:#ae81ff&#34;&gt;443&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;nodeFilters&lt;/span&gt;:
+      - &lt;span style=&#34;color:#ae81ff&#34;&gt;loadbalancer&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;options&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;k3s&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;extraServerArgs&lt;/span&gt;:
+      - --&lt;span style=&#34;color:#66d9ef&#34;&gt;no&lt;/span&gt;-&lt;span style=&#34;color:#ae81ff&#34;&gt;deploy=traefik &lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# we will be using Istio ingress instead&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Deploy the cluster with k3d&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;k3d cluster create --config k3d-istio.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Once the cluster has been deployed, configure &lt;code&gt;kubectl&lt;/code&gt; to use the newly created context &lt;code&gt;k3d-istio&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl config use-context k3d-istio
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify cluster creation by running&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl cluster-info
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h1 id=&#34;deploy-sample-application&#34;&gt;Deploy sample application&lt;/h1&gt;
+&lt;p&gt;Deploy the sample &lt;a href=&#34;https://istio.io/latest/docs/examples/bookinfo/#deploying-the-application&#34;&gt;Bookinfo&lt;/a&gt; application so that we can observe the difference Istio brings&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl create ns bookinfo
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.10/samples/bookinfo/platform/kube/bookinfo.yaml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You should see some pods created in the namespace&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+details-v1-79f774bdb9-swd8j       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          42m
+ratings-v1-b6994bb9-vgx86         1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          42m
+productpage-v1-6b746f74dc-wkd2r   1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          42m
+reviews-v1-545db77b95-vcps9       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          42m
+reviews-v2-7bf8c9648f-4tscf       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          42m
+reviews-v3-84779c7bbc-tgxx7       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          42m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To access the Bookinfo application, port forward the &lt;code&gt;productpage&lt;/code&gt; service to localhost:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl port-forward svc/productpage &lt;span style=&#34;color:#ae81ff&#34;&gt;9080&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You should now be able to see the product page by browsing to &lt;a href=&#34;http://localhost:9080/productpage&#34;&gt;http://localhost:9080/productpage&lt;/a&gt;.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;install-istio&#34;&gt;Install Istio&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This section is largely based on Istio&amp;rsquo;s &lt;a href=&#34;https://istio.io/latest/docs/setup/getting-started/&#34;&gt;quick start guide&lt;/a&gt; with some minor differences to how the application is accessed (due to k3s networking)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;We will be using &lt;code&gt;istioctl&lt;/code&gt; to install Istio in the cluster. See &lt;a href=&#34;https://istio.io/latest/docs/setup/install/&#34;&gt;Istio Installation Guides&lt;/a&gt; for alternative installation methods.&lt;/p&gt;
+&lt;p&gt;Follow the instructions &lt;a href=&#34;https://istio.io/latest/docs/setup/getting-started/#download&#34;&gt;here&lt;/a&gt; to install the &lt;code&gt;istioctl&lt;/code&gt; binary. Verify that &lt;code&gt;istioctl&lt;/code&gt; has been installed by running &lt;code&gt;istioctl version&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;istioctl version
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Next, install Istio with the &lt;code&gt;demo&lt;/code&gt; profile in the cluster&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;istioctl install --set profile&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;demo -y
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;demo&lt;/code&gt; profile comes with all the Istio core components, and enables high levels of tracing and access logging. See &lt;a href=&#34;https://istio.io/latest/docs/setup/additional-setup/config-profiles/&#34;&gt;Istio Installation Configuration Profiles&lt;/a&gt; for more information on all supported configuration profiles.&lt;/p&gt;
+&lt;p&gt;After a while, you should be able to see all Istio core components deployed in the &lt;code&gt;istio-system&lt;/code&gt; namespace&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ kubectl -n istio-system get all
+NAME                                       READY   STATUS    RESTARTS   AGE
+pod/istiod-568d797f55-j2z9p                1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          15m
+pod/svclb-istio-ingressgateway-nvbs8       5/5     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          14m
+pod/svclb-istio-ingressgateway-2r9xx       5/5     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          14m
+pod/svclb-istio-ingressgateway-c62h4       5/5     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          14m
+pod/istio-egressgateway-5547fcc8fc-cqnzs   1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          14m
+pod/istio-ingressgateway-8f568d595-q4g96   1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          14m
+
+NAME                           TYPE           CLUSTER-IP      EXTERNAL-IP                        PORT&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;S&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+                                                      AGE
+service/istiod                 ClusterIP      10.43.189.242   &amp;lt;none&amp;gt;                             15010/TCP,15012/TCP,443/TCP,15014/TCP                                        15m
+service/istio-egressgateway    ClusterIP      10.43.162.21    &amp;lt;none&amp;gt;                             80/TCP,443/TCP
+                                                      14m
+service/istio-ingressgateway   LoadBalancer   10.43.59.75     172.22.0.2,172.22.0.3,172.22.0.4   15021:31379/TCP,80:30381/TCP,443:32247/TCP,31400:31774/TCP,15443:32131/TCP   14m
+
+NAME                                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+daemonset.apps/svclb-istio-ingressgateway   &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;       &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;            &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;           &amp;lt;none&amp;gt;          14m
+
+NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/istiod                 1/1     &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;            &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;           15m
+deployment.apps/istio-egressgateway    1/1     &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;            &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;           14m
+deployment.apps/istio-ingressgateway   1/1     &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;            &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;           14m
+
+NAME                                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/istiod-568d797f55                &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;       15m
+replicaset.apps/istio-egressgateway-5547fcc8fc   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;       14m
+replicaset.apps/istio-ingressgateway-8f568d595   &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;         &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;       14m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h1 id=&#34;enabling-istio-sidecar-injection&#34;&gt;Enabling Istio sidecar injection&lt;/h1&gt;
+&lt;p&gt;Now that we have everything set up, let&amp;rsquo;s begin by enabling Istio in our application namespace &lt;code&gt;default&lt;/code&gt; by adding the label &lt;code&gt;istio-injection=enabled&lt;/code&gt; to the namespace:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl label namespace default istio-injection&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;enabled
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;At this point, there should be no changes to the bookinfo application (note the container count is still &lt;code&gt;1/1&lt;/code&gt; for all pods):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+details-v1-79f774bdb9-swd8j       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          56m
+ratings-v1-b6994bb9-vgx86         1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          56m
+productpage-v1-6b746f74dc-wkd2r   1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          56m
+reviews-v1-545db77b95-vcps9       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          56m
+reviews-v2-7bf8c9648f-4tscf       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          56m
+reviews-v3-84779c7bbc-tgxx7       1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          56m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To get the sidecar injected, we need to get the pods redeployed by deleting the existing ones with the command&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl get pods --no-headers | awk &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{print $1}&amp;#39;&lt;/span&gt; | xargs kubectl delete pod
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The pods should be redeployed with 2 containers in each of them&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+reviews-v1-545db77b95-5c5z4       2/2     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          91s
+ratings-v1-b6994bb9-v2mc4         2/2     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          91s
+productpage-v1-6b746f74dc-wjkr5   2/2     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          91s
+details-v1-79f774bdb9-fm7jd       2/2     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          91s
+reviews-v2-7bf8c9648f-b9mrh       2/2     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          91s
+reviews-v3-84779c7bbc-lvrwv       2/2     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          91s
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;with the new container being the Istio sidecar proxy, as demonstrated in the following command&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ kubectl get pods productpage-v1-6b746f74dc-wjkr5 -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{range .spec.containers[*]}{.image}{&amp;#34;\n&amp;#34;}{end}&amp;#39;&lt;/span&gt;
+docker.io/istio/examples-bookinfo-productpage-v1:1.16.2
+docker.io/istio/proxyv2:1.10.3
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h1 id=&#34;security-hardening&#34;&gt;Security Hardening&lt;/h1&gt;
+&lt;h2 id=&#34;mutual-tls&#34;&gt;Mutual TLS&lt;/h2&gt;
+&lt;p&gt;By default, Istio configures the destination workloads using &lt;code&gt;PERMISSIVE&lt;/code&gt; mode, where a service can accept both plain text and mutual TLS traffic. To ensure all our cluster traffic is encrypted, we will change this to &lt;code&gt;STRICT&lt;/code&gt; mode.&lt;/p&gt;
+&lt;p&gt;There are two spots to enforce this&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;By namespace&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl apply -n &amp;lt;namespace&amp;gt; -f - &amp;lt;&amp;lt;EOF
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: &amp;quot;default&amp;quot;
+spec:
+  mtls:
+    mode: STRICT
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Globally - note the resource is applied in the &lt;code&gt;istio-system&lt;/code&gt; namespace.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl apply -n istio-system -f - &amp;lt;&amp;lt;EOF
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: &amp;quot;default&amp;quot;
+spec:
+  mtls:
+    mode: STRICT
+EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;outbound-traffic-policy&#34;&gt;Outbound Traffic Policy&lt;/h2&gt;
+&lt;p&gt;To ensure we have better control of traffic exiting the cluster to reach external services, we will be configuring the Istio &lt;code&gt;meshConfig.outboundTrafficPolicy.mode&lt;/code&gt; option to &lt;code&gt;REGISTRY_ONLY&lt;/code&gt;. This means that pods/sidecars in the cluster are only able to reach external services if they are first defined in Istio&amp;rsquo;s internal service registry (via &lt;a href=&#34;https://istio.io/latest/docs/reference/config/networking/service-entry/&#34;&gt;ServiceEntry&lt;/a&gt; definitions).&lt;/p&gt;
+&lt;p&gt;Use &lt;code&gt;istioctl&lt;/code&gt; to enforce the policy&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;istioctl install --set profile=demo -y --set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Verify the configuration is applied correctly&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ kubectl get istiooperator installed-state -n istio-system -o jsonpath=&#39;{.spec.meshConfig.outboundTrafficPolicy.mode}&#39;
+REGISTRY_ONLY
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;h1 id=&#34;next-steps&#34;&gt;Next steps&lt;/h1&gt;
+&lt;p&gt;Now that we have a Kubernetes cluster with Istio installed, and a sample application with Istio sidecar injected, we should be ready to test out some Istio features in future articles.&lt;/p&gt;
+</content>
     </item>
     
     <item>
-      <title>ELI5: Kubernetes Custom Resources</title>
+      <title>Kubernetes | ELI5: Kubernetes Custom Resources</title>
       <link>/posts/eli5-kubernetes-custom-resources/</link>
       <pubDate>Sun, 18 Jul 2021 14:50:02 +1000</pubDate>
       
@@ -91,16 +1527,288 @@ Deploy k3s cluster First step is to deploy the k8s cluster with k3d - a wrapper 
       <description>In this article, I will be using the process of building a house as an example to explain how Kubernetes Custom Resources work.
  Imagine building a custom home, which is a highly detailed and laborious work, that you decided to just hire a home builder. The builder gives you a form to fill out details such as:
  how many rooms do you need and what size should they be?</description>
+      <content>&lt;p&gt;In this article, I will be using the process of building a house as an example to explain how Kubernetes &lt;a href=&#34;https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/&#34;&gt;Custom Resources&lt;/a&gt; work.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Imagine building a custom home, which is a highly detailed and laborious work, that you decided to just hire a home builder. The builder gives you a form to fill out details such as:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;how many rooms do you need and what size should they be?&lt;/li&gt;
+&lt;li&gt;do you want a garage that fits 1, 2 or 3 cars?&lt;/li&gt;
+&lt;li&gt;would you like a swimming pool?&lt;/li&gt;
+&lt;li&gt;do you want the utilities connected when you move in?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You fill in the form, specifying the details of your dream home, and hand it over to the builder. Months go by, and voila, the house is completed, ready for you to move in. The builder even offers services to ensure any repairs are covered throughout the occupancy period, and the pool is cleaned regularly!&lt;/p&gt;
+&lt;p&gt;3 months down, after settling in with all the furniture, you now want a beautiful backyard to go with it. Not a problem, send an updated copy of the form you submitted earlier to include landscaping, and the builder hires some landscapers to build you your garden.&lt;/p&gt;
+&lt;p&gt;You like the house so much that, 6 years down the road, you fill in another form to get another house built, this time with more room for your growing family, and the builder&amp;rsquo;s done it again!&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Let&amp;rsquo;s now translate the example above into Kubernetes terms:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A house consists of many smaller, more fundamental components (walls, bricks, doors, swimming pool etc) which are analogous to the &lt;strong&gt;standard resources in Kubernetes - pods, services, persistent volumes etc&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Building a house is a complex process, and that&amp;rsquo;s when it is handy to get someone to do all the work for you, in this case the builder, which acts as a &lt;strong&gt;Custom Controller&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The form provided by the builder is the &lt;strong&gt;Custom Resource Definition (CRD)&lt;/strong&gt;, which defines a template or constraints the builder supports for the houses it builds. And submitting the forms back to the builder with your preferences on how the houses should look is like declaring instances of &lt;strong&gt;Custom Resources&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The builder/&lt;strong&gt;customer controller&lt;/strong&gt; then handles all the nitty gritty details of setting up the houses/&lt;strong&gt;custom resources&lt;/strong&gt;, as well as making sure any modifications are correctly applied to them.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Often, applications are complex mix of resources, which makes it difficult for end users to manage them without deep understanding of how the resources work together. To lower the the barrier of entry, software vendors provide &lt;a href=&#34;https://kubernetes.io/docs/concepts/extend-kubernetes/operator/&#34;&gt;Operators&lt;/a&gt; which comprises of custom controllers and CRDs, allowing users to manage the applications in a declarative manner. The controllers, written by the vendors, then do the hard work of getting the application to a desired state.&lt;/p&gt;
+&lt;p&gt;Hopefully the example above helps you visualize how custom resources are used. If you are interested to build your own CRDs and custom controllers, the following resources are good starting points:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/&#34;&gt;CRD examples&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/kubernetes/sample-controller&#34;&gt;Sample controller&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
     </item>
     
     <item>
-      <title>Learning Terraform S3 Backend</title>
+      <title>Automation | Learning Terraform S3 Backend</title>
       <link>/posts/learning-terraform-s3-backend/</link>
       <pubDate>Fri, 11 Jun 2021 14:52:29 +1000</pubDate>
       
       <guid>/posts/learning-terraform-s3-backend/</guid>
       <description>I have had basic experience playing with Terraform to instantiate resources in Kubernetes and AWS, but my previous attempts left me with a thought, how do I implement this at work and scale it up to the team?
 Terraform creates a local state file which seems like a pain to share around a team. This is when I found out about remote backends. And this is my attempt to learn Terraform S3 backend.</description>
+      <content>&lt;p&gt;I have had basic experience playing with Terraform to instantiate resources in Kubernetes and AWS, but my previous attempts left me with a thought, how do I implement this at work and scale it up to the team?&lt;/p&gt;
+&lt;p&gt;Terraform creates a local state file which seems like a pain to share around a team. This is when I found out about remote backends. And this is my attempt to learn &lt;a href=&#34;https://www.terraform.io/docs/language/settings/backends/s3.html&#34;&gt;Terraform S3 backend&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;
+&lt;p&gt;Terraform S3 backend stores the state file in an AWS S3 bucket, and if required, uses DynamoDB to manage state locking (highly recommended when working in a team).&lt;/p&gt;
+&lt;p&gt;So&amp;hellip; to manage infrastructure using Terraform, I first need to deploy the supporting infrastructure 😅&lt;/p&gt;
+&lt;p&gt;🐔 and 🥚 problem much?&lt;/p&gt;
+&lt;p&gt;There are guides online to perform this setup using Terraform, but I&amp;rsquo;ll keep it simple for now and do it manually through AWS console.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Create an S3 bucket&lt;/li&gt;
+&lt;li&gt;Create DynamoDB table&lt;/li&gt;
+&lt;li&gt;Create a role with policy to interact with S3 and DynamoDB (I called it &lt;code&gt;terraform-backend-role&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{
+    &amp;quot;Version&amp;quot;: &amp;quot;2012-10-17&amp;quot;,
+    &amp;quot;Statement&amp;quot;: [
+        {
+            &amp;quot;Sid&amp;quot;: &amp;quot;VisualEditor0&amp;quot;,
+            &amp;quot;Effect&amp;quot;: &amp;quot;Allow&amp;quot;,
+            &amp;quot;Action&amp;quot;: [
+                &amp;quot;s3:PutObject&amp;quot;,
+                &amp;quot;s3:GetObject&amp;quot;,
+                &amp;quot;dynamodb:PutItem&amp;quot;,
+                &amp;quot;dynamodb:DeleteItem&amp;quot;,
+                &amp;quot;dynamodb:GetItem&amp;quot;,
+                &amp;quot;s3:ListBucket&amp;quot;
+            ],
+            &amp;quot;Resource&amp;quot;: [
+                &amp;quot;arn:aws:dynamodb:ap-southeast-2:&amp;lt;account ID&amp;gt;:table/TerraformLocks&amp;quot;,
+                &amp;quot;arn:aws:s3:::ls-terraform-bucket/terraform.tfstate&amp;quot;,
+                &amp;quot;arn:aws:s3:::ls-terraform-bucket&amp;quot;
+            ]
+        }
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;Give the IAM user the appropriate policy to assume the role above.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;With all that done, we should be good to go.&lt;/p&gt;
+&lt;h1 id=&#34;using-terraform&#34;&gt;Using Terraform&lt;/h1&gt;
+&lt;p&gt;I will be using the &lt;a href=&#34;https://registry.terraform.io/providers/hashicorp/aws/latest/docs&#34;&gt;AWS provider&lt;/a&gt; to create the EC2 instance.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# main.tf
+terraform {
+  backend &amp;quot;s3&amp;quot; {
+    bucket = &amp;quot;ls-terraform-bucket&amp;quot;
+    key = &amp;quot;terraform.tfstate&amp;quot;
+    region = &amp;quot;ap-southeast-2&amp;quot;
+    encrypt = true
+
+    dynamodb_table = &amp;quot;TerraformLocks&amp;quot;
+
+    role_arn = &amp;quot;arn:aws:iam::&amp;lt;account_id&amp;gt;:role/terraform-backend-role&amp;quot;
+  }
+}
+
+provider &amp;quot;aws&amp;quot; {
+  region = &amp;quot;ap-southeast-2&amp;quot;
+}
+
+resource &amp;quot;aws_instance&amp;quot; &amp;quot;terraform-test&amp;quot; {
+  ami = &amp;quot;ami-0186908e2fdeea8f3&amp;quot;
+  instance_type = &amp;quot;t3.micro&amp;quot;
+  availability_zone = &amp;quot;ap-southeast-2a&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To run Terraform apply, I need to provide it with my AWS authentication details, which I do by exporting the &lt;code&gt;AWS_ACCESS_KEY_ID&lt;/code&gt; and &lt;code&gt;AWS_SECRET_ACCESS_KEY&lt;/code&gt; environment variables.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ export AWS_ACCESS_KEY_ID=&amp;quot;anaccesskey&amp;quot;
+$ export AWS_SECRET_ACCESS_KEY=&amp;quot;asecretkey&amp;quot;
+$ terraform plan
+$ terraform apply
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I quickly ran into permission errors, but the error message isn&amp;rsquo;t great.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;╷
+│ Error: Error launching source instance: UnauthorizedOperation: You are not authorized to perform this operation. Encoded authorization failure message: &amp;lt;encoded error message&amp;gt;
+│       status code: 403, request id: cc586b96-11b7-4a68-a54c-24bf4bce5419
+│
+│   with aws_instance.terraform-test,
+│   on main.tf line 21, in resource &amp;quot;aws_instance&amp;quot; &amp;quot;terraform-test&amp;quot;:
+│   21: resource &amp;quot;aws_instance&amp;quot; &amp;quot;terraform-test&amp;quot; {
+│
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Enabling debug logs when running &lt;code&gt;terraform apply&lt;/code&gt; didn&amp;rsquo;t reveal anything useful for this particular error either&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ TF_LOG=DEBUG terraform apply
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;A quick Google shows that I can use AWS CLI to &lt;a href=&#34;https://docs.aws.amazon.com/cli/latest/reference/sts/decode-authorization-message.html&#34;&gt;decode the error message&lt;/a&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ aws sts decode-authorization-message --encoded-message &amp;lt;encoded error message&amp;gt; --query DecodedMessage --output text | jq .
+{
+  &amp;quot;allowed&amp;quot;: false,
+  ...
+  &amp;quot;context&amp;quot;: {
+    &amp;quot;action&amp;quot;: &amp;quot;ec2:RunInstances&amp;quot;,
+    &amp;quot;resource&amp;quot;: &amp;quot;arn:aws:ec2:ap-southeast-2:&amp;lt;account ID&amp;gt;:instance/*&amp;quot;,
+    ...
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;which tells me that I don&amp;rsquo;t have permission to create an EC2 instance. Of course! Permission to actually perform what I want to do on AWS! I created the necessary role and policy to interact with EC2 (I called it &lt;code&gt;test-project&lt;/code&gt;, and gave my IAM user permission to assume the role. Once that&amp;rsquo;s been done, I added the &lt;code&gt;assume_role&lt;/code&gt; attribute to the AWS provider&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# main.tf
+terraform {
+  backend &amp;quot;s3&amp;quot; {
+    bucket = &amp;quot;ls-terraform-bucket&amp;quot;
+    key = &amp;quot;terraform.tfstate&amp;quot;
+    region = &amp;quot;ap-southeast-2&amp;quot;
+    encrypt = true
+
+    dynamodb_table = &amp;quot;TerraformLocks&amp;quot;
+
+    role_arn = &amp;quot;arn:aws:iam::&amp;lt;account_id&amp;gt;:role/terraform-backend-role&amp;quot;
+  }
+}
+
+provider &amp;quot;aws&amp;quot; {
+  assume_role {
+    role_arn = &amp;quot;arn:aws:iam::&amp;lt;account_id&amp;gt;:role/test-project&amp;quot;
+  }
+  region = &amp;quot;ap-southeast-2&amp;quot;
+}
+
+resource &amp;quot;aws_instance&amp;quot; &amp;quot;terraform-test&amp;quot; {
+  ami = &amp;quot;ami-0186908e2fdeea8f3&amp;quot;
+  instance_type = &amp;quot;t3.micro&amp;quot;
+  availability_zone = &amp;quot;ap-southeast-2a&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;With that, &lt;code&gt;terraform apply&lt;/code&gt; was able to run successfully and created the EC2 instance&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_instance.terraform-test will be created
+  + resource &amp;quot;aws_instance&amp;quot; &amp;quot;terraform-test&amp;quot; {
+      + ami                                  = &amp;quot;ami-0186908e2fdeea8f3&amp;quot;
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = (known after apply)
+      + availability_zone                    = &amp;quot;ap-southeast-2a&amp;quot;
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = &amp;quot;t3.micro&amp;quot;
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + subnet_id                            = (known after apply)
+      + tags                                 = {
+          + &amp;quot;Name&amp;quot; = &amp;quot;Terraform EC2&amp;quot;
+        }
+      + tags_all                             = {
+          + &amp;quot;Name&amp;quot; = &amp;quot;Terraform EC2&amp;quot;
+        }
+      + tenancy                              = (known after apply)
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification {
+          + capacity_reservation_preference = (known after apply)
+
+          + capacity_reservation_target {
+              + capacity_reservation_id = (known after apply)
+            }
+        }
+
+      + ebs_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + snapshot_id           = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+
+      + enclave_options {
+          + enabled = (known after apply)
+        }
+
+      + ephemeral_block_device {
+          + device_name  = (known after apply)
+          + no_device    = (known after apply)
+          + virtual_name = (known after apply)
+        }
+
+      + metadata_options {
+          + http_endpoint               = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = (known after apply)
+        }
+
+      + network_interface {
+          + delete_on_termination = (known after apply)
+          + device_index          = (known after apply)
+          + network_interface_id  = (known after apply)
+        }
+
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only &#39;yes&#39; will be accepted to approve.
+
+  Enter a value: yes
+
+aws_instance.terraform-test: Creating...
+aws_instance.terraform-test: Still creating... [10s elapsed]
+aws_instance.terraform-test: Creation complete after 13s [id=i-05e44bf5cfbb98977]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;summary&#34;&gt;Summary&lt;/h1&gt;
+&lt;p&gt;With that, I am now able to use Terraform with the state tracked remotely. Along with state locking, multiple people in the team can access the same state file safely, as long as their IAM users have the correct permission to assume the role to read/write to S3 and DynamoDB.&lt;/p&gt;
+</content>
     </item>
     
   </channel>

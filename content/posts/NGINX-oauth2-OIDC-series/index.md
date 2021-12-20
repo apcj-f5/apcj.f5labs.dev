@@ -1,5 +1,5 @@
 ---
-title: 'NGINX and oAuth2/OIDC series one'
+title: 'Security | NGINX and oAuth2/OIDC series one'
 subtitle: 'Translate by google'
 summary: NGINX as different role in oAuth/OIDC
 authors:

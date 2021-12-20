@@ -1,208 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>istio - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>istio :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/tags/istio/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="istio">
+<meta property="og:description" content="" />
+<meta property="og:url" content="/tags/istio/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+
+
+
+  <link href="/tags/istio/index.xml" rel="alternate" type="application/rss+xml" title="apcj@f5 blog" />
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-list'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
-
+    </div>
     
+      <div class="menu-trigger">menu</div>
     
-    
-    
-
-    
-    
-
-<span class="overview">Overview</span>
-<h1 class="title">istio</h1>
-<div class="content">
+  </div>
   
-</div>
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
+          <ul class="menu__sub-inner-more hidden">
+            
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
+    
 
-<div class="summary mb-2">
+    
+  </ul>
+
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
   
-  <h2 class="title-summary"><a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a></h2>
-  <p>In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
- Is the JWT issued by the right party Is the client who they claim to be  The logic for the checks above are usually coded into the application.</p>
-</div>
+</header>
 
 
-<div class="summary mb-2">
+  <div class="content">
+    
   
-  <h2 class="title-summary"><a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a></h2>
-  <p>There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where
- application owners have to keep track of certificates for each of their applications applications written in different language/libraries have different ways of implementing mTLS connections  As an application owner, I would prefer to just deal with plain ol' HTTP on port 80, and not have to modify the application to handle HTTPS or mTLS.</p>
-</div>
+  <div class="posts">
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-11-06
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+            #<a href="/tags/jwt/">jwt</a>&nbsp;
+            
+          </span>
+        
+
+        
 
 
-<div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a></h2>
-  <p>I got a question on how we can restrict access to certain external endpoints on a per namespace basis. There was an idea to use Istio&rsquo;s egress gateway to control access to external endpoints, though I&rsquo;m not convinced that&rsquo;s a valid use case for an egress gateway today. So I went off to do some investigation, and found some options:
- Specifying which namespaces can access certain hosts defined in the ServiceEntry Specifying which endpoints can be accessed from a namespace  But before that, a bit of back story of how we got here&hellip;</p>
-</div>
+      
+        <div class="post-content">
+          
+          
+          In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
+ Is the JWT issued by the right party Is the client who they claim to be  The logic for the checks above are usually coded into the application.
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/jwt-auth/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-10-12
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
 
 
-<div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a></h2>
-  <p>In this post, we will be testing Istio&rsquo;s ServiceEntry by accessing a PostgreDB database hosted externally from the Kubernetes cluster.
+      
+        <div class="post-content">
+          
+          
+          There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where
+ application owners have to keep track of certificates for each of their applications applications written in different language/libraries have different ways of implementing mTLS connections  As an application owner, I would prefer to just deal with plain ol' HTTP on port 80, and not have to modify the application to handle HTTPS or mTLS.
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&rsquo;t Service Entry Namespaced!?</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-09-04
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          I got a question on how we can restrict access to certain external endpoints on a per namespace basis. There was an idea to use Istio&rsquo;s egress gateway to control access to external endpoints, though I&rsquo;m not convinced that&rsquo;s a valid use case for an egress gateway today. So I went off to do some investigation, and found some options:
+ Specifying which namespaces can access certain hosts defined in the ServiceEntry Specifying which endpoints can be accessed from a namespace  But before that, a bit of back story of how we got here&hellip;
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-08-16
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          In this post, we will be testing Istio&rsquo;s ServiceEntry by accessing a PostgreDB database hosted externally from the Kubernetes cluster.
 Setup &ldquo;External&rdquo; PostgresDB service Since we are running the Kubernetes cluster locally in Docker containers using k3d, we can create an &ldquo;external&rdquo; service by running a PostgresDB Docker container on the same host and expose its ports to localhost.
 Create a local PostgresDB container database using Docker
-docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres Create a test database app_db</p>
-</div>
+docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres Create a test database app_db
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-08-02
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
 
 
-<div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a></h2>
-  <p>In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
+      
+        <div class="post-content">
+          
+          
+          In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
 Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
 Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
-kubectl -n bookinfo apply -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes.</p>
-</div>
-
-
-<div class="summary mb-2">
-  
-  <h2 class="title-summary"><a href="/posts/learning-istio/setup/">Learning Istio | Setup</a></h2>
-  <p>In this series, we will be testing out several features in Istio with a local Kubernetes (k3s) cluster.
-Deploy k3s cluster First step is to deploy the k8s cluster with k3d - a wrapper to run k3s in docker. Start by creating a k3d config file:
-# k3d-istio.yamlapiVersion:k3d.io/v1alpha2kind:Simplename:istioservers:1agents:2ports:# for exposing Istio ingress on localhost- port:8080:80nodeFilters:- loadbalancer- port:8443:443nodeFilters:- loadbalanceroptions:k3s:extraServerArgs:- --no-deploy=traefik # we will be using Istio ingress insteadDeploy the cluster with k3d</p>
-</div>
-
-
-<div class="summary mb-2">
-  
-  <img alt="The rule of Istio Gateway port definition" src="#ZgotmplZ" />
-  
-  <h2 class="title-summary"><a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a></h2>
-  <p>Dont set wrong port in Gateway.</p>
-</div>
-
-
-<div class="summary mb-2">
-  
-  <img alt="Istio sidecar iptables and traffic steering detail" src="#ZgotmplZ" />
-  
-  <h2 class="title-summary"><a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a></h2>
-  <p>How istio manipulates the traffic.</p>
-</div>
-
-
-<div class="summary mb-2">
-  
-  <img alt="F5 BIG-IP links Istio to enhance ingress service capabilities" src="#ZgotmplZ" />
-  
-  <h2 class="title-summary"><a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a></h2>
-  <p>F5 make istio works better</p>
-</div>
-
-
-
-
-    
-  </div>
-
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
+kubectl -n bookinfo apply -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes.
+          
+          
         </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/ingress/">Read more →</a>
+        </div>
+        
       </div>
-    </div>
+    
+    <div class="pagination">
+  <div class="pagination__buttons">
+    
+    
+      <span class="button next">
+        <a href="/tags/istio/page/2/">
+          <span class="button__text">Older posts</span>
+          <span class="button__icon">→</span>
+        </a>
+      </span>
+    
   </div>
 </div>
 
-  
+  </div>
+
+  </div>
 
   
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

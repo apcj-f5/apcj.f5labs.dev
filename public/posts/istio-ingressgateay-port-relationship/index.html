@@ -1,188 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>The rule of Istio Gateway port definition - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Istio | The role of Istio Gateway port definition :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Dont set wrong port in Gateway." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/istio-ingressgateay-port-relationship/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Istio | The role of Istio Gateway port definition">
+<meta property="og:description" content="Dont set wrong port in Gateway." />
+<meta property="og:url" content="/posts/istio-ingressgateay-port-relationship/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2020-07-13 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">The rule of Istio Gateway port definition</h1>
-<div class="content ">
-  <p>The port and protocol in the Gateway resource define the listener port and protocol in ingressgateway (envoy).</p>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/istio-ingressgateay-port-relationship/">Istio | The role of Istio Gateway port definition</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2020-07-13
+        
+          [Updated: 2020-07-13]
+        
+      </span>
+    
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/istio/">istio</a>&nbsp;
+    
+    #<a href="/tags/envoy/">envoy</a>&nbsp;
+    
+    #<a href="/tags/gateway-port/">gateway port</a>&nbsp;
+    
+    #<a href="/tags/ingressgateway/">ingressgateway</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>The port and protocol in the Gateway resource define the listener port and protocol in ingressgateway (envoy).</p>
 <p>However, the port in Gateway can be set to the port or targetPort of the ingressgateway svc, and finally the targetPort is used in envoy.</p>
 <p>For example below, the port is defined as 443 in Gateway:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">apiVersion: networking.istio.io/v1alpha3
+<pre tabindex="0"><code>apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   namespace: istio-bookinfo
@@ -196,7 +186,7 @@ spec:
       name: http
       protocol: HTTP 
     hosts:
-    - &#34;*&#34;
+    - &quot;*&quot;
   - port:
       number: 443 #####use for assembling the route name that under the listener
       name: https #####use for assembling the route name that under the listener
@@ -206,43 +196,43 @@ spec:
       serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
       privateKey: /etc/istio/ingressgateway-certs/tls.key
     hosts:
-    - &#34;*&#34;
-</code></pre></div><p>While, when you check the envoy configurations, the listener port actually is 8443</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[root@k8s-master-v1-16 networking]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-lfqz9.istio-system --port 8443 -o json
+    - &quot;*&quot;
+</code></pre><p>While, when you check the envoy configurations, the listener port actually is 8443</p>
+<pre tabindex="0"><code>[root@k8s-master-v1-16 networking]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-lfqz9.istio-system --port 8443 -o json
 [
     {
-        &#34;name&#34;: &#34;0.0.0.0_8443&#34;,
-        &#34;address&#34;: {
-            &#34;socketAddress&#34;: {
-                &#34;address&#34;: &#34;0.0.0.0&#34;,
-                &#34;portValue&#34;: 8443 《《《《《8443！！
+        &quot;name&quot;: &quot;0.0.0.0_8443&quot;,
+        &quot;address&quot;: {
+            &quot;socketAddress&quot;: {
+                &quot;address&quot;: &quot;0.0.0.0&quot;,
+                &quot;portValue&quot;: 8443 《《《《《8443！！
             }
         },
-        &#34;filterChains&#34;: [
+        &quot;filterChains&quot;: [
             {
-                &#34;filters&#34;: [
+                &quot;filters&quot;: [
                     {
-                        &#34;name&#34;: &#34;envoy.http_connection_manager&#34;,
-                        &#34;typedConfig&#34;: {
-                            &#34;@type&#34;: &#34;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&#34;,
-                            &#34;statPrefix&#34;: &#34;outbound_0.0.0.0_8443&#34;,
-                            &#34;rds&#34;: {
-                                &#34;configSource&#34;: {
-                                    &#34;ads&#34;: {}
+                        &quot;name&quot;: &quot;envoy.http_connection_manager&quot;,
+                        &quot;typedConfig&quot;: {
+                            &quot;@type&quot;: &quot;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&quot;,
+                            &quot;statPrefix&quot;: &quot;outbound_0.0.0.0_8443&quot;,
+                            &quot;rds&quot;: {
+                                &quot;configSource&quot;: {
+                                    &quot;ads&quot;: {}
                                 },
                                 ###The route name is assembled by protocol + port number + portname, Note here: use 443,not 8443
-                                &#34;routeConfigName&#34;: &#34;https.443.https.bookinfo-gateway.istio-bookinfo&#34;
+                                &quot;routeConfigName&quot;: &quot;https.443.https.bookinfo-gateway.istio-bookinfo&quot;
                             },
-</code></pre></div><p>This is because the ingressgateway&rsquo;s 443 svc port is corresponding to targetPort 8443:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"> - name: https
+</code></pre><p>This is because the ingressgateway&rsquo;s 443 svc port is corresponding to targetPort 8443:</p>
+<pre tabindex="0"><code> - name: https
     nodePort: 30975
     port: 443
     protocol: TCP
     targetPort: 8443
-</code></pre></div><p>If the port is defined as 8443 in the gateway, the result is same, will generate 8443 listener in envoy.</p>
+</code></pre><p>If the port is defined as 8443 in the gateway, the result is same, will generate 8443 listener in envoy.</p>
 <p>When there is only one gateway definition, it is ok to use port or the corresponding targetport of the ingressgateway, both will get the same listener port in evnoy lastly. But please be noted, if there are multiple gateway definitions and set same protocol, then the port in the gateways must be same. Otherwise, the listener will only associate the routeConfigName generated by the gateway that created afterwards, and the associated route will not contain the virtualservice logic that related to the first created gateway.</p>
 <p>For example, configure HTTP:8080 in the gateway in the istio-bookinfo namespace (the svc 80 of ingressgateway corresponds to the 8080 of the pod):</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">apiVersion: v1
+<pre tabindex="0"><code>apiVersion: v1
 items:
  
   spec:
@@ -250,7 +240,7 @@ items:
       istio: ingressgateway
     servers:
     - hosts:
-      - &#39;*&#39;
+      - '*'
       port:
         name: http
         number: 8080
@@ -261,8 +251,8 @@ items:
         name: https
         number: 443
         protocol: HTTPS
-</code></pre></div><p>The gateway in the httpbin namespace configures HTTP：80，</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[root@k8s-master-v1-16 httpbin]# kubectl get gateways.networking.istio.io -n httpbin -o yaml
+</code></pre><p>The gateway in the httpbin namespace configures HTTP：80，</p>
+<pre tabindex="0"><code>[root@k8s-master-v1-16 httpbin]# kubectl get gateways.networking.istio.io -n httpbin -o yaml
 apiVersion: v1
 items:
  
@@ -276,75 +266,98 @@ items:
         name: http-httpbin
         number: 80
         protocol: HTTP
-</code></pre></div><p>This leads to the fact that the envoy listener is actually actually associated with the later created http.80 route:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[root@k8s-master-v1-16 ~]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-gh2vr.istio-system --port 8080 -o json
+</code></pre><p>This leads to the fact that the envoy listener is actually actually associated with the later created http.80 route:</p>
+<pre tabindex="0"><code>[root@k8s-master-v1-16 ~]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-gh2vr.istio-system --port 8080 -o json
 [
     {
-        &#34;name&#34;: &#34;0.0.0.0_8080&#34;,
-        &#34;address&#34;: {
-            &#34;socketAddress&#34;: {
-                &#34;address&#34;: &#34;0.0.0.0&#34;,
-                &#34;portValue&#34;: 8080
+        &quot;name&quot;: &quot;0.0.0.0_8080&quot;,
+        &quot;address&quot;: {
+            &quot;socketAddress&quot;: {
+                &quot;address&quot;: &quot;0.0.0.0&quot;,
+                &quot;portValue&quot;: 8080
             }
         },
-        &#34;filterChains&#34;: [
+        &quot;filterChains&quot;: [
             {
-                &#34;filters&#34;: [
+                &quot;filters&quot;: [
                     {
-                        &#34;name&#34;: &#34;envoy.http_connection_manager&#34;,
-                        &#34;typedConfig&#34;: {
-                            &#34;@type&#34;: &#34;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&#34;,
-                            &#34;statPrefix&#34;: &#34;outbound_0.0.0.0_8080&#34;,
-                            &#34;rds&#34;: {
-                                &#34;configSource&#34;: {
-                                    &#34;ads&#34;: {}
+                        &quot;name&quot;: &quot;envoy.http_connection_manager&quot;,
+                        &quot;typedConfig&quot;: {
+                            &quot;@type&quot;: &quot;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&quot;,
+                            &quot;statPrefix&quot;: &quot;outbound_0.0.0.0_8080&quot;,
+                            &quot;rds&quot;: {
+                                &quot;configSource&quot;: {
+                                    &quot;ads&quot;: {}
                                 },
-                                &#34;routeConfigName&#34;: &#34;http.80&#34;
-</code></pre></div><p>Therefore, in these multi gateways configuration, which ultimately shares the listener port, the port number and protocol name need to be the same (BEST practice is using the port number that envoy actually listens to), but the port must be named differently (if the port name is the same, envoy will show the conflicting configuration logs):</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">2020-07-10T09:56:26.192152Z	warning	envoy config	[external/envoy/source/common/config/grpc_subscription_impl.cc:101] gRPC config for type.googleapis.com/envoy.api.v2.Listener rejected: 
+                                &quot;routeConfigName&quot;: &quot;http.80&quot;
+</code></pre><p>Therefore, in these multi gateways configuration, which ultimately shares the listener port, the port number and protocol name need to be the same (BEST practice is using the port number that envoy actually listens to), but the port must be named differently (if the port name is the same, envoy will show the conflicting configuration logs):</p>
+<pre tabindex="0"><code>2020-07-10T09:56:26.192152Z	warning	envoy config	[external/envoy/source/common/config/grpc_subscription_impl.cc:101] gRPC config for type.googleapis.com/envoy.api.v2.Listener rejected: 
 Error adding/updating listener(s) 0.0.0.0_8080: duplicate listener 0.0.0.0_8080 found
-</code></pre></div><p>Gateways with the same protocol and the same port, no matter whether they are in the same namespace, can only share one listener in envoy, so they will also share same route. If you accidentally configure the same virtualservice under different namespaces at this time, it will cause envoy to generate two identical match conditions in the same route (and the associated cluster is different namespace suffix, This resulting in abnormal access)</p>
+</code></pre><p>Gateways with the same protocol and the same port, no matter whether they are in the same namespace, can only share one listener in envoy, so they will also share same route. If you accidentally configure the same virtualservice under different namespaces at this time, it will cause envoy to generate two identical match conditions in the same route (and the associated cluster is different namespace suffix, This resulting in abnormal access)</p>
 <p>Check more istio practice detail at my tech blog <a href="https://imesh.club">https://imesh.club</a></p>
 
-</div>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/learning-terraform-s3-backend/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Automation | Learning Terraform S3 Backend</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/f5-envoy-cloud-native/">
+                <span class="button__text">Infrastructure | How an application delivery veteran sees Envoy in the era of cloud native</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

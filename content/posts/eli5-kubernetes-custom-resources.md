@@ -1,5 +1,5 @@
 ---
-title: "ELI5: Kubernetes Custom Resources"
+title: "Kubernetes | ELI5: Kubernetes Custom Resources"
 date: 2021-07-18T14:50:02+10:00
 draft: false
 tags: ['kubernetes', 'eli5']
