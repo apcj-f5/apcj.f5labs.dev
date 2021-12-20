@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>s3 on apcj@f5 technical articles</title>
-    <link>apcj.f5labs.dev/tags/s3/</link>
+    <link>/tags/s3/</link>
     <description>Recent content in s3 on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Jun 2021 14:52:29 +1000</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/s3/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 11 Jun 2021 14:52:29 +1000</lastBuildDate><atom:link href="/tags/s3/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Learning Terraform S3 Backend</title>
-      <link>apcj.f5labs.dev/posts/learning-terraform-s3-backend/</link>
+      <link>/posts/learning-terraform-s3-backend/</link>
       <pubDate>Fri, 11 Jun 2021 14:52:29 +1000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/learning-terraform-s3-backend/</guid>
+      <guid>/posts/learning-terraform-s3-backend/</guid>
       <description>I have had basic experience playing with Terraform to instantiate resources in Kubernetes and AWS, but my previous attempts left me with a thought, how do I implement this at work and scale it up to the team?
 Terraform creates a local state file which seems like a pain to share around a team. This is when I found out about remote backends. And this is my attempt to learn Terraform S3 backend.</description>
     </item>

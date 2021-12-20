@@ -2,36 +2,36 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>terraform on apcj@f5 technical articles</title>
-    <link>apcj.f5labs.dev/tags/terraform/</link>
+    <link>/tags/terraform/</link>
     <description>Recent content in terraform on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/terraform/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="/tags/terraform/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Ephemeral Kubernetes Lab with IaC and GitOps</title>
-      <link>apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</link>
+      <link>/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</link>
       <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</guid>
+      <guid>/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</guid>
       <description>I&amp;rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&amp;rsquo;m used to is a no-go. I need a setup that meets the following requirements:
  Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &amp;ldquo;just the way I left it there last night&amp;rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post.</description>
     </item>
     
     <item>
       <title>Terraform Maps</title>
-      <link>apcj.f5labs.dev/posts/terraform-maps/</link>
+      <link>/posts/terraform-maps/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/terraform-maps/</guid>
+      <guid>/posts/terraform-maps/</guid>
       <description>Intro I&amp;rsquo;ve been doing a lot with terraform lately, and I&amp;rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&amp;rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&amp;rsquo;s essentially the same resource. Why should I do this? There has to be a better way.</description>
     </item>
     
     <item>
       <title>Learning Terraform S3 Backend</title>
-      <link>apcj.f5labs.dev/posts/learning-terraform-s3-backend/</link>
+      <link>/posts/learning-terraform-s3-backend/</link>
       <pubDate>Fri, 11 Jun 2021 14:52:29 +1000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/learning-terraform-s3-backend/</guid>
+      <guid>/posts/learning-terraform-s3-backend/</guid>
       <description>I have had basic experience playing with Terraform to instantiate resources in Kubernetes and AWS, but my previous attempts left me with a thought, how do I implement this at work and scale it up to the team?
 Terraform creates a local state file which seems like a pain to share around a team. This is when I found out about remote backends. And this is my attempt to learn Terraform S3 backend.</description>
     </item>

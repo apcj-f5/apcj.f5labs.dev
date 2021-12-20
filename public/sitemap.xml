@@ -2,127 +2,127 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>apcj.f5labs.dev/tags/argocd/</loc>
+    <loc>/tags/argocd/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/aws/</loc>
+    <loc>/tags/aws/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/</loc>
+    <loc>/categories/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/eks/</loc>
+    <loc>/tags/eks/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</loc>
+    <loc>/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/gitops/</loc>
+    <loc>/tags/gitops/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/iac/</loc>
+    <loc>/tags/iac/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/kubernetes/</loc>
+    <loc>/tags/kubernetes/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/</loc>
+    <loc>/posts/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/</loc>
+    <loc>/tags/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/tech/</loc>
+    <loc>/categories/tech/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/terraform/</loc>
+    <loc>/tags/terraform/</loc>
     <lastmod>2021-12-08T09:05:42+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/containers/</loc>
+    <loc>/tags/containers/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/databases/</loc>
+    <loc>/tags/databases/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/dev/</loc>
+    <loc>/categories/dev/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/kubernetes/</loc>
+    <loc>/categories/kubernetes/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/software/</loc>
+    <loc>/categories/software/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</loc>
+    <loc>/posts/sql-server-kubernetes-2/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/istio/</loc>
+    <loc>/tags/istio/</loc>
     <lastmod>2021-11-06T21:32:16+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/jwt/</loc>
+    <loc>/tags/jwt/</loc>
     <lastmod>2021-11-06T21:32:16+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/jwt-auth/</loc>
+    <loc>/posts/jwt-auth/</loc>
     <lastmod>2021-11-06T21:32:16+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/sql-server-kubernetes/</loc>
+    <loc>/posts/sql-server-kubernetes/</loc>
     <lastmod>2021-11-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/</loc>
+    <loc>/posts/securing-egress-traffic-with-mtls/</loc>
     <lastmod>2021-10-12T15:59:45+11:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/automation/</loc>
+    <loc>/categories/automation/</loc>
     <lastmod>2021-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/terraform-maps/</loc>
+    <loc>/posts/terraform-maps/</loc>
     <lastmod>2021-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/</loc>
+    <loc>/posts/why-isnt-service-entry-namespaced/</loc>
     <lastmod>2021-09-04T23:36:07+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/</loc>
+    <loc>/posts/accessing-external-tcp-services-using-serviceentry/</loc>
     <lastmod>2021-08-16T11:31:40+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/nginx/</loc>
+    <loc>/tags/nginx/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/nginx-unit/</loc>
+    <loc>/posts/nginx-unit/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/unit/</loc>
+    <loc>/tags/unit/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/ingress/</loc>
+    <loc>/posts/ingress/</loc>
     <lastmod>2021-08-02T16:25:55+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/setup/</loc>
+    <loc>/posts/setup/</loc>
     <lastmod>2021-08-02T14:20:35+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/eli5/</loc>
+    <loc>/tags/eli5/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/</loc>
+    <loc>/posts/eli5-kubernetes-custom-resources/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/containers/</loc>
+    <loc>/categories/containers/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/minimal/</loc>
+    <loc>/tags/minimal/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/smallest-container-ever/</loc>
+    <loc>/posts/smallest-container-ever/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/categories/testing/</loc>
+    <loc>/categories/testing/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/posts/learning-terraform-s3-backend/</loc>
+    <loc>/posts/learning-terraform-s3-backend/</loc>
     <lastmod>2021-06-11T14:52:29+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/tags/s3/</loc>
+    <loc>/tags/s3/</loc>
     <lastmod>2021-06-11T14:52:29+10:00</lastmod>
   </url><url>
-    <loc>apcj.f5labs.dev/</loc>
+    <loc>/</loc>
     <lastmod>2018-11-28T15:14:39+10:00</lastmod>
   </url>
 </urlset>

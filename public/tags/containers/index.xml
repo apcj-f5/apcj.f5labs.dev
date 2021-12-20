@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>containers on apcj@f5 technical articles</title>
-    <link>apcj.f5labs.dev/tags/containers/</link>
+    <link>/tags/containers/</link>
     <description>Recent content in containers on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/containers/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/containers/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>SQL Server on Kubernetes - Part 2</title>
-      <link>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</link>
+      <link>/posts/sql-server-kubernetes-2/</link>
       <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</guid>
+      <guid>/posts/sql-server-kubernetes-2/</guid>
       <description>Intro So in my last post I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.
 This post is going to focus on the storage components of running a database on Kubernetes.
 Why do I need persistent storage Persistent storage as the name implies allows you to store your data between container restarts.</description>
@@ -20,20 +20,20 @@ Why do I need persistent storage Persistent storage as the name implies allows y
     
     <item>
       <title>SQL Server on Kubernetes - Part 1</title>
-      <link>apcj.f5labs.dev/posts/sql-server-kubernetes/</link>
+      <link>/posts/sql-server-kubernetes/</link>
       <pubDate>Mon, 01 Nov 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes/</guid>
+      <guid>/posts/sql-server-kubernetes/</guid>
       <description>Intro Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster. Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it. I decided to give it a go recently on Kubernetes, and get it all working.
 This is part one, where I deploy SQL server without persistent storage. In part two, I will discuss using persistent storage.</description>
     </item>
     
     <item>
       <title>Small Containers for fun </title>
-      <link>apcj.f5labs.dev/posts/smallest-container-ever/</link>
+      <link>/posts/smallest-container-ever/</link>
       <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/smallest-container-ever/</guid>
+      <guid>/posts/smallest-container-ever/</guid>
       <description>Intro I have a side hobby where I try to create minimal container images. There are a number of reasons for this, but the primary one is because I&amp;rsquo;m a complete geek.
 Other reasons include:
  It&amp;rsquo;s a neatness thing There&amp;rsquo;s an engineering imperative in me to be minimalist I don&amp;rsquo;t like waste The process of creation helps me understand the technology a little better Smaller images are great for testing at scale  Why The why I do this is mainly because it&amp;rsquo;s a hobby, but in this case, I started the ultra minimal container image build because someone I work with wanted to build a container for testing Istio latency at scale.</description>

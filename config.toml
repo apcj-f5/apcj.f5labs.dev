@@ -1,4 +1,4 @@
-baseURL = "apcj.f5labs.dev"
+baseURL = "/"
 languageCode = "en-us"
 title = "apcj@f5 technical articles"
 theme = "hugo-whisper-theme"

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>eli5 on apcj@f5 technical articles</title>
-    <link>apcj.f5labs.dev/tags/eli5/</link>
+    <link>/tags/eli5/</link>
     <description>Recent content in eli5 on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jul 2021 14:50:02 +1000</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/eli5/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Jul 2021 14:50:02 +1000</lastBuildDate><atom:link href="/tags/eli5/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ELI5: Kubernetes Custom Resources</title>
-      <link>apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/</link>
+      <link>/posts/eli5-kubernetes-custom-resources/</link>
       <pubDate>Sun, 18 Jul 2021 14:50:02 +1000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/</guid>
+      <guid>/posts/eli5-kubernetes-custom-resources/</guid>
       <description>In this article, I will be using the process of building a house as an example to explain how Kubernetes Custom Resources work.
  Imagine building a custom home, which is a highly detailed and laborious work, that you decided to just hire a home builder. The builder gives you a form to fill out details such as:
  how many rooms do you need and what size should they be?</description>

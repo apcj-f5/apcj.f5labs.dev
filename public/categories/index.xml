@@ -2,71 +2,71 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on apcj@f5 technical articles</title>
-    <link>apcj.f5labs.dev/categories/</link>
+    <link>/categories/</link>
     <description>Recent content in Categories on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="apcj.f5labs.dev/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>tech</title>
-      <link>apcj.f5labs.dev/categories/tech/</link>
+      <link>/categories/tech/</link>
       <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
       
-      <guid>apcj.f5labs.dev/categories/tech/</guid>
+      <guid>/categories/tech/</guid>
       <description></description>
     </item>
     
     <item>
       <title>dev</title>
-      <link>apcj.f5labs.dev/categories/dev/</link>
+      <link>/categories/dev/</link>
       <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/categories/dev/</guid>
+      <guid>/categories/dev/</guid>
       <description></description>
     </item>
     
     <item>
       <title>kubernetes</title>
-      <link>apcj.f5labs.dev/categories/kubernetes/</link>
+      <link>/categories/kubernetes/</link>
       <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/categories/kubernetes/</guid>
+      <guid>/categories/kubernetes/</guid>
       <description></description>
     </item>
     
     <item>
       <title>software</title>
-      <link>apcj.f5labs.dev/categories/software/</link>
+      <link>/categories/software/</link>
       <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/categories/software/</guid>
+      <guid>/categories/software/</guid>
       <description></description>
     </item>
     
     <item>
       <title>automation</title>
-      <link>apcj.f5labs.dev/categories/automation/</link>
+      <link>/categories/automation/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/categories/automation/</guid>
+      <guid>/categories/automation/</guid>
       <description></description>
     </item>
     
     <item>
       <title>containers</title>
-      <link>apcj.f5labs.dev/categories/containers/</link>
+      <link>/categories/containers/</link>
       <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/categories/containers/</guid>
+      <guid>/categories/containers/</guid>
       <description></description>
     </item>
     
     <item>
       <title>testing</title>
-      <link>apcj.f5labs.dev/categories/testing/</link>
+      <link>/categories/testing/</link>
       <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/categories/testing/</guid>
+      <guid>/categories/testing/</guid>
       <description></description>
     </item>
     
