@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Hugo Whisper Docs on Hugo Whisper Theme</title>
-    <link>www.example.com/</link>
-    <description>Recent content in Hugo Whisper Docs on Hugo Whisper Theme</description>
+    <title>Hugo Whisper Docs on apcj@f5 technical articles</title>
+    <link>apcj.f5labs.dev/</link>
+    <description>Recent content in Hugo Whisper Docs on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 28 Nov 2018 15:14:39 +1000</lastBuildDate><atom:link href="www.example.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 28 Nov 2018 15:14:39 +1000</lastBuildDate><atom:link href="apcj.f5labs.dev/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ELI5: Kubernetes Custom Resources</title>
-      <link>www.example.com/posts/eli5-kubernetes-custom-resources/</link>
+      <link>apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/</link>
       <pubDate>Sun, 18 Jul 2021 14:50:02 +1000</pubDate>
       
-      <guid>www.example.com/posts/eli5-kubernetes-custom-resources/</guid>
+      <guid>apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/</guid>
       <description>In this article, I will be using the process of building a house as an example to explain how Kubernetes Custom Resources work.
  Imagine building a custom home, which is a highly detailed and laborious work, that you decided to just hire a home builder. The builder gives you a form to fill out details such as:
  how many rooms do you need and what size should they be?</description>
