@@ -31,7 +31,6 @@ summaryLength = 30
   homepage_button_link = '/posts'
   homepage_button_text = 'Posts'
   homepage_intro = 'apcj@f5 technical articles from @codecowboydotio, @leonseong, @myf5, @shainsingh'
-  homepage_image = '/images/f5labs.svg'
 
   ## You can enable to add anchor links to header elements
   # enable_anchor_link = true
@@ -46,5 +45,5 @@ summaryLength = 30
     meta_twitter_card = "summary"
 
   [params.logo]
-      mobile = "/images/logo-mobile.svg"
-      standard  = "/images/logo.svg"
+      mobile = "/images/f5labs.svg"
+      standard  = "/images/f5labs.svg"
