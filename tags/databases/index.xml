@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>databases on apcj@f5 technical articles</title>
-    <link>apcj.f5labs.dev/tags/databases/</link>
+    <link>/tags/databases/</link>
     <description>Recent content in databases on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/databases/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/databases/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>SQL Server on Kubernetes - Part 2</title>
-      <link>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</link>
+      <link>/posts/sql-server-kubernetes-2/</link>
       <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</guid>
+      <guid>/posts/sql-server-kubernetes-2/</guid>
       <description>Intro So in my last post I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.
 This post is going to focus on the storage components of running a database on Kubernetes.
 Why do I need persistent storage Persistent storage as the name implies allows you to store your data between container restarts.</description>
@@ -20,10 +20,10 @@ Why do I need persistent storage Persistent storage as the name implies allows y
     
     <item>
       <title>SQL Server on Kubernetes - Part 1</title>
-      <link>apcj.f5labs.dev/posts/sql-server-kubernetes/</link>
+      <link>/posts/sql-server-kubernetes/</link>
       <pubDate>Mon, 01 Nov 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes/</guid>
+      <guid>/posts/sql-server-kubernetes/</guid>
       <description>Intro Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster. Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it. I decided to give it a go recently on Kubernetes, and get it all working.
 This is part one, where I deploy SQL server without persistent storage. In part two, I will discuss using persistent storage.</description>
     </item>

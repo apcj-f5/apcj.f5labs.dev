@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>testing on apcj@f5 technical articles</title>
-    <link>apcj.f5labs.dev/categories/testing/</link>
+    <link>/categories/testing/</link>
     <description>Recent content in testing on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 09 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="apcj.f5labs.dev/categories/testing/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 09 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/testing/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Small Containers for fun </title>
-      <link>apcj.f5labs.dev/posts/smallest-container-ever/</link>
+      <link>/posts/smallest-container-ever/</link>
       <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/posts/smallest-container-ever/</guid>
+      <guid>/posts/smallest-container-ever/</guid>
       <description>Intro I have a side hobby where I try to create minimal container images. There are a number of reasons for this, but the primary one is because I&amp;rsquo;m a complete geek.
 Other reasons include:
  It&amp;rsquo;s a neatness thing There&amp;rsquo;s an engineering imperative in me to be minimalist I don&amp;rsquo;t like waste The process of creation helps me understand the technology a little better Smaller images are great for testing at scale  Why The why I do this is mainly because it&amp;rsquo;s a hobby, but in this case, I started the ultra minimal container image build because someone I work with wanted to build a container for testing Istio latency at scale.</description>
