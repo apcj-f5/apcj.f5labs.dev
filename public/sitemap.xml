@@ -2,28 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>www.example.com/categories/</loc>
+    <loc>apcj.f5labs.dev/categories/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>www.example.com/tags/eli5/</loc>
+    <loc>apcj.f5labs.dev/tags/eli5/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>www.example.com/posts/eli5-kubernetes-custom-resources/</loc>
+    <loc>apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>www.example.com/tags/kubernetes/</loc>
+    <loc>apcj.f5labs.dev/tags/kubernetes/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>www.example.com/posts/</loc>
+    <loc>apcj.f5labs.dev/posts/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>www.example.com/tags/</loc>
+    <loc>apcj.f5labs.dev/tags/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>www.example.com/categories/tech/</loc>
+    <loc>apcj.f5labs.dev/categories/tech/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>www.example.com/</loc>
+    <loc>apcj.f5labs.dev/</loc>
     <lastmod>2018-11-28T15:14:39+10:00</lastmod>
   </url>
 </urlset>

@@ -1,6 +1,6 @@
-baseURL = "www.example.com"
+baseURL = "apcj.f5labs.dev"
 languageCode = "en-us"
-title = "Hugo Whisper Theme"
+title = "apcj@f5 technical articles"
 theme = "hugo-whisper-theme"
 
 pygmentsCodeFences = true
