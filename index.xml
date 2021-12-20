@@ -6,18 +6,33 @@
     <description>Recent content in apcj@f5 on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 28 Nov 2018 15:14:39 +1000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Authors</title>
-      <link>/authors/</link>
+      <link>/about/</link>
       <pubDate>Mon, 20 Dec 2021 00:00:00 +0000</pubDate>
       
-      <guid>/authors/</guid>
-      <description>Lin Jing - https://linjing.io Scott Van Kalken https://codecowboy.io Leon Seng - https://leonseng.com Shain Singh - https://shain.io </description>
-      <content>&lt;h2 id=&#34;lin-jing---httpslinjingio&#34;&gt;Lin Jing - &lt;a href=&#34;https://linjing.io&#34;&gt;https://linjing.io&lt;/a&gt;&lt;/h2&gt;
-&lt;h2 id=&#34;scott-van-kalken-httpscodecowboyio&#34;&gt;Scott Van Kalken &lt;a href=&#34;https://codecowboy.io&#34;&gt;https://codecowboy.io&lt;/a&gt;&lt;/h2&gt;
-&lt;h2 id=&#34;leon-seng---httpsleonsengcom&#34;&gt;Leon Seng - &lt;a href=&#34;https://leonseng.com&#34;&gt;https://leonseng.com&lt;/a&gt;&lt;/h2&gt;
-&lt;h2 id=&#34;shain-singh---httpsshainio&#34;&gt;Shain Singh - &lt;a href=&#34;https://shain.io&#34;&gt;https://shain.io&lt;/a&gt;&lt;/h2&gt;
+      <guid>/about/</guid>
+      <description>Lin Jing site: https://linjing.io
+github: https://github.com/myf5
+Scott Van Kalken site: https://codecowboy.io
+github: https://github.com/codecowboydotio
+Leon Seng site: https://leonseng.com
+github: https://github.com/leonseng
+Shain Singh site: https://shain.io
+github: https://github.com/shsingh</description>
+      <content>&lt;h2 id=&#34;lin-jing&#34;&gt;Lin Jing&lt;/h2&gt;
+&lt;p&gt;site: &lt;a href=&#34;https://linjing.io&#34;&gt;https://linjing.io&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;github: &lt;a href=&#34;https://github.com/myf5&#34;&gt;https://github.com/myf5&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;scott-van-kalken&#34;&gt;Scott Van Kalken&lt;/h2&gt;
+&lt;p&gt;site: &lt;a href=&#34;https://codecowboy.io&#34;&gt;https://codecowboy.io&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;github: &lt;a href=&#34;https://github.com/codecowboydotio&#34;&gt;https://github.com/codecowboydotio&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;leon-seng&#34;&gt;Leon Seng&lt;/h2&gt;
+&lt;p&gt;site: &lt;a href=&#34;https://leonseng.com&#34;&gt;https://leonseng.com&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;github: &lt;a href=&#34;https://github.com/leonseng&#34;&gt;https://github.com/leonseng&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;shain-singh&#34;&gt;Shain Singh&lt;/h2&gt;
+&lt;p&gt;site: &lt;a href=&#34;https://shain.io&#34;&gt;https://shain.io&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;github: &lt;a href=&#34;https://github.com/shsingh&#34;&gt;https://github.com/shsingh&lt;/a&gt;&lt;/p&gt;
 </content>
     </item>
     
