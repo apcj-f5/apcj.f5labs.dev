@@ -1,185 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>NGINX Unit - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Development | NGINX Unit :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Intro I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software. I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:
+ Open Source Super cool software Extensible Makes my life as a developer easier  It pretty much ticks all the boxes.
+What is it? This one is a little harder to answer." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/development/nginx-unit/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Development | NGINX Unit">
+<meta property="og:description" content="Intro I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software. I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:
+ Open Source Super cool software Extensible Makes my life as a developer easier  It pretty much ticks all the boxes.
+What is it? This one is a little harder to answer." />
+<meta property="og:url" content="/posts/development/nginx-unit/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+  <meta property="article:section" content="software" />
+
+  <meta property="article:section" content="dev" />
+
+
+  <meta property="article:published_time" content="2021-08-11 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">NGINX Unit</h1>
-<div class="content ">
-  <h1 id="intro">Intro</h1>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/development/nginx-unit/">Development | NGINX Unit</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-08-11
+        
+          [Updated: 2021-08-11]
+        
+      </span>
+    
+    
+      <span class="post-author">:: map[name:codecowboy.io]</span>
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/nginx/">nginx</a>&nbsp;
+    
+    #<a href="/tags/unit/">unit</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="intro">Intro<a href="#intro" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>I recently discovered NGINX Unit - now there&rsquo;s a disclaimer here as well - I work for the company that produces this software.
 I do think that it&rsquo;s a very very cool piece of open source software, so it generally suits my ethos:</p>
 <ul>
@@ -189,16 +185,16 @@ I do think that it&rsquo;s a very very cool piece of open source software, so it
 <li>Makes my life as a developer easier</li>
 </ul>
 <p>It pretty much ticks all the boxes.</p>
-<h2 id="what-is-it">What is it?</h2>
+<h2 id="what-is-it">What is it?<a href="#what-is-it" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This one is a little harder to answer.</p>
 <p><strong>It&rsquo;s a lot of things</strong></p>
 <p>I&rsquo;ll let the <a href="https://unit.nginx.org">unit webpage</a> do the talking here:</p>
 <p><strong>NGINX Unit is a polyglot app server, a reverse proxy, and a static file server, available for Unix-like systems.</strong></p>
 <p>Dare I say it&rsquo;s a lot more than that though.</p>
-<h2 id="in-a-nutshell">In a nutshell</h2>
+<h2 id="in-a-nutshell">In a nutshell<a href="#in-a-nutshell" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In a nutshell, if I had to describe it I would say it&rsquo;s a multi language application server that has a declarative configuration and description interface.</p>
 <p>That&rsquo;s wordy but that&rsquo;s what it is to me.</p>
-<h2 id="why-is-this-important">Why is this important?</h2>
+<h2 id="why-is-this-important">Why is this important?<a href="#why-is-this-important" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In a modern application ecosystem I have many services written in multiple languages.
 Some of these will be written in spring, some will be written in golang and some will be written in nodejs as examples.</p>
 <p>This is great because every team writes services the way that best fits them and makes sense for the delivery of that particular service. It lets teams operate at the speed they&rsquo;re comfortable with and means that services get delivered in the best way.</p>
@@ -209,44 +205,44 @@ Some of these will be written in spring, some will be written in golang and some
 </ul>
 <p>This is why I think Unit is important.</p>
 <p><img src="/images/unit.JPG" alt="unit.JPG"></p>
-<h2 id="multiple-languages">Multiple languages</h2>
+<h2 id="multiple-languages">Multiple languages<a href="#multiple-languages" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>NGINX Unit allows you to use multiple langugaes. In a modern application architecture, this is a very common thing to want to do.
 Multiple services, written by different teams in different languages - this is a completely common scenario.</p>
 <p>NGINX Unit allows you to deploy services written in multiple different languages on the same application server.
 This makes deployment easier and makes the whole dev experience a lot easier also.</p>
-<h2 id="declarative-configuration">Declarative configuration</h2>
+<h2 id="declarative-configuration">Declarative configuration<a href="#declarative-configuration" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>NGINX Unit has a REST based declarative configuration.
 This is one of the other very nice things about Unit -  everything in the configuration is declarative. With a declarative configuration, everything is real time, and I don&rsquo;t need to worry about restarting applications.</p>
 <p>A simple configuration looks something like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-JSON" data-lang="JSON"><span class="p">{</span>
-        <span class="nt">&#34;listeners&#34;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&#34;*:8080&#34;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;applications/python&#34;</span>
-                <span class="p">},</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-JSON" data-lang="JSON">{
+        <span style="color:#f92672">&#34;listeners&#34;</span>: {
+                <span style="color:#f92672">&#34;*:8080&#34;</span>: {
+                        <span style="color:#f92672">&#34;pass&#34;</span>: <span style="color:#e6db74">&#34;applications/python&#34;</span>
+                },
 
-                <span class="nt">&#34;*:80&#34;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;routes&#34;</span>
-                <span class="p">}</span>
-        <span class="p">},</span>
+                <span style="color:#f92672">&#34;*:80&#34;</span>: {
+                        <span style="color:#f92672">&#34;pass&#34;</span>: <span style="color:#e6db74">&#34;routes&#34;</span>
+                }
+        },
 
-        <span class="nt">&#34;routes&#34;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span>
-                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">&#34;share&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/pacman-unit/&#34;</span>
-                        <span class="p">}</span>
-                <span class="p">}</span>
-        <span class="p">],</span>
+        <span style="color:#f92672">&#34;routes&#34;</span>: [
+                {
+                        <span style="color:#f92672">&#34;action&#34;</span>: {
+                                <span style="color:#f92672">&#34;share&#34;</span>: <span style="color:#e6db74">&#34;/www/pacman-unit/&#34;</span>
+                        }
+                }
+        ],
 
-        <span class="nt">&#34;applications&#34;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&#34;python&#34;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;python&#34;</span><span class="p">,</span>
-                        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/git-pull-api/&#34;</span><span class="p">,</span>
-                        <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;wsgi&#34;</span><span class="p">,</span>
-                        <span class="nt">&#34;callable&#34;</span><span class="p">:</span> <span class="s2">&#34;app&#34;</span>
-                <span class="p">}</span>
-        <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div><h2 id="components">Components</h2>
+        <span style="color:#f92672">&#34;applications&#34;</span>: {
+                <span style="color:#f92672">&#34;python&#34;</span>: {
+                        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;python&#34;</span>,
+                        <span style="color:#f92672">&#34;path&#34;</span>: <span style="color:#e6db74">&#34;/www/git-pull-api/&#34;</span>,
+                        <span style="color:#f92672">&#34;module&#34;</span>: <span style="color:#e6db74">&#34;wsgi&#34;</span>,
+                        <span style="color:#f92672">&#34;callable&#34;</span>: <span style="color:#e6db74">&#34;app&#34;</span>
+                }
+        }
+}
+</code></pre></div><h2 id="components">Components<a href="#components" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Each component of the configuration above allows you to step through connecting to, and serving my application.
 A picutre is worth a thousand words here, so here is one that I like as it explains the concepts of unit nicely.</p>
 <p><img src="/images/unit-config.JPG" alt="unit-config.JPG"></p>
@@ -255,97 +251,120 @@ Listeners can pass to either routes or directly to applications. In the case abo
 <p>My second listener passes to a route. While I only have one route, it is possible to have multiple routes. Each route can have multiple conditions or matches and actions. In the case above, the route simply passes to a directory that serves out a static website (and yes it&rsquo;s pacman).</p>
 <p>Routes in unit are handled by a separate router process. This software based router handles request routing for unit.</p>
 <p>A more complex route block looks like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-JSON" data-lang="JSON">        <span class="s2">&#34;routes&#34;</span><span class="err">:</span> <span class="p">[</span>
-                <span class="p">{</span>
-                        <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;static.svkcode.org&#34;</span>
-                        <span class="p">},</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-JSON" data-lang="JSON">        <span style="color:#e6db74">&#34;routes&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> [
+                {
+                        <span style="color:#f92672">&#34;match&#34;</span>: {
+                                <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;static.svkcode.org&#34;</span>
+                        },
 
-                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">&#34;share&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/pacman-canvas&#34;</span>
-                        <span class="p">}</span>
-                <span class="p">},</span>
-                <span class="p">{</span>
-                        <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;api.svkcode.org&#34;</span>
-                        <span class="p">},</span>
+                        <span style="color:#f92672">&#34;action&#34;</span>: {
+                                <span style="color:#f92672">&#34;share&#34;</span>: <span style="color:#e6db74">&#34;/www/pacman-canvas&#34;</span>
+                        }
+                },
+                {
+                        <span style="color:#f92672">&#34;match&#34;</span>: {
+                                <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;api.svkcode.org&#34;</span>
+                        },
 
-                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;upstreams/rr-lb&#34;</span>
-                        <span class="p">}</span>
-                <span class="p">},</span>
-                <span class="p">{</span>
-                        <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;jsp.svkcode.org&#34;</span>
-                        <span class="p">},</span>
+                        <span style="color:#f92672">&#34;action&#34;</span>: {
+                                <span style="color:#f92672">&#34;pass&#34;</span>: <span style="color:#e6db74">&#34;upstreams/rr-lb&#34;</span>
+                        }
+                },
+                {
+                        <span style="color:#f92672">&#34;match&#34;</span>: {
+                                <span style="color:#f92672">&#34;host&#34;</span>: <span style="color:#e6db74">&#34;jsp.svkcode.org&#34;</span>
+                        },
 
-                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
-                                <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;applications/java&#34;</span>
-                        <span class="p">}</span>
-                <span class="p">}</span>
+                        <span style="color:#f92672">&#34;action&#34;</span>: {
+                                <span style="color:#f92672">&#34;pass&#34;</span>: <span style="color:#e6db74">&#34;applications/java&#34;</span>
+                        }
+                }
 </code></pre></div><p>Each route in this case passes to a different application based on the incoming host header. In this way, the unit router can be used to handle incoming request routing at a very granular level.</p>
 <p>My application block is the last piece of the puzzle here.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-JSON" data-lang="JSON">        <span class="s2">&#34;applications&#34;</span><span class="err">:</span> <span class="p">{</span>
-                <span class="nt">&#34;python&#34;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;python&#34;</span><span class="p">,</span>
-                        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/git-pull-api/&#34;</span><span class="p">,</span>
-                        <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;wsgi&#34;</span><span class="p">,</span>
-                        <span class="nt">&#34;callable&#34;</span><span class="p">:</span> <span class="s2">&#34;app&#34;</span>
-                <span class="p">}</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-JSON" data-lang="JSON">        <span style="color:#e6db74">&#34;applications&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> {
+                <span style="color:#f92672">&#34;python&#34;</span>: {
+                        <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;python&#34;</span>,
+                        <span style="color:#f92672">&#34;path&#34;</span>: <span style="color:#e6db74">&#34;/www/git-pull-api/&#34;</span>,
+                        <span style="color:#f92672">&#34;module&#34;</span>: <span style="color:#e6db74">&#34;wsgi&#34;</span>,
+                        <span style="color:#f92672">&#34;callable&#34;</span>: <span style="color:#e6db74">&#34;app&#34;</span>
+                }
 </code></pre></div><p>My application block tells unit to run my application.</p>
 <p><strong>That&rsquo;s right unit is an application server.</strong></p>
 <p>The example above is a python application, but unit can also run nodejs, java, golang, perl (yes really - though I haven&rsquo;t tried it), php, ruby, python and so on.</p>
 <p>The intention here is that unit handles instantiating the application and everything is configured via the declarative configuration language of unit in real time.</p>
-<h2 id="low-barrier-to-adoption">Low barrier to adoption</h2>
+<h2 id="low-barrier-to-adoption">Low barrier to adoption<a href="#low-barrier-to-adoption" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Unit offers a very low barrier to entry.</p>
 <ol>
 <li>The concepts are simple and sensible.</li>
 <li>The declarative configuration is JSON based with a &ldquo;get it, put it&rdquo; mentality.</li>
 <li>Everything is real time - make a change, it&rsquo;s reflected immediately.</li>
 </ol>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>NGINX Unit is a good application server, and has a lot of uses.
 Look out for additional posts on how to use it, how to configure it, and where it fits in a knative world.</p>
 
-</div>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Learning Istio | Accessing external TCP services using ServiceEntry</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/learning-istio/ingress/">
+                <span class="button__text">Learning Istio | Ingress</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

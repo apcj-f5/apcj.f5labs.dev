@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>dev on apcj@f5 technical blog</title>
+    <title>dev on apcj@f5 blog</title>
     <link>/categories/dev/</link>
-    <description>Recent content in dev on apcj@f5 technical blog</description>
+    <description>Recent content in dev on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/dev/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>SQL Server on Kubernetes - Part 2</title>
+      <title>Kubernetes | SQL Server on Kubernetes - Part 2</title>
       <link>/posts/kubernetes/sql-server-kubernetes-2/</link>
       <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
       
@@ -16,29 +16,440 @@
       <description>Intro So in my last post I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.
 This post is going to focus on the storage components of running a database on Kubernetes.
 Why do I need persistent storage Persistent storage as the name implies allows you to store your data between container restarts.</description>
+      <content>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;So in my last &lt;a href=&#34;https://codecowboy.io/kubernetes/sql-server-kubernetes/&#34;&gt;post&lt;/a&gt; I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.&lt;/p&gt;
+&lt;p&gt;This post is going to focus on the storage components of running a database on Kubernetes.&lt;/p&gt;
+&lt;h2 id=&#34;why-do-i-need-persistent-storage&#34;&gt;Why do I need persistent storage&lt;/h2&gt;
+&lt;p&gt;Persistent storage as the name implies allows you to store your data between container restarts. This is important where data is stored in a database. You actually want your data to be persisted.&lt;/p&gt;
+&lt;h2 id=&#34;how-do-i-do-this-in-kubernetes&#34;&gt;How do I do this in kubernetes?&lt;/h2&gt;
+&lt;p&gt;Kubernetes has two concepts that allow you to persist data that we are going to use. The first is a persistent volume claim, the second is a persistent volume mount&lt;/p&gt;
+&lt;h2 id=&#34;persistent-volume-claim&#34;&gt;Persistent Volume Claim&lt;/h2&gt;
+&lt;p&gt;In Kubernetes a persistent volume claim is a way of &amp;ldquo;grabbing some storage&amp;rdquo; if you&amp;rsquo;re a user. The Kubernetes documentation describes this much more eloquently as &amp;ldquo;a request for storage from a user&amp;rdquo; and &amp;ldquo;the persistent volume API abstracts the details of storage from the user&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;This is documented &lt;a href=&#34;https://kubernetes.io/docs/concepts/storage/persistent-volumes/&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;In order to create a persistent volume claim, you can use a manifest like the one below.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Yaml&#34; data-lang=&#34;Yaml&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;v1&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;kind&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;PersistentVolumeClaim&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-data&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;namespace&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;accessModes&lt;/span&gt;:
+    - &lt;span style=&#34;color:#ae81ff&#34;&gt;ReadWriteOnce&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;resources&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;requests&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;storage&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;100Mi&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;volumeMode&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Filesystem&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will request 100M as a filesystem mount with a Read and Write access mode, within the namespace mssql.&lt;/p&gt;
+&lt;p&gt;Once I have a claim, I can create a pod that utilises the claim, and mounts a filesystem.&lt;/p&gt;
+&lt;h2 id=&#34;persistent-storage-volumes&#34;&gt;Persistent Storage Volumes&lt;/h2&gt;
+&lt;p&gt;Pods can use a claim as a volume. In order to do this, the following is added to the Deployment definition.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Yaml&#34; data-lang=&#34;Yaml&#34;&gt;        &lt;span style=&#34;color:#f92672&#34;&gt;volumeMounts&lt;/span&gt;:
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssqldb&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;mountPath&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;/var/opt/mssql&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
+      - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssqldb&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;persistentVolumeClaim&lt;/span&gt;:
+          &lt;span style=&#34;color:#f92672&#34;&gt;claimName&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-data&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This mounts the volume by mapping to a claim name.&lt;/p&gt;
+&lt;p&gt;Note that the claim name is the same as our claim name in our PersistentVolumeClaim definition above. This essentially makes the &amp;ldquo;raw disk&amp;rdquo; available to the pod.&lt;/p&gt;
+&lt;p&gt;The volume mount, mounts the volume as a filesystem within the container or pod. The reason that I can do this is that the volume mode in my PersistentVolumeClaim is set to Filesystem. This allows the volume to be mounted as a filesystem within the container / pod.&lt;/p&gt;
+&lt;p&gt;The full definition is below.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Yaml&#34; data-lang=&#34;Yaml&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;apps/v1&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;kind&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Deployment&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;namespace&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;replicas&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;selector&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;matchLabels&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;app&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;strategy&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Recreate&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;template&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;labels&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;app&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;terminationGracePeriodSeconds&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;securityContext&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;fsGroup&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;containers&lt;/span&gt;:
+      - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mcr.microsoft.com/mssql/rhel/server:2019-latest&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+        - &lt;span style=&#34;color:#f92672&#34;&gt;containerPort&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1433&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-port&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;TCP&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;env&lt;/span&gt;:
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;MSSQL_PID&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;value&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Developer&amp;#34;&lt;/span&gt;
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;ACCEPT_EULA&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;value&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Y&amp;#34;&lt;/span&gt;
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;MSSQL_SA_PASSWORD&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;valueFrom&lt;/span&gt;:
+            &lt;span style=&#34;color:#f92672&#34;&gt;secretKeyRef&lt;/span&gt;:
+              &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+              &lt;span style=&#34;color:#f92672&#34;&gt;key&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;SA_PASSWORD&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;volumeMounts&lt;/span&gt;:
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssqldb&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;mountPath&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;/var/opt/mssql&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;volumes&lt;/span&gt;:
+      - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssqldb&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;persistentVolumeClaim&lt;/span&gt;:
+          &lt;span style=&#34;color:#f92672&#34;&gt;claimName&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-data&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;inside-the-container&#34;&gt;Inside the container&lt;/h2&gt;
+&lt;p&gt;Inside the container I see the following&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora mssql&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# kubectl exec -it mssql-a-59b4fbc56d-68rzj -n mssql /bin/bash&lt;/span&gt;
+
+bash-4.4$
+bash-4.4$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          80G  4.3G   76G   6% /
+tmpfs            64M     &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;   64M   0% /dev
+tmpfs           7.9G     &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  7.9G   0% /sys/fs/cgroup
+/dev/xvda1       80G  4.3G   76G   6% /etc/hosts
+shm              64M     &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;   64M   0% /dev/shm
+
+/dev/xvdca      976M  112M  849M  12% /var/opt/mssql
+
+tmpfs           7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           7.9G     &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  7.9G   0% /proc/acpi
+tmpfs           7.9G     &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  7.9G   0% /proc/scsi
+tmpfs           7.9G     &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;  7.9G   0% /sys/firmware
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can see that the /var/opt/mssql filesystem is a filesystem that I can put data into.
+In my case, this is the default data directory for my SQL Server database.&lt;/p&gt;
+&lt;h2 id=&#34;how-do-i-check-this&#34;&gt;How do I check this?&lt;/h2&gt;
+&lt;p&gt;If you want to check a persistent volume claim use the following commands.
+&lt;em&gt;kubectl get pvc&lt;/em&gt; will show the current persistent volume claims and their status.&lt;/p&gt;
+&lt;p&gt;For each persistent volume, you should be able to see the mode, capacity, storageclass and so on.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora mssql&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# kubectl get pvc -n mssql&lt;/span&gt;
+NAME         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mssql-data   Bound    pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371   1Gi        RWO            gp2            33h
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Further information can be gained by using the describe key word.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora mssql&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# kubectl describe  pvc -n mssql&lt;/span&gt;
+Name:          mssql-data
+Namespace:     mssql
+StorageClass:  gp2
+Status:        Bound
+Volume:        pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371
+Labels:        &amp;lt;none&amp;gt;
+Annotations:   pv.kubernetes.io/bind-completed: yes
+               pv.kubernetes.io/bound-by-controller: yes
+               volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+               volume.kubernetes.io/selected-node: ip-192-168-44-199.ap-southeast-2.compute.internal
+Finalizers:    &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;kubernetes.io/pvc-protection&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+Capacity:      1Gi
+Access Modes:  RWO
+VolumeMode:    Filesystem
+Used By:       mssql-a-59b4fbc56d-68rzj
+Events:        &amp;lt;none&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In order to see the actual volumes you can use the following commands.&lt;/p&gt;
+&lt;p&gt;This shows the volume, it&amp;rsquo;s status and storage class, as well as the associated volume claim, including the namespace that the volume claim lives in.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora mssql&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# kubectl get pv&lt;/span&gt;
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM              STORAGECLASS   REASON   AGE
+pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371   1Gi        RWO            Delete           Bound    mssql/mssql-data   gp2                     33h
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Similarly, when I perform a describe against the volume, we can see that this is running in AWS, we can see the type of storage and so on.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora mssql&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# kubectl describe pv&lt;/span&gt;
+Name:              pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371
+Labels:            failure-domain.beta.kubernetes.io/region&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;ap-southeast-2
+                   failure-domain.beta.kubernetes.io/zone&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;ap-southeast-2c
+Annotations:       kubernetes.io/createdby: aws-ebs-dynamic-provisioner
+                   pv.kubernetes.io/bound-by-controller: yes
+                   pv.kubernetes.io/provisioned-by: kubernetes.io/aws-ebs
+Finalizers:        &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;kubernetes.io/pv-protection&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+StorageClass:      gp2
+Status:            Bound
+Claim:             mssql/mssql-data
+Reclaim Policy:    Delete
+Access Modes:      RWO
+VolumeMode:        Filesystem
+Capacity:          1Gi
+Node Affinity:
+  Required Terms:
+    Term 0:        failure-domain.beta.kubernetes.io/zone in &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;ap-southeast-2c&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+                   failure-domain.beta.kubernetes.io/region in &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;ap-southeast-2&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+Message:
+Source:
+    Type:       AWSElasticBlockStore &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;a Persistent Disk resource in AWS&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+    VolumeID:   aws://ap-southeast-2c/vol-087cd704ef36ad587
+    FSType:     ext4
+    Partition:  &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;
+    ReadOnly:   false
+Events:         &amp;lt;none&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;what-if-the-pod-restarts&#34;&gt;What if the pod restarts?&lt;/h2&gt;
+&lt;p&gt;If the pod restarts, the newly scheduled pod will use the existing PVC and your data will still be there!&lt;/p&gt;
+&lt;p&gt;This may cause transaction problems in your database, but for the most part the data will still be there.&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Persistent volumes are cool, and they make your life running databases, but really persisting any storage on Kubernetes easier.&lt;/p&gt;
+&lt;p&gt;I hope you had fun reading, look out for more topics soon!&lt;/p&gt;
+</content>
     </item>
     
     <item>
-      <title>SQL Server on Kubernetes - Part 1</title>
+      <title>Kubernetes | SQL Server on Kubernetes - Part 1</title>
       <link>/posts/kubernetes/sql-server-kubernetes/</link>
       <pubDate>Mon, 01 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>/posts/kubernetes/sql-server-kubernetes/</guid>
       <description>Intro Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster. Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it. I decided to give it a go recently on Kubernetes, and get it all working.
 This is part one, where I deploy SQL server without persistent storage. In part two, I will discuss using persistent storage.</description>
+      <content>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster.
+Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it.
+I decided to give it a go recently on Kubernetes, and get it all working.&lt;/p&gt;
+&lt;p&gt;This is part one, where I deploy SQL server without persistent storage.
+In part two, I will discuss using persistent storage.&lt;/p&gt;
+&lt;h2 id=&#34;why-databases&#34;&gt;Why databases?&lt;/h2&gt;
+&lt;p&gt;There is a lot of debate about whether or not you &lt;em&gt;should&lt;/em&gt; run databases on kubernetes or not. If you&amp;rsquo;re operating in a public cloud environment, this is much more clear cut to my mind than if you&amp;rsquo;re not. If you are, then it may be better to use a service from a cloud provider where infrastructure is taken care of for you. It&amp;rsquo;s just easier.&lt;/p&gt;
+&lt;p&gt;If you are not operating in a public cloud environment, then running on kubernetes gives you the resilience and abstraction from infrastructure that is as close as you can get to running in a public cloud. This is very useful in disconnected environments and environments where you cannot access public cloud (yes they do exist).&lt;/p&gt;
+&lt;p&gt;Suffice to say, there are reasons that you may want to do this.&lt;/p&gt;
+&lt;h2 id=&#34;why-sql-server&#34;&gt;Why SQL server?&lt;/h2&gt;
+&lt;p&gt;SQL server is ubiquitous. It is the database that a lot of applications use. As applications get either refactored or shifted to kubernetes, it is reasonable to assume that there will be instances where running a SQL server database on kubernetes is needed.&lt;/p&gt;
+&lt;h2 id=&#34;secret&#34;&gt;Secret&lt;/h2&gt;
+&lt;p&gt;In order to get the database up and running, you will need to have a secret.
+This is the initial SA password that is used for the database.
+The easiest way to do this is to create an opaque secret.&lt;/p&gt;
+&lt;p&gt;The command below creates an opaque secret with a password that is complex enough to start the database.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl create secret generic mssql --from-literal&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;SA_PASSWORD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;MyC0m9l&amp;amp;xP@ssw0rd&amp;#34;&lt;/span&gt; --namespace&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;mssql
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;manifests&#34;&gt;Manifests&lt;/h2&gt;
+&lt;p&gt;The manifests for deploying SQL server are relatively simple.
+The pages &lt;a href=&#34;https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-overview?view=sql-server-ver15&#34;&gt;here&lt;/a&gt; give a really good overview of the general installation and command line options available for SQL Server on linux. These can be converted to manifest files.&lt;/p&gt;
+&lt;h3 id=&#34;namespace&#34;&gt;Namespace&lt;/h3&gt;
+&lt;p&gt;First we create a namespace. Technically, you don&amp;rsquo;t need to do this and can run everything in the default namespace, but for neatness sake, I always think it&amp;rsquo;s worth creating a separate namespace.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Yaml&#34; data-lang=&#34;Yaml&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;kind&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Namespace&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;v1&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;labels&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;pods&#34;&gt;Pods&lt;/h3&gt;
+&lt;p&gt;Create a deployment for SQL server. I am creating a deployment rather than a statefulset for demonstration purposes.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Yaml&#34; data-lang=&#34;Yaml&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;apps/v1&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;kind&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Deployment&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;namespace&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;replicas&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;selector&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;matchLabels&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;app&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;strategy&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Recreate&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;template&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;labels&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;app&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;terminationGracePeriodSeconds&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;securityContext&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;fsGroup&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;containers&lt;/span&gt;:
+      - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;image&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mcr.microsoft.com/mssql/rhel/server:2019-latest&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+        - &lt;span style=&#34;color:#f92672&#34;&gt;containerPort&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1433&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-port&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;TCP&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;env&lt;/span&gt;:
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;MSSQL_PID&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;value&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Developer&amp;#34;&lt;/span&gt;
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;ACCEPT_EULA&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;value&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Y&amp;#34;&lt;/span&gt;
+        - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;MSSQL_SA_PASSWORD&lt;/span&gt;
+          &lt;span style=&#34;color:#f92672&#34;&gt;valueFrom&lt;/span&gt;:
+            &lt;span style=&#34;color:#f92672&#34;&gt;secretKeyRef&lt;/span&gt;:
+              &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+              &lt;span style=&#34;color:#f92672&#34;&gt;key&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;SA_PASSWORD&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h4 id=&#34;environment-variables&#34;&gt;Environment variables&lt;/h4&gt;
+&lt;p&gt;The environment variables that can be used to configure MSSQL server are listed &lt;a href=&#34;https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables?view=sql-server-ver15&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In the manifest above, I am using three variables.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MSSQL_PID: The SQL Server edition or product key. In my case, &amp;ldquo;developer edition&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;ACCEPT_EULA: Accept the End User License Agreement&lt;/li&gt;
+&lt;li&gt;MSSQL_SA_PASSWORD: The SA password for the database. In my case, this refers to the secret that I created earlier&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;service&#34;&gt;Service&lt;/h3&gt;
+&lt;p&gt;Create a service that can be used to expose the pods that we created above. The service is named &lt;strong&gt;mssql-a&lt;/strong&gt; purely because I may have more than one database that i want to expose.&lt;/p&gt;
+&lt;p&gt;This service exposes the database pods on port 1433, the default SQL server port.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Yaml&#34; data-lang=&#34;Yaml&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;v1&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;kind&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Service&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;namespace&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;selector&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;app&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;mssql-a&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;ports&lt;/span&gt;:
+    - &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;TCP&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1433&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;targetPort&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;1433&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;persistent-storage&#34;&gt;Persistent Storage&lt;/h3&gt;
+&lt;p&gt;I&amp;rsquo;ll cover this piece in a second blog post, because it deserves its own topic entirely.&lt;/p&gt;
+&lt;p&gt;The database manifest works but will store data locally only. This means that it is only useful for development purposes. If the pod is restarted for any reason, data will be lost.&lt;/p&gt;
+&lt;h2 id=&#34;client-side-tools&#34;&gt;Client side tools&lt;/h2&gt;
+&lt;p&gt;Install client side tools to connect to the database.&lt;/p&gt;
+&lt;p&gt;There is a really good document &lt;a href=&#34;https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-red-hat?view=sql-server-ver15&#34;&gt;here&lt;/a&gt; that describes how to install the client side utilities in order to connect to your database.&lt;/p&gt;
+&lt;p&gt;I use fedora, so am using the instructions for RHEL8 (close enough)&lt;/p&gt;
+&lt;p&gt;Use curl to install the microsoft repository on your system.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;sudo curl -o /etc/yum.repos.d/msprod.repo https://packages.microsoft.com/config/rhel/8/prod.repo
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Install the client side tooling and the unix ODBC client&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;sudo yum install -y mssql-tools unixODBC-devel
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Add the SQL tools to your default path and load the path into the current environment.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;export PATH=&amp;#34;$PATH:/opt/mssql-tools/bin&amp;#34;&amp;#39;&lt;/span&gt; &amp;gt;&amp;gt; ~/.bash_profile
+echo &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;export PATH=&amp;#34;$PATH:/opt/mssql-tools/bin&amp;#34;&amp;#39;&lt;/span&gt; &amp;gt;&amp;gt; ~/.bashrc
+source ~/.bashrc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Test your database.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;sqlcmd -S localhost -U SA -P &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&amp;lt;YourPassword&amp;gt;&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;port-forward-from-local-machine-to-database&#34;&gt;Port forward from local machine to database&lt;/h2&gt;
+&lt;p&gt;As I have not created any ingress for my database, the easiest way for me to get connectivity is to port forward directly to it.
+I can use the command below to port forward from my local workstation to my database.&lt;/p&gt;
+&lt;p&gt;First I need to get the pod name of my database in order to port forward to it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl get pods -n mssql
+
+NAME                       READY   STATUS    RESTARTS   AGE
+mssql-a-8469f884f7-rrbx9   1/1     Running   &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;          18m
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I can then use the port-forward command to forward a local port to the pod port so that I can perform some testing and check that my database actually works.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl port-forward mssql-a-&amp;lt;pod&amp;gt; 1433:1433 -n mssql --address 0.0.0.0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;database-connect-and-test&#34;&gt;Database connect and test&lt;/h2&gt;
+&lt;p&gt;Once everything has been created on the kubernetes side of the house, we can connect to the database and see that it is available.&lt;/p&gt;
+&lt;p&gt;I can connect to my database using the password I set originally. As I have port forwarded to my cluster, no ingress is needed. This is useful for testing.&lt;/p&gt;
+&lt;p&gt;I create a database named &lt;strong&gt;foo&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# sqlcmd -S localhost -U SA -P &amp;#39;MyC0m9l&amp;amp;xP@ssw0rd&amp;#39;&lt;/span&gt;
+1&amp;gt; create database foo
+2&amp;gt; go
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If I select the names of all databases from the sys.Database table, I can see that the last entry is my database &lt;strong&gt;foo&lt;/strong&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; name &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; sys.Databases
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt;
+name
+&lt;span style=&#34;color:#75715e&#34;&gt;--------------------------------------------------------------------------------------------------------------------------------
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;master
+tempdb
+model
+msdb
+foo
+
+(&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;rows&lt;/span&gt; affected)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I can switch to the &lt;strong&gt;foo&lt;/strong&gt; database and being to use it.
+I create a table and insert a single line of data into my newly created database.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; use foo
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt;
+Changed &lt;span style=&#34;color:#66d9ef&#34;&gt;database&lt;/span&gt; context &lt;span style=&#34;color:#66d9ef&#34;&gt;to&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;.
+
+&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;create&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;table&lt;/span&gt; bar (id INT, name VARCHAR(&lt;span style=&#34;color:#ae81ff&#34;&gt;50&lt;/span&gt;))
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt;
+
+&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;insert&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;into&lt;/span&gt; bar &lt;span style=&#34;color:#66d9ef&#34;&gt;values&lt;/span&gt; (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;test&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt;
+
+(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;rows&lt;/span&gt; affected)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If I select all of the data from my table &lt;strong&gt;bar&lt;/strong&gt; I can see the single line of data that I inserted above.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;select&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;from&lt;/span&gt; bar
+&lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;go&lt;/span&gt;
+id          name
+&lt;span style=&#34;color:#75715e&#34;&gt;----------- --------------------------------------------------
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;          &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; test
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I have a functional database that is running on kubernetes!&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Running databases on kubernetes isn&amp;rsquo;t that difficult. There are reasons that you want to do this.
+The difficult part about this is the ephemeral nature of pods on kubernetes and how to handle persistent storage with databases.
+This is the topic of my next post, where I will show how to use persistent storage to make your databases on kubernetes more robust.&lt;/p&gt;
+</content>
     </item>
     
     <item>
-      <title>Terraform Maps</title>
+      <title>Automation | Terraform Maps</title>
       <link>/posts/automation/terraform-maps/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>/posts/automation/terraform-maps/</guid>
       <description>Intro I&amp;rsquo;ve been doing a lot with terraform lately, and I&amp;rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&amp;rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&amp;rsquo;s essentially the same resource. Why should I do this? There has to be a better way.</description>
+      <content>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;I&amp;rsquo;ve been doing a lot with terraform lately, and I&amp;rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&amp;rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&amp;rsquo;s essentially the same resource. Why should I do this? &lt;strong&gt;There has to be a better way.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;what-is-a-map&#34;&gt;What is a map?&lt;/h2&gt;
+&lt;p&gt;In looking for a way to make my codebase cleaner and simpler, I started looking at using maps. I&amp;rsquo;ve not delved into them in depth before, so it was a fun thing to do on a rainy afternoon.&lt;/p&gt;
+&lt;p&gt;The terraform docs do a better job than I can of telling you what a map is - see &lt;a href=&#34;https://www.terraform.io/docs/language/expressions/types.html#maps-objects&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;why-are-maps-cool&#34;&gt;Why are maps cool?&lt;/h2&gt;
+&lt;p&gt;Maps are cool because they allow you to have groups of key value pairs that can be accessed in a neat way.&lt;/p&gt;
+&lt;h2 id=&#34;a-simple-example&#34;&gt;A simple example&lt;/h2&gt;
+&lt;p&gt;A very simple example of a map is as follows:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;variable &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;tcp_lb&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; map
+  default &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    unit-config-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8888&amp;#34;&lt;/span&gt;
+    unit-git-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8080&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You will notice that the map above is actually a variable. That&amp;rsquo;s right &lt;strong&gt;you can use a map as a variable&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;In this case, I am using a map to assign different ports to origin servers within a &lt;a href=&#34;http://volterra.io&#34;&gt;volterra&lt;/a&gt; resource.
+In this way, I don&amp;rsquo;t need to declare the same resource over and over, I can use a loop within my resource to access all of the items within my map.&lt;/p&gt;
+&lt;h2 id=&#34;the-resource&#34;&gt;The resource&lt;/h2&gt;
+&lt;p&gt;The resource that uses the map above looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;resource &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;volterra_tcp_loadbalancer&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;unit-config&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  for_each  &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.tcp_lb
+  name      &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.key&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+  namespace &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.ns
+
+  listen_port &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.value&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+  dns_volterra_managed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+  domains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;var.domain_host&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;var.domain&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+  advertise_on_public_default_vip &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+
+  retract_cluster &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+
+  origin_pools_weights &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    pool &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+      name &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.key&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+      namespace &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.ns
+    &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+  hash_policy_choice_round_robin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There are two pieces to this resource that I need to point out.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The for_each loop&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Accessing map keys and values&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;the-for_each-loop&#34;&gt;The for_each loop&lt;/h3&gt;
+&lt;p&gt;The for_each loop is used to loop through the map within the context of the resource.
+The for_each loop in terraofrm is documented &lt;a href=&#34;https://www.terraform.io/docs/language/meta-arguments/for_each.html#basic-syntax&#34;&gt;here&lt;/a&gt;. The interesting thing is that a for_each loop can &lt;strong&gt;accept a map&lt;/strong&gt; as an input!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;  for_each  &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.tcp_lb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that the for_each loop references the variable that I defined above. The variable is actually a map, which the for_each loop can accept as an input.
+The for_each loop will loop through each key within the variable tcp_lb. In my case, the variable has two values.
+The for_each loop will run twice as it iterates over my map variable.&lt;/p&gt;
+&lt;h3 id=&#34;accessing-map-keys-and-values&#34;&gt;Accessing map keys and values&lt;/h3&gt;
+&lt;p&gt;The map that I have defined has two keys and two values.
+Each key and each value can be acess separately within the context of the &lt;strong&gt;for_each&lt;/strong&gt; loop.&lt;/p&gt;
+&lt;p&gt;In order to access each of the map values or names, I can use the following syntax:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;  name      &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.key&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;  listen_port &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.value&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;strong&gt;each.key&lt;/strong&gt; and &lt;strong&gt;each.value&lt;/strong&gt; keywords are used to access either the key or the value within the map.&lt;/p&gt;
+&lt;p&gt;In my case, on each iteration, the following will be true:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;variable &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;tcp_lb&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; map
+  default &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    unit-config-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8888&amp;#34;&lt;/span&gt;
+    unit-git-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8080&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;One first iteration:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;each.key &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; unit-config-origin
+each.value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;8888&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;On the second iteration:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;each.key &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; unit-git-origin
+each.value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;8080&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Using terraform maps simplifies your code by reducing the number of resources that you need to duplicate. It also makes your code a lot more readable.&lt;/p&gt;
+&lt;p&gt;There are traps and pitfalls using this method if you have dependant resources, but I&amp;rsquo;ll cover this in another post. :)&lt;/p&gt;
+</content>
     </item>
     
     <item>
-      <title>NGINX Unit</title>
+      <title>Development | NGINX Unit</title>
       <link>/posts/development/nginx-unit/</link>
       <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
       
@@ -46,6 +457,134 @@ This is part one, where I deploy SQL server without persistent storage. In part 
       <description>Intro I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software. I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:
  Open Source Super cool software Extensible Makes my life as a developer easier  It pretty much ticks all the boxes.
 What is it? This one is a little harder to answer.</description>
+      <content>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software.
+I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Open Source&lt;/li&gt;
+&lt;li&gt;Super cool software&lt;/li&gt;
+&lt;li&gt;Extensible&lt;/li&gt;
+&lt;li&gt;Makes my life as a developer easier&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It pretty much ticks all the boxes.&lt;/p&gt;
+&lt;h2 id=&#34;what-is-it&#34;&gt;What is it?&lt;/h2&gt;
+&lt;p&gt;This one is a little harder to answer.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;It&amp;rsquo;s a lot of things&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ll let the &lt;a href=&#34;https://unit.nginx.org&#34;&gt;unit webpage&lt;/a&gt; do the talking here:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;NGINX Unit is a polyglot app server, a reverse proxy, and a static file server, available for Unix-like systems.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Dare I say it&amp;rsquo;s a lot more than that though.&lt;/p&gt;
+&lt;h2 id=&#34;in-a-nutshell&#34;&gt;In a nutshell&lt;/h2&gt;
+&lt;p&gt;In a nutshell, if I had to describe it I would say it&amp;rsquo;s a multi language application server that has a declarative configuration and description interface.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s wordy but that&amp;rsquo;s what it is to me.&lt;/p&gt;
+&lt;h2 id=&#34;why-is-this-important&#34;&gt;Why is this important?&lt;/h2&gt;
+&lt;p&gt;In a modern application ecosystem I have many services written in multiple languages.
+Some of these will be written in spring, some will be written in golang and some will be written in nodejs as examples.&lt;/p&gt;
+&lt;p&gt;This is great because every team writes services the way that best fits them and makes sense for the delivery of that particular service. It lets teams operate at the speed they&amp;rsquo;re comfortable with and means that services get delivered in the best way.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;What if I want services in different languages to coexist together?&lt;/li&gt;
+&lt;li&gt;What if I want to describe my services in a common way?&lt;/li&gt;
+&lt;li&gt;What I don&amp;rsquo;t want my pipelines to be brittle and I want them to be templated?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is why I think Unit is important.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/images/unit.JPG&#34; alt=&#34;unit.JPG&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;multiple-languages&#34;&gt;Multiple languages&lt;/h2&gt;
+&lt;p&gt;NGINX Unit allows you to use multiple langugaes. In a modern application architecture, this is a very common thing to want to do.
+Multiple services, written by different teams in different languages - this is a completely common scenario.&lt;/p&gt;
+&lt;p&gt;NGINX Unit allows you to deploy services written in multiple different languages on the same application server.
+This makes deployment easier and makes the whole dev experience a lot easier also.&lt;/p&gt;
+&lt;h2 id=&#34;declarative-configuration&#34;&gt;Declarative configuration&lt;/h2&gt;
+&lt;p&gt;NGINX Unit has a REST based declarative configuration.
+This is one of the other very nice things about Unit -  everything in the configuration is declarative. With a declarative configuration, everything is real time, and I don&amp;rsquo;t need to worry about restarting applications.&lt;/p&gt;
+&lt;p&gt;A simple configuration looks something like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;{
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;listeners&amp;#34;&lt;/span&gt;: {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;*:8080&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;applications/python&amp;#34;&lt;/span&gt;
+                },
+
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;*:80&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;routes&amp;#34;&lt;/span&gt;
+                }
+        },
+
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;routes&amp;#34;&lt;/span&gt;: [
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;share&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/pacman-unit/&amp;#34;&lt;/span&gt;
+                        }
+                }
+        ],
+
+        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;applications&amp;#34;&lt;/span&gt;: {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;path&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/git-pull-api/&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;module&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wsgi&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;callable&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;app&amp;#34;&lt;/span&gt;
+                }
+        }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;components&#34;&gt;Components&lt;/h2&gt;
+&lt;p&gt;Each component of the configuration above allows you to step through connecting to, and serving my application.
+A picutre is worth a thousand words here, so here is one that I like as it explains the concepts of unit nicely.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/images/unit-config.JPG&#34; alt=&#34;unit-config.JPG&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Listeners expose the application publicly, and can have characteristics like ports, certificates, names and so on.
+Listeners can pass to either routes or directly to applications. In the case above, my first listener passes directly to my application named &amp;ldquo;python&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;My second listener passes to a route. While I only have one route, it is possible to have multiple routes. Each route can have multiple conditions or matches and actions. In the case above, the route simply passes to a directory that serves out a static website (and yes it&amp;rsquo;s pacman).&lt;/p&gt;
+&lt;p&gt;Routes in unit are handled by a separate router process. This software based router handles request routing for unit.&lt;/p&gt;
+&lt;p&gt;A more complex route block looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;routes&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt; [
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;match&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;static.svkcode.org&amp;#34;&lt;/span&gt;
+                        },
+
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;share&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/pacman-canvas&amp;#34;&lt;/span&gt;
+                        }
+                },
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;match&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;api.svkcode.org&amp;#34;&lt;/span&gt;
+                        },
+
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;upstreams/rr-lb&amp;#34;&lt;/span&gt;
+                        }
+                },
+                {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;match&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;host&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;jsp.svkcode.org&amp;#34;&lt;/span&gt;
+                        },
+
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;action&amp;#34;&lt;/span&gt;: {
+                                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;pass&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;applications/java&amp;#34;&lt;/span&gt;
+                        }
+                }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Each route in this case passes to a different application based on the incoming host header. In this way, the unit router can be used to handle incoming request routing at a very granular level.&lt;/p&gt;
+&lt;p&gt;My application block is the last piece of the puzzle here.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;applications&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;:&lt;/span&gt; {
+                &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;: {
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;python&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;path&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/www/git-pull-api/&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;module&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;wsgi&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#f92672&#34;&gt;&amp;#34;callable&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;app&amp;#34;&lt;/span&gt;
+                }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;My application block tells unit to run my application.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;That&amp;rsquo;s right unit is an application server.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The example above is a python application, but unit can also run nodejs, java, golang, perl (yes really - though I haven&amp;rsquo;t tried it), php, ruby, python and so on.&lt;/p&gt;
+&lt;p&gt;The intention here is that unit handles instantiating the application and everything is configured via the declarative configuration language of unit in real time.&lt;/p&gt;
+&lt;h2 id=&#34;low-barrier-to-adoption&#34;&gt;Low barrier to adoption&lt;/h2&gt;
+&lt;p&gt;Unit offers a very low barrier to entry.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The concepts are simple and sensible.&lt;/li&gt;
+&lt;li&gt;The declarative configuration is JSON based with a &amp;ldquo;get it, put it&amp;rdquo; mentality.&lt;/li&gt;
+&lt;li&gt;Everything is real time - make a change, it&amp;rsquo;s reflected immediately.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;NGINX Unit is a good application server, and has a lot of uses.
+Look out for additional posts on how to use it, how to configure it, and where it fits in a knative world.&lt;/p&gt;
+</content>
     </item>
     
   </channel>

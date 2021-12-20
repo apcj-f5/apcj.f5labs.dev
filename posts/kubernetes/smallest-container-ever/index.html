@@ -1,185 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Small Containers for fun  - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Kubernetes | Small Containers for fun  :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Intro I have a side hobby where I try to create minimal container images. There are a number of reasons for this, but the primary one is because I&amp;rsquo;m a complete geek.
+Other reasons include:
+ It&amp;rsquo;s a neatness thing There&amp;rsquo;s an engineering imperative in me to be minimalist I don&amp;rsquo;t like waste The process of creation helps me understand the technology a little better Smaller images are great for testing at scale  Why The why I do this is mainly because it&amp;rsquo;s a hobby, but in this case, I started the ultra minimal container image build because someone I work with wanted to build a container for testing Istio latency at scale." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/kubernetes/smallest-container-ever/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Kubernetes | Small Containers for fun ">
+<meta property="og:description" content="Intro I have a side hobby where I try to create minimal container images. There are a number of reasons for this, but the primary one is because I&amp;rsquo;m a complete geek.
+Other reasons include:
+ It&amp;rsquo;s a neatness thing There&amp;rsquo;s an engineering imperative in me to be minimalist I don&amp;rsquo;t like waste The process of creation helps me understand the technology a little better Smaller images are great for testing at scale  Why The why I do this is mainly because it&amp;rsquo;s a hobby, but in this case, I started the ultra minimal container image build because someone I work with wanted to build a container for testing Istio latency at scale." />
+<meta property="og:url" content="/posts/kubernetes/smallest-container-ever/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+  <meta property="article:section" content="containers" />
+
+  <meta property="article:section" content="testing" />
+
+
+  <meta property="article:published_time" content="2021-07-09 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">Small Containers for fun </h1>
-<div class="content ">
-  <h1 id="intro">Intro</h1>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/kubernetes/smallest-container-ever/">Kubernetes | Small Containers for fun</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-07-09
+        
+          [Updated: 2021-07-09]
+        
+      </span>
+    
+    
+      <span class="post-author">:: map[name:codecowboy.io]</span>
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/containers/">containers</a>&nbsp;
+    
+    #<a href="/tags/minimal/">minimal</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h1 id="intro">Intro<a href="#intro" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>I have a side hobby where I try to create minimal container images.
 There are a number of reasons for this, but the primary one is because I&rsquo;m a complete geek.</p>
 <p>Other reasons include:</p>
@@ -190,10 +186,10 @@ There are a number of reasons for this, but the primary one is because I&rsquo;m
 <li>The process of creation helps me understand the technology a little better</li>
 <li>Smaller images are great for testing at scale</li>
 </ul>
-<h2 id="why">Why</h2>
+<h2 id="why">Why<a href="#why" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The why I do this is mainly because it&rsquo;s a hobby, but in this case, I started the ultra minimal container image build
 because someone I work with wanted to build a container for testing Istio latency at scale. He needed a container image that was ultimately small, so that he could spin up in his words &lsquo;about 10,000&rsquo; at once. The other goal was to minimise any application response time so that he could test Istio rather than the application behind Istio.</p>
-<h2 id="building-a-minimal-image">Building a minimal image</h2>
+<h2 id="building-a-minimal-image">Building a minimal image<a href="#building-a-minimal-image" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Building a minimal image is easy, and I&rsquo;ve spoken about it before at Container Camp, and you can see the <a href="https://www.youtube.com/watch?v=SWwd4uTVeF0">video</a> if you like.</p>
 <p>What I have realised is that there are two parts to building a minimal image:</p>
 <ul>
@@ -201,159 +197,182 @@ because someone I work with wanted to build a container for testing Istio latenc
 <li>Statically linking your binary - but doing so in a super strict and optimised way.</li>
 </ul>
 <p>When I spoke at Container Camp a few years ago, I only used default options during my compile. I have since realised that I can go even smaller by optimising my compiler options!</p>
-<h2 id="the-code">The Code</h2>
+<h2 id="the-code">The Code<a href="#the-code" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>This is the easy part.</p>
 <p>I needed an &ldquo;application&rdquo; that didn&rsquo;t introduce any latency at all so that my colleague could perform Istio testing. I decided to go as minimal as possible and create an &ldquo;application&rdquo; that actually doesn&rsquo;t do anything.</p>
 <p>In order for the application to work within a containerised environment, it needs to continue to run, and never exit. If the application ever exits, the container will stop running.</p>
 <p>C is my chosen language of choice today, and I created the following application.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-C++" data-lang="C++"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
-</span><span class="cp"></span>
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span> 
-    <span class="k">return</span> <span class="n">pause</span><span class="p">();</span>
-<span class="p">}</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) { 
+    <span style="color:#66d9ef">return</span> pause();
+}
 </code></pre></div><p>This tiny little code block does a single thing - it pauses the thread until a signal is received.</p>
 <p>In container terms, this means the container will run, and will wait for a valid signal, and then honour that signal. This is the perfect behaviour for container testing. The &ldquo;application&rdquo; in the container doesn&rsquo;t do anything, so doesn&rsquo;t add any latency to the transaction, and is perfect for testing.</p>
-<h2 id="the-compilation">The compilation</h2>
+<h2 id="the-compilation">The compilation<a href="#the-compilation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In order to meet my goal of making a really small container image, I need to compile the code. I need to compile the code in such a way that the code does not require external libraries. That is, the code is <strong>statically linked</strong>. The second thing to make the application smaller is to compile the code using compiler options that strip out everything that is extraneous.</p>
-<h3 id="linking">Linking</h3>
+<h3 id="linking">Linking<a href="#linking" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>There are generally two types on linking when compiling code, and it&rsquo;s relevant for containers.</p>
-<h4 id="dynamic-linking">Dynamic Linking</h4>
+<h4 id="dynamic-linking">Dynamic Linking<a href="#dynamic-linking" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
 <p>When using dynamic linking, shared libraries within the operatig system are used. This has a good side benefit of making the executable smaller (typically). The rationale behind dynamic linking is that when you are running multiple applications on a single operating system, it is possible for multiple applications to use common shared libraries. This makes each individual application smaller.o</p>
 <p>The code snippet below creates a dynamically linked binary from my C code above. I&rsquo;ve named the application &ldquo;pausle&rdquo; because all it does is &ldquo;pause&rdquo;.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># gcc pausle.c -o pausle-dynamic</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># gcc pausle.c -o pausle-dynamic</span>
 </code></pre></div><p>If I use the <strong>ldd</strong> command to see the dynamically linked libraries as part of my binary, you can see that there are three shared libraries used by the <strong>pausle-dynamic</strong> application.:1</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># ldd pausle-dynamic</span>
-        linux-vdso.so.1 <span class="o">(</span>0x00007ffc93da0000<span class="o">)</span>
-        libc.so.6 <span class="o">=</span>&gt; /lib64/libc.so.6 <span class="o">(</span>0x00007f32a782c000<span class="o">)</span>
-        /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007f32a7a06000<span class="o">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># ldd pausle-dynamic</span>
+        linux-vdso.so.1 <span style="color:#f92672">(</span>0x00007ffc93da0000<span style="color:#f92672">)</span>
+        libc.so.6 <span style="color:#f92672">=</span>&gt; /lib64/libc.so.6 <span style="color:#f92672">(</span>0x00007f32a782c000<span style="color:#f92672">)</span>
+        /lib64/ld-linux-x86-64.so.2 <span style="color:#f92672">(</span>0x00007f32a7a06000<span style="color:#f92672">)</span>
 
 </code></pre></div><p>Finally, we can see that the size of the dynamically linked binary is 25K.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># ls -lh pausle-dynamic</span>
--rwxr-xr-x. <span class="m">1</span> root root 25K Jul  <span class="m">9</span> 21:48 pausle-dynamic
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># ls -lh pausle-dynamic</span>
+-rwxr-xr-x. <span style="color:#ae81ff">1</span> root root 25K Jul  <span style="color:#ae81ff">9</span> 21:48 pausle-dynamic
 </code></pre></div><p>One would imagine that this is a very small application.</p>
 <ul>
 <li>It&rsquo;s dynamically linked - <strong>should</strong> be smaller</li>
 <li>It&rsquo;s not doing anything, and is minimal anyway</li>
 </ul>
 <p><strong>What if I were to tell you that we could reduce the size of this application by 60%?</strong></p>
-<h3 id="compiler-options">Compiler Options</h3>
+<h3 id="compiler-options">Compiler Options<a href="#compiler-options" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>What I realised is that if I <strong>aggressively</strong> tune my compiler options, I can go even smaller again.
 Using the compiler options below I can compile my code to the smallest possible statically linked binary that I can.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">gcc  -Os -fdata-sections -ffunction-sections -fipa-pta  -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all paus
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">gcc  -Os -fdata-sections -ffunction-sections -fipa-pta  -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all paus
 le.c -o pausle-dynamic-aggressive
-</code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># ls -lh pausle-dynamic-aggressive</span>
--rwxr-xr-x. <span class="m">1</span> root root 15K Aug  <span class="m">3</span> 20:34 pausle-dynamic-aggressive
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># ls -lh pausle-dynamic-aggressive</span>
+-rwxr-xr-x. <span style="color:#ae81ff">1</span> root root 15K Aug  <span style="color:#ae81ff">3</span> 20:34 pausle-dynamic-aggressive
 </code></pre></div><p>Just by using agressive compiler options, the size of the code is smaller again.</p>
-<h4 id="static-linking">Static Linking</h4>
+<h4 id="static-linking">Static Linking<a href="#static-linking" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
 <p>Static linking is where I include all of the libraries for the executable &ldquo;inside&rdquo; the binary itself. This is useful when operating inside a container as it removes the need to have shared libraries (and hence an entire operating system). This in theory should make the entire container image smaller, even if the size of the binary is slightly larger.</p>
 <p>To statically link the binary, I pass the -static option to the compiler.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">gcc -Os -s -static -ffunction-sections -fipa-pta  -Wl,--gc-sections pausle.c -o pausle-static
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">gcc -Os -s -static -ffunction-sections -fipa-pta  -Wl,--gc-sections pausle.c -o pausle-static
 </code></pre></div><p>This creates a slightly larger binary size</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># ls -lh pausle-static</span>
--rwxr-xr-x. <span class="m">1</span> root root 708K Aug  <span class="m">3</span> 20:38 pausle-static
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># ls -lh pausle-static</span>
+-rwxr-xr-x. <span style="color:#ae81ff">1</span> root root 708K Aug  <span style="color:#ae81ff">3</span> 20:38 pausle-static
 </code></pre></div><p><strong>WOAH</strong> 708K.</p>
 <p>If I look at the linking using ldd again, I get the following message.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># ldd pausle-static</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># ldd pausle-static</span>
         not a dynamic executable
 </code></pre></div><p>This means that all of my libraries are included in the binary itself.</p>
-<h2 id="building-containers">Building containers</h2>
+<h2 id="building-containers">Building containers<a href="#building-containers" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In order to build containers, I&rsquo;m going to use the dockerfile format, it&rsquo;s simple and is mostly uderstood.</p>
 <p>I use the following file</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">FROM registry.fedoraproject.org/fedora-minimal
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">FROM registry.fedoraproject.org/fedora-minimal
 
 ADD pausle-dynamic /
-CMD <span class="o">[</span><span class="s2">&#34;/pausle-dynamic&#34;</span><span class="o">]</span>
+CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;/pausle-dynamic&#34;</span><span style="color:#f92672">]</span>
 </code></pre></div><p>I&rsquo;m using a minimal fedora image here to build out my container image.
 I add my dynamically linked binary into my image as a layer.</p>
 <p>I can build this using the following command.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># podman build --tag=pausle-dynamic .</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># podman build --tag=pausle-dynamic .</span>
 STEP 1: FROM registry.fedoraproject.org/fedora-minimal
-Getting image <span class="nb">source</span> signatures
-Copying blob 033c7516884e <span class="k">done</span>
-Copying config 241281a93a <span class="k">done</span>
+Getting image source signatures
+Copying blob 033c7516884e <span style="color:#66d9ef">done</span>
+Copying config 241281a93a <span style="color:#66d9ef">done</span>
 Writing manifest to image destination
 Storing signatures
 STEP 2: ADD pausle-dynamic /
 --&gt; 54ab00ee58c
-STEP 3: CMD <span class="o">[</span><span class="s2">&#34;/pausle-dynamic&#34;</span><span class="o">]</span>
+STEP 3: CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;/pausle-dynamic&#34;</span><span style="color:#f92672">]</span>
 STEP 4: COMMIT pausle-dynamic
 --&gt; 96800d278c6
 96800d278c61d69101791d416fd139a3e70afff2033063354c08307fa2eb118c
 </code></pre></div><p>This builds me a container that we can see below.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># podman images</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># podman images</span>
 REPOSITORY                                   TAG           IMAGE ID      CREATED         SIZE
-localhost/pausle-dynamic                     latest        96800d278c61  <span class="m">11</span> seconds ago  <span class="m">119</span> MB
+localhost/pausle-dynamic                     latest        96800d278c61  <span style="color:#ae81ff">11</span> seconds ago  <span style="color:#ae81ff">119</span> MB
 </code></pre></div><p>This comes out to 119MB - remember that the original binary was only 25K in size!</p>
-<h3 id="using-scratch">Using Scratch</h3>
+<h3 id="using-scratch">Using Scratch<a href="#using-scratch" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Using the SCRATCH keyword, I can create a container that only has the required binary inside it.
 It&rsquo;s still a container, but doesn&rsquo;t have any of the ancilliary &ldquo;operating system&rdquo; requirements.
 It doesn&rsquo;t have shared libraries, nor does it have any operating system tooling that you may expect to find.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">FROM scratch
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash">FROM scratch
 
 ADD pausle-static /
-CMD <span class="o">[</span><span class="s2">&#34;/pausle-static&#34;</span><span class="o">]</span>
+CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;/pausle-static&#34;</span><span style="color:#f92672">]</span>
 </code></pre></div><p>I need to add my statically compiled binary here because there are no shared libraries available for a dynamically linked library to use.</p>
 <p>Let&rsquo;s build this out.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># podman build --tag=pausle-static .</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># podman build --tag=pausle-static .</span>
 STEP 1: FROM scratch
 STEP 2: ADD pausle-static /
 --&gt; 87ee8170167
-STEP 3: CMD <span class="o">[</span><span class="s2">&#34;/pausle-static&#34;</span><span class="o">]</span>
+STEP 3: CMD <span style="color:#f92672">[</span><span style="color:#e6db74">&#34;/pausle-static&#34;</span><span style="color:#f92672">]</span>
 STEP 4: COMMIT pausle-static
 --&gt; d6e9daeb1ce
 d6e9daeb1ce4211e3f04dd535494a3e78228c3642d22d350d6e9d4f2241e5861
 </code></pre></div><p>If I check my container image sizes we see the following.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora<span class="o">]</span><span class="c1"># podman images</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Bash" data-lang="Bash"><span style="color:#f92672">[</span>root@fedora<span style="color:#f92672">]</span><span style="color:#75715e"># podman images</span>
 REPOSITORY                                   TAG           IMAGE ID      CREATED        SIZE
-localhost/pausle-static                      latest        d6e9daeb1ce4  <span class="m">3</span> seconds ago  <span class="m">727</span> kB
+localhost/pausle-static                      latest        d6e9daeb1ce4  <span style="color:#ae81ff">3</span> seconds ago  <span style="color:#ae81ff">727</span> kB
 </code></pre></div><p>You will notice that this container is only 727KB in size.
 It doesn&rsquo;t have anything inside it EXCEPT the binary or the application that I&rsquo;m going to run.</p>
 <p>In this way, I can build very small and minimal container images.
 Even though my initial binary size is larger when I statically compile, it much reduces the overall size of my container image.</p>
-<h3 id="other-benefits">Other Benefits</h3>
+<h3 id="other-benefits">Other Benefits<a href="#other-benefits" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>Other benefits are that only having a single binary inside your container reduces the attack surface that&rsquo;s available from a security perspective. There are no dependencies that need to be individually lifecycle managed, and no real provenance in terms of ancialliary tooling inside the container.</p>
 <p>The boot time of my container is much reduced because it&rsquo;s smaller - this is a good thing.</p>
 <p>Next up I&rsquo;ll talk a little about telemetry and how this can be included in your application stacks while keeping a minimal container footprint.</p>
 
-</div>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/eli5-kubernetes-custom-resources/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Kubernetes | ELI5: Kubernetes Custom Resources</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/learning-terraform-s3-backend/">
+                <span class="button__text">Automation | Learning Terraform S3 Backend</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

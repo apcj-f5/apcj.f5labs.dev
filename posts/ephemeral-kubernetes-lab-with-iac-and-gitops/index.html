@@ -1,185 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Ephemeral Kubernetes Lab with IaC and GitOps - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="I&amp;rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&amp;rsquo;m used to is a no-go. I need a setup that meets the following requirements:
+ Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &amp;ldquo;just the way I left it there last night&amp;rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps">
+<meta property="og:description" content="I&amp;rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&amp;rsquo;m used to is a no-go. I need a setup that meets the following requirements:
+ Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &amp;ldquo;just the way I left it there last night&amp;rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post." />
+<meta property="og:url" content="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+  <meta property="article:section" content="tech" />
+
+
+  <meta property="article:published_time" content="2021-12-08 09:05:42 &#43;1100 AEDT" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="active ">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">Ephemeral Kubernetes Lab with IaC and GitOps</h1>
-<div class="content ">
-  <p>I&rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&rsquo;m used to is a no-go. I need a setup that meets the following requirements:</p>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-12-08
+        
+          [Updated: 2021-12-08]
+        
+      </span>
+    
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/aws/">aws</a>&nbsp;
+    
+    #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+    
+    #<a href="/tags/eks/">eks</a>&nbsp;
+    
+    #<a href="/tags/terraform/">terraform</a>&nbsp;
+    
+    #<a href="/tags/iac/">iac</a>&nbsp;
+    
+    #<a href="/tags/argocd/">argocd</a>&nbsp;
+    
+    #<a href="/tags/gitops/">gitops</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>I&rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&rsquo;m used to is a no-go. I need a setup that meets the following requirements:</p>
 <ul>
 <li>Simple to create and tear down</li>
 <li>Applications must be pre-deployed when the cluster is up, as close to &ldquo;just the way I left it there last night&rdquo; as possible</li>
@@ -189,7 +189,7 @@
 <blockquote>
 <p><a href="https://github.com/leonseng/terraform-everything/tree/master/eks-gitops">https://github.com/leonseng/terraform-everything/tree/master/eks-gitops</a></p>
 </blockquote>
-<h1 id="infrastructure-as-code-using-terraform">Infrastructure as Code using Terraform</h1>
+<h1 id="infrastructure-as-code-using-terraform">Infrastructure as Code using Terraform<a href="#infrastructure-as-code-using-terraform" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>Starting with the Kubernetes cluster, using a managed Kubernetes offering makes sense for me as my current focus is on Kubernetes applications.</p>
 <blockquote>
 <p>If cluster customization is of importance, one can deploy Kubernetes on the cloud computes using tools like <a href="https://github.com/kubernetes/kops">kops</a> or <a href="https://github.com/kubernetes-sigs/kubespray">kubespray</a>, similarly adopting IaC practices detailed below.</p>
@@ -199,7 +199,7 @@
 <p><a href="https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/eks.tf">https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/eks.tf</a></p>
 </blockquote>
 <p>With the cluster sorted, I turn my attention to deploying Kubernetes resources/applications in the cluster.</p>
-<h1 id="k8s-resource-management-via-gitops-using-argo-cd">K8s resource management via GitOps using Argo CD</h1>
+<h1 id="k8s-resource-management-via-gitops-using-argo-cd">K8s resource management via GitOps using Argo CD<a href="#k8s-resource-management-via-gitops-using-argo-cd" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>It&rsquo;s instinctive to start running <code>kubectl</code> commands to deploy Kubernetes resources that make up your application in the cluster, but keeping track of them gets harder overtime. If the cluster is to be rebuilt on a regular basis, we&rsquo;d best hope we have a record of what&rsquo;s deployed in it, and what better option than storing the Kubernetes manifests in a Git repository where the IaC definitions are also stored. With the desired state of applications in Git, the next step is ensuring the cluster state reflects the desired state. This is where GitOps comes in.</p>
 <p>GitOps can be briefly described as an automated workflow that ensures the state of the cluster and its applications matches the desired state from the source of truth, or Git repositories in the case. GitOps achieves this with one of the two patterns below:</p>
 <ol>
@@ -213,14 +213,14 @@
 </li>
 </ol>
 <p>For this article, I will be using Argo CD, mainly for its explicit support for the <a href="#the-one-app-to-rule-them-all">App of Apps pattern</a> which I will cover in a section further down.</p>
-<h2 id="argo-cd-applications">Argo CD Applications</h2>
+<h2 id="argo-cd-applications">Argo CD Applications<a href="#argo-cd-applications" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>In Argo CD, a Kubernetes application are defined via an <a href="https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#applications"><code>Application</code> custom resource (CR)</a>. An <code>Application</code> CR provides Argo CD with the following information:</p>
 <ul>
 <li><strong>source</strong>: the Git repository, revision and path to where the collection of Kubernetes resource manifests are stored</li>
 <li><strong>destination</strong>: the target cluster (Argo CD supports multi-cluster GitOps) and namespace to apply/deploy Kubernetes resource manifests in</li>
 </ul>
 <p>An <code>Application</code> CR can be as simple as this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">apiVersion: argoproj.io/v1alpha1
+<pre tabindex="0"><code>apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: guestbook
@@ -234,7 +234,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: guestbook
-</code></pre></div><p>The diagram below shows how an application is deployed with Argo CD:</p>
+</code></pre><p>The diagram below shows how an application is deployed with Argo CD:</p>
 <p><img src="/images/argocd-basic.png" alt="Basic Argo CD workflow"></p>
 <ol>
 <li>User creates/modifies and uploads Kubernetes resource manifests (e.g. Deployment, ConfigMap, Service etc) for an application into a Git repository.</li>
@@ -244,7 +244,7 @@ spec:
 <li>Argo CD applies/deploys the Kubernetes resource manifests into the target cluster and namespace per the <code>Application</code> CR.</li>
 </ol>
 <p>And just like that, our application deployment has been turned into code. Pretty cool! But we can do better&hellip;</p>
-<h2 id="the-one-app-to-rule-them-all">The One App To Rule Them All</h2>
+<h2 id="the-one-app-to-rule-them-all">The One App To Rule Them All<a href="#the-one-app-to-rule-them-all" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>The previous workflow still involves a manual step on the cluster - creating the <code>Application</code> CR in the cluster. If the user forgets or makes a mistake, the state of the cluster will not reflect the desired state defined in the Git repository. In order to deal with such scenarios, let&rsquo;s turn to the <a href="https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern">App of Apps pattern</a>.</p>
 <p>Remember that an <code>Application</code> CR just points the agent to where the Kubernetes resource manifests are, there&rsquo;s no limitation on what kind of resources it supports. Naturally, this can be extended to other <code>Application</code> CRs! Here&rsquo;s how it works:</p>
 <p><img src="/images/argocd-app-of-apps.png" alt="Argo CD app of apps workflow"></p>
@@ -266,7 +266,7 @@ spec:
 </ol>
 <p>Using the App of Apps pattern means we only have to maintain the desired state of our applications through Git, and Argo CD would automatically apply the desired state in the cluster.</p>
 <p>Phew&hellip; that was a lot to take in 😅. Hopefully we are now in the right head space to move on to the next section where we automate the bootstrapping via Terraform.</p>
-<h2 id="terraforming-gitops">Terraforming GitOps</h2>
+<h2 id="terraforming-gitops">Terraforming GitOps<a href="#terraforming-gitops" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>To integrate this GitOps workflow and the App of Apps pattern with the <a href="#infrastructure-as-code-with-terraform">IaC</a> definitions, we use Terraform to:</p>
 <ol>
 <li>
@@ -291,53 +291,69 @@ spec:
 <blockquote>
 <p><a href="https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/argocd.tf">https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/argocd.tf</a></p>
 </blockquote>
-<h1 id="finale">Finale</h1>
+<h1 id="finale">Finale<a href="#finale" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>With the Terraform files and application manifests in their respective Git repositories, we can kick off the deployment with the Terraform commands</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">terraform init
+<pre tabindex="0"><code>terraform init
 terraform apply -auto-approve
-</code></pre></div><p>And at the end of the day, shutting it down is as easy as running</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">terraform destroy -auto-approve
-</code></pre></div><p>Is it perfect? No. I need to be conscious of storing my application manifests in Git, which will slow me down. And occasionally, the destroy process fails due to some orphaned cloud resources (work in progress). But what I have now is an on/off button for my Kubernetes lab in the cloud, which should keep the IT department of my back 😁.</p>
+</code></pre><p>And at the end of the day, shutting it down is as easy as running</p>
+<pre tabindex="0"><code>terraform destroy -auto-approve
+</code></pre><p>Is it perfect? No. I need to be conscious of storing my application manifests in Git, which will slow me down. And occasionally, the destroy process fails due to some orphaned cloud resources (work in progress). But what I have now is an on/off button for my Kubernetes lab in the cloud, which should keep the IT department of my back 😁.</p>
 
-</div>
-</div>
+      </div></div>
 
-        </div>
-      </div>
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
     </div>
-    
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="/posts/kubernetes/sql-server-kubernetes-2/">
+                <span class="button__text">Kubernetes | SQL Server on Kubernetes - Part 2</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

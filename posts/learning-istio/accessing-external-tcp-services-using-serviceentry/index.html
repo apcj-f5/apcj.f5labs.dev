@@ -1,215 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>Learning Istio | Accessing external TCP services using ServiceEntry - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Learning Istio | Accessing external TCP services using ServiceEntry :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="In this post, we will be testing Istio&amp;rsquo;s ServiceEntry by accessing a PostgreDB database hosted externally from the Kubernetes cluster.
+Setup &amp;ldquo;External&amp;rdquo; PostgresDB service Since we are running the Kubernetes cluster locally in Docker containers using k3d, we can create an &amp;ldquo;external&amp;rdquo; service by running a PostgresDB Docker container on the same host and expose its ports to localhost.
+Create a local PostgresDB container database using Docker
+docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres Create a test database app_db" />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Learning Istio | Accessing external TCP services using ServiceEntry">
+<meta property="og:description" content="In this post, we will be testing Istio&amp;rsquo;s ServiceEntry by accessing a PostgreDB database hosted externally from the Kubernetes cluster.
+Setup &amp;ldquo;External&amp;rdquo; PostgresDB service Since we are running the Kubernetes cluster locally in Docker containers using k3d, we can create an &amp;ldquo;external&amp;rdquo; service by running a PostgresDB Docker container on the same host and expose its ports to localhost.
+Create a local PostgresDB container database using Docker
+docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres Create a test database app_db" />
+<meta property="og:url" content="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+  <meta property="article:section" content="tech" />
+
+
+  <meta property="article:published_time" content="2021-08-16 11:31:40 &#43;1000 AEST" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">Learning Istio | Accessing external TCP services using ServiceEntry</h1>
-<div class="content ">
-  <p>In this post, we will be testing Istio&rsquo;s <a href="https://istio.io/latest/docs/reference/config/networking/service-entry/">ServiceEntry</a> by accessing a PostgreDB database hosted externally from the Kubernetes cluster.</p>
-<h1 id="setup">Setup</h1>
-<h2 id="external-postgresdb-service">&ldquo;External&rdquo; PostgresDB service</h2>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-08-16
+        
+          [Updated: 2021-08-16]
+        
+      </span>
+    
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+    
+    #<a href="/tags/istio/">istio</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <p>In this post, we will be testing Istio&rsquo;s <a href="https://istio.io/latest/docs/reference/config/networking/service-entry/">ServiceEntry</a> by accessing a PostgreDB database hosted externally from the Kubernetes cluster.</p>
+<h1 id="setup">Setup<a href="#setup" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
+<h2 id="external-postgresdb-service">&ldquo;External&rdquo; PostgresDB service<a href="#external-postgresdb-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>Since we are running the Kubernetes cluster locally in Docker containers using <code>k3d</code>, we can create an &ldquo;external&rdquo; service by running a <code>PostgresDB</code> Docker container on the same host and expose its ports to localhost.</p>
 <p>Create a local PostgresDB container database using Docker</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres
-</code></pre></div><p>Create a test database <code>app_db</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">docker exec -u postgres -it postgres createdb app_db
-</code></pre></div><p>This service should be accessible within the cluster at <code>host.k3d.internal:5432</code> (See <a href="https://k3d.io/faq/faq/#how-to-access-services-like-a-database-running-on-my-docker-host-machine">k3d FAQ</a> for more information on <code>host.k3d.internal</code>)</p>
-<h2 id="postgres-client">Postgres client</h2>
+<pre tabindex="0"><code>docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres
+</code></pre><p>Create a test database <code>app_db</code></p>
+<pre tabindex="0"><code>docker exec -u postgres -it postgres createdb app_db
+</code></pre><p>This service should be accessible within the cluster at <code>host.k3d.internal:5432</code> (See <a href="https://k3d.io/faq/faq/#how-to-access-services-like-a-database-running-on-my-docker-host-machine">k3d FAQ</a> for more information on <code>host.k3d.internal</code>)</p>
+<h2 id="postgres-client">Postgres client<a href="#postgres-client" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
 <p>To test the externally hosted service, we will use <a href="https://www.pgcli.com/">pgcli</a> to open a connection towards the database. I have published an image <a href="https://hub.docker.com/r/leonseng/pgcli-docker">leonseng/pgcli-docker</a> on <a href="https://hub.docker.com/">Dockerhub</a>, which contains the <code>pgcli</code> binary for the purpose of this test.</p>
 <p>Create a deployment with the image</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create deployment pgcli --image leonseng/pgcli-docker:3.1.0 -- sleep 36000
-</code></pre></div><p>Assuming the namespace has been labelled with <code>istio-injection=enabled</code>, the pod should come up with 2 containers - one for <code>pgcli-docker</code>, another for <code>istio-proxy</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl get pods pgcli-6d678b54fb-v8fpp
+<pre tabindex="0"><code>kubectl create deployment pgcli --image leonseng/pgcli-docker:3.1.0 -- sleep 36000
+</code></pre><p>Assuming the namespace has been labelled with <code>istio-injection=enabled</code>, the pod should come up with 2 containers - one for <code>pgcli-docker</code>, another for <code>istio-proxy</code></p>
+<pre tabindex="0"><code>$ kubectl get pods pgcli-6d678b54fb-v8fpp
 NAME                     READY   STATUS    RESTARTS   AGE
 pgcli-6d678b54fb-v8fpp   2/2     Running   0          30m
-</code></pre></div><p>Try initial connection to the PostgresDB external to the Kubernetes cluster</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec &lt;pgcli_pod&gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
+</code></pre><p>Try initial connection to the PostgresDB external to the Kubernetes cluster</p>
+<pre tabindex="0"><code>$ kubectl exec &lt;pgcli_pod&gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
 server closed the connection unexpectedly
         This probably means the server terminated abnormally
         before or while processing the request.
 
 command terminated with exit code 1
 $
-</code></pre></div><p>Connection fails as expected due to missing entry in the registry for the external service. Looking at logs of <code>istio-proxy</code> confirms that traffic is being sent to the <code>BlackHoleCluster</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl logs &lt;pgcli_pod&gt; -c istio-proxy --tail 50 -f
-[2021-08-16T00:47:49.898Z] &#34;- - -&#34; 0 UH - - &#34;-&#34; 0 0 0 - &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;-&#34; BlackHoleCluster - 172.17.0.1:5432 10.42.0.10:35742 - -
-</code></pre></div><h1 id="service-entry">Service Entry</h1>
+</code></pre><p>Connection fails as expected due to missing entry in the registry for the external service. Looking at logs of <code>istio-proxy</code> confirms that traffic is being sent to the <code>BlackHoleCluster</code></p>
+<pre tabindex="0"><code>$ kubectl logs &lt;pgcli_pod&gt; -c istio-proxy --tail 50 -f
+[2021-08-16T00:47:49.898Z] &quot;- - -&quot; 0 UH - - &quot;-&quot; 0 0 0 - &quot;-&quot; &quot;-&quot; &quot;-&quot; &quot;-&quot; &quot;-&quot; BlackHoleCluster - 172.17.0.1:5432 10.42.0.10:35742 - -
+</code></pre><h1 id="service-entry">Service Entry<a href="#service-entry" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h1>
 <p>Create a <code>ServiceEntry</code> which registers the PostgresDB service at <code>host.k3d.internal:5432</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create -f - &lt;&lt;EOF
+<pre tabindex="0"><code>kubectl create -f - &lt;&lt;EOF
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
@@ -225,8 +219,8 @@ spec:
   resolution: DNS
 EOF
 
-</code></pre></div><p>Once the <code>ServiceEntry</code> has been created, the <code>pgcli</code> client is now able to connect to the PostgresDB</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec &lt;pgcli_pod&gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
+</code></pre><p>Once the <code>ServiceEntry</code> has been created, the <code>pgcli</code> client is now able to connect to the PostgresDB</p>
+<pre tabindex="0"><code>$ kubectl exec &lt;pgcli_pod&gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
 Server: PostgreSQL 13.3 (Debian 13.3-1.pgdg100+1)
 Version: 3.1.0
 Chat: https://gitter.im/dbcli/pgcli
@@ -234,10 +228,10 @@ Home: http://pgcli.com
 postgres@host:app_db&gt; quit
 Goodbye!
 $
-</code></pre></div><p>This successful connection is also logged on the <code>istio-proxy</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[2021-08-16T00:57:32.037Z] &#34;- - -&#34; 0 - - - &#34;-&#34; 452 880 30823 - &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;172.17.0.1:5432&#34; outbound|5432||host.k3d.internal 10.42.0.10:40108 172.17.0.1:5432 10.42.0.10:40106 - -
-</code></pre></div><p>Digging deeper into the <code>istio-proxy</code> configuration will show the relevant <code>Envoy</code> objects created by this <code>ServiceEntry</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ istioctl proxy-config listeners pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
+</code></pre><p>This successful connection is also logged on the <code>istio-proxy</code></p>
+<pre tabindex="0"><code>[2021-08-16T00:57:32.037Z] &quot;- - -&quot; 0 - - - &quot;-&quot; 452 880 30823 - &quot;-&quot; &quot;-&quot; &quot;-&quot; &quot;-&quot; &quot;172.17.0.1:5432&quot; outbound|5432||host.k3d.internal 10.42.0.10:40108 172.17.0.1:5432 10.42.0.10:40106 - -
+</code></pre><p>Digging deeper into the <code>istio-proxy</code> configuration will show the relevant <code>Envoy</code> objects created by this <code>ServiceEntry</code></p>
+<pre tabindex="0"><code>$ istioctl proxy-config listeners pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
 0.0.0.0       5432  ALL                                                                      Cluster: outbound|5432||host.k3d.internal
 
 $ istioctl proxy-config clusters pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
@@ -245,46 +239,69 @@ host.k3d.internal                                       5432      -          out
 
 $ istioctl proxy-config endpoints pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
 172.17.0.1:5432                  HEALTHY     OK                outbound|5432||host.k3d.internal
-</code></pre></div>
-</div>
+</code></pre>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/development/nginx-unit/">
+                <span class="button__text">Development | NGINX Unit</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

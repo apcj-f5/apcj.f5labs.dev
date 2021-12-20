@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>testing on apcj@f5 technical blog</title>
+    <title>testing on apcj@f5 blog</title>
     <link>/categories/testing/</link>
-    <description>Recent content in testing on apcj@f5 technical blog</description>
+    <description>Recent content in testing on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 09 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/testing/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Small Containers for fun </title>
+      <title>Kubernetes | Small Containers for fun </title>
       <link>/posts/kubernetes/smallest-container-ever/</link>
       <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
       
@@ -16,6 +16,142 @@
       <description>Intro I have a side hobby where I try to create minimal container images. There are a number of reasons for this, but the primary one is because I&amp;rsquo;m a complete geek.
 Other reasons include:
  It&amp;rsquo;s a neatness thing There&amp;rsquo;s an engineering imperative in me to be minimalist I don&amp;rsquo;t like waste The process of creation helps me understand the technology a little better Smaller images are great for testing at scale  Why The why I do this is mainly because it&amp;rsquo;s a hobby, but in this case, I started the ultra minimal container image build because someone I work with wanted to build a container for testing Istio latency at scale.</description>
+      <content>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;I have a side hobby where I try to create minimal container images.
+There are a number of reasons for this, but the primary one is because I&amp;rsquo;m a complete geek.&lt;/p&gt;
+&lt;p&gt;Other reasons include:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s a neatness thing&lt;/li&gt;
+&lt;li&gt;There&amp;rsquo;s an engineering imperative in me to be minimalist&lt;/li&gt;
+&lt;li&gt;I don&amp;rsquo;t like waste&lt;/li&gt;
+&lt;li&gt;The process of creation helps me understand the technology a little better&lt;/li&gt;
+&lt;li&gt;Smaller images are great for testing at scale&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;why&#34;&gt;Why&lt;/h2&gt;
+&lt;p&gt;The why I do this is mainly because it&amp;rsquo;s a hobby, but in this case, I started the ultra minimal container image build
+because someone I work with wanted to build a container for testing Istio latency at scale. He needed a container image that was ultimately small, so that he could spin up in his words &amp;lsquo;about 10,000&amp;rsquo; at once. The other goal was to minimise any application response time so that he could test Istio rather than the application behind Istio.&lt;/p&gt;
+&lt;h2 id=&#34;building-a-minimal-image&#34;&gt;Building a minimal image&lt;/h2&gt;
+&lt;p&gt;Building a minimal image is easy, and I&amp;rsquo;ve spoken about it before at Container Camp, and you can see the &lt;a href=&#34;https://www.youtube.com/watch?v=SWwd4uTVeF0&#34;&gt;video&lt;/a&gt; if you like.&lt;/p&gt;
+&lt;p&gt;What I have realised is that there are two parts to building a minimal image:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Using SCRATCH and only including your application in your image.&lt;/li&gt;
+&lt;li&gt;Statically linking your binary - but doing so in a super strict and optimised way.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When I spoke at Container Camp a few years ago, I only used default options during my compile. I have since realised that I can go even smaller by optimising my compiler options!&lt;/p&gt;
+&lt;h2 id=&#34;the-code&#34;&gt;The Code&lt;/h2&gt;
+&lt;p&gt;This is the easy part.&lt;/p&gt;
+&lt;p&gt;I needed an &amp;ldquo;application&amp;rdquo; that didn&amp;rsquo;t introduce any latency at all so that my colleague could perform Istio testing. I decided to go as minimal as possible and create an &amp;ldquo;application&amp;rdquo; that actually doesn&amp;rsquo;t do anything.&lt;/p&gt;
+&lt;p&gt;In order for the application to work within a containerised environment, it needs to continue to run, and never exit. If the application ever exits, the container will stop running.&lt;/p&gt;
+&lt;p&gt;C is my chosen language of choice today, and I created the following application.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-C++&#34; data-lang=&#34;C++&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;main&lt;/span&gt;(&lt;span style=&#34;color:#66d9ef&#34;&gt;void&lt;/span&gt;) { 
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; pause();
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This tiny little code block does a single thing - it pauses the thread until a signal is received.&lt;/p&gt;
+&lt;p&gt;In container terms, this means the container will run, and will wait for a valid signal, and then honour that signal. This is the perfect behaviour for container testing. The &amp;ldquo;application&amp;rdquo; in the container doesn&amp;rsquo;t do anything, so doesn&amp;rsquo;t add any latency to the transaction, and is perfect for testing.&lt;/p&gt;
+&lt;h2 id=&#34;the-compilation&#34;&gt;The compilation&lt;/h2&gt;
+&lt;p&gt;In order to meet my goal of making a really small container image, I need to compile the code. I need to compile the code in such a way that the code does not require external libraries. That is, the code is &lt;strong&gt;statically linked&lt;/strong&gt;. The second thing to make the application smaller is to compile the code using compiler options that strip out everything that is extraneous.&lt;/p&gt;
+&lt;h3 id=&#34;linking&#34;&gt;Linking&lt;/h3&gt;
+&lt;p&gt;There are generally two types on linking when compiling code, and it&amp;rsquo;s relevant for containers.&lt;/p&gt;
+&lt;h4 id=&#34;dynamic-linking&#34;&gt;Dynamic Linking&lt;/h4&gt;
+&lt;p&gt;When using dynamic linking, shared libraries within the operatig system are used. This has a good side benefit of making the executable smaller (typically). The rationale behind dynamic linking is that when you are running multiple applications on a single operating system, it is possible for multiple applications to use common shared libraries. This makes each individual application smaller.o&lt;/p&gt;
+&lt;p&gt;The code snippet below creates a dynamically linked binary from my C code above. I&amp;rsquo;ve named the application &amp;ldquo;pausle&amp;rdquo; because all it does is &amp;ldquo;pause&amp;rdquo;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# gcc pausle.c -o pausle-dynamic&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If I use the &lt;strong&gt;ldd&lt;/strong&gt; command to see the dynamically linked libraries as part of my binary, you can see that there are three shared libraries used by the &lt;strong&gt;pausle-dynamic&lt;/strong&gt; application.:1&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ldd pausle-dynamic&lt;/span&gt;
+        linux-vdso.so.1 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0x00007ffc93da0000&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        libc.so.6 &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;gt; /lib64/libc.so.6 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0x00007f32a782c000&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+        /lib64/ld-linux-x86-64.so.2 &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;0x00007f32a7a06000&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally, we can see that the size of the dynamically linked binary is 25K.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ls -lh pausle-dynamic&lt;/span&gt;
+-rwxr-xr-x. &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root 25K Jul  &lt;span style=&#34;color:#ae81ff&#34;&gt;9&lt;/span&gt; 21:48 pausle-dynamic
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;One would imagine that this is a very small application.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s dynamically linked - &lt;strong&gt;should&lt;/strong&gt; be smaller&lt;/li&gt;
+&lt;li&gt;It&amp;rsquo;s not doing anything, and is minimal anyway&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;What if I were to tell you that we could reduce the size of this application by 60%?&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&#34;compiler-options&#34;&gt;Compiler Options&lt;/h3&gt;
+&lt;p&gt;What I realised is that if I &lt;strong&gt;aggressively&lt;/strong&gt; tune my compiler options, I can go even smaller again.
+Using the compiler options below I can compile my code to the smallest possible statically linked binary that I can.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;gcc  -Os -fdata-sections -ffunction-sections -fipa-pta  -Wl,--gc-sections -Wl,-O1 -Wl,--as-needed -Wl,--strip-all paus
+le.c -o pausle-dynamic-aggressive
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ls -lh pausle-dynamic-aggressive&lt;/span&gt;
+-rwxr-xr-x. &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root 15K Aug  &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; 20:34 pausle-dynamic-aggressive
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Just by using agressive compiler options, the size of the code is smaller again.&lt;/p&gt;
+&lt;h4 id=&#34;static-linking&#34;&gt;Static Linking&lt;/h4&gt;
+&lt;p&gt;Static linking is where I include all of the libraries for the executable &amp;ldquo;inside&amp;rdquo; the binary itself. This is useful when operating inside a container as it removes the need to have shared libraries (and hence an entire operating system). This in theory should make the entire container image smaller, even if the size of the binary is slightly larger.&lt;/p&gt;
+&lt;p&gt;To statically link the binary, I pass the -static option to the compiler.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;gcc -Os -s -static -ffunction-sections -fipa-pta  -Wl,--gc-sections pausle.c -o pausle-static
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This creates a slightly larger binary size&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ls -lh pausle-static&lt;/span&gt;
+-rwxr-xr-x. &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; root root 708K Aug  &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; 20:38 pausle-static
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;WOAH&lt;/strong&gt; 708K.&lt;/p&gt;
+&lt;p&gt;If I look at the linking using ldd again, I get the following message.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ldd pausle-static&lt;/span&gt;
+        not a dynamic executable
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This means that all of my libraries are included in the binary itself.&lt;/p&gt;
+&lt;h2 id=&#34;building-containers&#34;&gt;Building containers&lt;/h2&gt;
+&lt;p&gt;In order to build containers, I&amp;rsquo;m going to use the dockerfile format, it&amp;rsquo;s simple and is mostly uderstood.&lt;/p&gt;
+&lt;p&gt;I use the following file&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;FROM registry.fedoraproject.org/fedora-minimal
+
+ADD pausle-dynamic /
+CMD &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/pausle-dynamic&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I&amp;rsquo;m using a minimal fedora image here to build out my container image.
+I add my dynamically linked binary into my image as a layer.&lt;/p&gt;
+&lt;p&gt;I can build this using the following command.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# podman build --tag=pausle-dynamic .&lt;/span&gt;
+STEP 1: FROM registry.fedoraproject.org/fedora-minimal
+Getting image source signatures
+Copying blob 033c7516884e &lt;span style=&#34;color:#66d9ef&#34;&gt;done&lt;/span&gt;
+Copying config 241281a93a &lt;span style=&#34;color:#66d9ef&#34;&gt;done&lt;/span&gt;
+Writing manifest to image destination
+Storing signatures
+STEP 2: ADD pausle-dynamic /
+--&amp;gt; 54ab00ee58c
+STEP 3: CMD &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/pausle-dynamic&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+STEP 4: COMMIT pausle-dynamic
+--&amp;gt; 96800d278c6
+96800d278c61d69101791d416fd139a3e70afff2033063354c08307fa2eb118c
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This builds me a container that we can see below.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# podman images&lt;/span&gt;
+REPOSITORY                                   TAG           IMAGE ID      CREATED         SIZE
+localhost/pausle-dynamic                     latest        96800d278c61  &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt; seconds ago  &lt;span style=&#34;color:#ae81ff&#34;&gt;119&lt;/span&gt; MB
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This comes out to 119MB - remember that the original binary was only 25K in size!&lt;/p&gt;
+&lt;h3 id=&#34;using-scratch&#34;&gt;Using Scratch&lt;/h3&gt;
+&lt;p&gt;Using the SCRATCH keyword, I can create a container that only has the required binary inside it.
+It&amp;rsquo;s still a container, but doesn&amp;rsquo;t have any of the ancilliary &amp;ldquo;operating system&amp;rdquo; requirements.
+It doesn&amp;rsquo;t have shared libraries, nor does it have any operating system tooling that you may expect to find.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;FROM scratch
+
+ADD pausle-static /
+CMD &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/pausle-static&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I need to add my statically compiled binary here because there are no shared libraries available for a dynamically linked library to use.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s build this out.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# podman build --tag=pausle-static .&lt;/span&gt;
+STEP 1: FROM scratch
+STEP 2: ADD pausle-static /
+--&amp;gt; 87ee8170167
+STEP 3: CMD &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/pausle-static&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+STEP 4: COMMIT pausle-static
+--&amp;gt; d6e9daeb1ce
+d6e9daeb1ce4211e3f04dd535494a3e78228c3642d22d350d6e9d4f2241e5861
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If I check my container image sizes we see the following.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@fedora&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# podman images&lt;/span&gt;
+REPOSITORY                                   TAG           IMAGE ID      CREATED        SIZE
+localhost/pausle-static                      latest        d6e9daeb1ce4  &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; seconds ago  &lt;span style=&#34;color:#ae81ff&#34;&gt;727&lt;/span&gt; kB
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You will notice that this container is only 727KB in size.
+It doesn&amp;rsquo;t have anything inside it EXCEPT the binary or the application that I&amp;rsquo;m going to run.&lt;/p&gt;
+&lt;p&gt;In this way, I can build very small and minimal container images.
+Even though my initial binary size is larger when I statically compile, it much reduces the overall size of my container image.&lt;/p&gt;
+&lt;h3 id=&#34;other-benefits&#34;&gt;Other Benefits&lt;/h3&gt;
+&lt;p&gt;Other benefits are that only having a single binary inside your container reduces the attack surface that&amp;rsquo;s available from a security perspective. There are no dependencies that need to be individually lifecycle managed, and no real provenance in terms of ancialliary tooling inside the container.&lt;/p&gt;
+&lt;p&gt;The boot time of my container is much reduced because it&amp;rsquo;s smaller - this is a good thing.&lt;/p&gt;
+&lt;p&gt;Next up I&amp;rsquo;ll talk a little about telemetry and how this can be included in your application stacks while keeping a minimal container footprint.&lt;/p&gt;
+</content>
     </item>
     
   </channel>

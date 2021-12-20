@@ -1,185 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <title>From load balancing to cloud native application services - apcj@f5 technical blog</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <link rel="icon" href="/favicon.png">
+    <title>Infrastructure | From load balancing to cloud native application services :: apcj@f5 blog</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="The history of ADC, the future of Service Proxy, how do you understand the importance of ADC/Service Proxy in your infrastructure." />
+<meta name="keywords" content="" />
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="/posts/from-lb-to-cloud-native-application-services/" />
+
+
+
+
+<link rel="stylesheet" href="/assets/style.css">
+
+
+
+
+
+
+<link rel="apple-touch-icon" href="/img/apple-touch-icon-192x192.png">
+
+  <link rel="shortcut icon" href="/img/favicon/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Infrastructure | From load balancing to cloud native application services">
+<meta property="og:description" content="The history of ADC, the future of Service Proxy, how do you understand the importance of ADC/Service Proxy in your infrastructure." />
+<meta property="og:url" content="/posts/from-lb-to-cloud-native-application-services/" />
+<meta property="og:site_name" content="apcj@f5 blog" />
 
   
-  
-  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+    <meta property="og:image" content="/img/favicon/orange.png">
   
 
-  
+<meta property="og:image:width" content="2048">
+<meta property="og:image:height" content="1024">
+
+
+  <meta property="article:published_time" content="2021-07-20 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
 
 </head>
+<body class="orange">
 
-<body class='page page-default-single'>
-  <div id="main-menu-mobile" class="main-menu-mobile">
-  <ul>
-    
-    
-    <li class="menu-item-home">
+
+<div class="container full headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
       <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-  <div class="wrapper">
-    <div class='header'>
-  <div class="container">
-    <div class="logo">
-      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
-    </div>
-    <div class="logo-mobile">
-      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
-    </div>
-    <div id="main-menu" class="main-menu">
-  <ul>
-    
-    
-    <li class="menu-item-home">
-      <a href="/">
-        <span>Home</span>
-      </a>
-    </li>
-    
-    <li class="menu-item-posts">
-      <a href="/posts/">
-        <span>Posts</span>
-      </a>
-    </li>
-    
-  </ul>
-</div>
-    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
-  <span class="hamburger-box">
-    <span class="hamburger-inner"></span>
-  </span>
-</button>
+  <div class="logo">
+    apcj@f5
   </div>
-</div>
+</a>
 
+    </div>
+    
+      <div class="menu-trigger">menu</div>
+    
+  </div>
+  
+    <nav class="menu">
+  <ul class="menu__inner menu__inner--desktop">
+    
+      
+        
+          <li><a href="/about">About</a></li>
+        
+      
+        
+          <li><a href="/posts">Posts</a></li>
+        
+      
+      
+        <ul class="menu__sub-inner">
+          <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
-    
-    
-    
-    
-    
-    
-
-    
-    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
-      <div class="row">
-        <div class="col-12 col-md-3 mb-3">
-          <div class="sidebar">
+          <ul class="menu__sub-inner-more hidden">
             
-<div class="docs-menu">
-  <h4>Posts</h4>
-  <ul>
+              
+                <li><a href="/tags">Tags</a></li>
+              
+            
+          </ul>
+        </ul>
+      
     
-    <li class="">
-      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
-    </li>
-    
-    <li class="active ">
-      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
-    </li>
-    
-    <li class="">
-      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
-    </li>
+
     
   </ul>
-</div>
 
-          </div>
-        </div>
-        <div class="col-12 col-md-9">
-          
-<h1 class="title">From load balancing to cloud native application services</h1>
-<div class="content ">
-  <h3 id="born-to-be-simpleload-balancing">Born to be simple(Load Balancing)</h3>
+  <ul class="menu__inner menu__inner--mobile">
+    
+      
+        <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/posts">Posts</a></li>
+      
+    
+      
+        <li><a href="/tags">Tags</a></li>
+      
+    
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<div class="post">
+  <h1 class="post-title">
+    <a href="/posts/from-lb-to-cloud-native-application-services/">Infrastructure | From load balancing to cloud native application services</a></h1>
+  <div class="post-meta">
+    
+      <span class="post-date">
+        2021-07-20
+        
+          [Updated: 2021-07-20]
+        
+      </span>
+    
+    
+    
+  </div>
+
+  
+  <span class="post-tags">
+    
+    #<a href="/tags/f5/">F5</a>&nbsp;
+    
+    #<a href="/tags/adc/">ADC</a>&nbsp;
+    
+    #<a href="/tags/service-proxy/">Service Proxy</a>&nbsp;
+    
+    #<a href="/tags/platform/">platform</a>&nbsp;
+    
+    #<a href="/tags/cloud-native-application-service/">Cloud native application service</a>&nbsp;
+    
+  </span>
+  
+  
+
+
+  
+
+  <div class="post-content"><div>
+        <h3 id="born-to-be-simpleload-balancing">Born to be simple(Load Balancing)<a href="#born-to-be-simpleload-balancing" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>In the 1990s, the rapid development of the Internet gave birth to a large number of online websites, and the number of Web visits increased rapidly. At that time, a simple appeal was how to improve the access speed and ability of Web sites.</p>
 <p>At that time, in the Six Arms bar on the slopes of downtown Seattle, several young people were here every night to enthusiastically discuss their entrepreneurial dreams. They were obsessed with human-computer interfaces and studied how to break through the limits of immersive virtual reality. . Michael Almquist was one of them. He found that the servers at the time could not meet their needs, so they studied the use of load balancing to help solve the problems they encountered.</p>
 <p>In 1996, F5 Labs was established in a dilapidated office on the fifth floor of the Seattle Tower. Michael Almquist was the founder. Such a technology was discovered by investors, bringing F5 Labs from the field of virtual reality technology to a world that helps to achieve trouble-free and efficient Internet communication.</p>
@@ -188,7 +180,7 @@
 <p><img src="1.png" alt="Load balancing"></p>
 <p>In 1997, F5 released the BIG-IP product. The earliest name of BIG-IP is actually called BIG/IP, which is derived from the name TCP/IP. BIG expresses the meaning of a super IP representing many backing service IPs. In the same year that BIG-IP was released, a company called ArrowPoint was established, mainly for web optimization.</p>
 <p>In 1998, F5 released the 3DNS product. On Load Balancing, DNS has always been an original technology. 3DNS products expand the concept of space (source, target) and time (availability) on top of the basic technology of DNS polling and resolution, forming three dimensions (3D), which is also 3DNS The origin of the naming was later changed to Global Traffic Management (GTM). In recent years, it was also named DNS to express a complete and comprehensive enterprise DNS architecture. We can actually see the focus of the market direction at different stages from the name change. The use of smart DNS technology has helped to further enhance the Web access experience, allowing users to access the nearest available site in time. The technical concepts used in 3DNS are still widely used today, whether it is global traffic management or enterprise basic DNS. In the same year, the industry also established two companies, uRoam and Netscaler. One was later acquired by F5, and the other was a company in the same field of F5.</p>
-<h3 id="success-in-adc">Success in ADC</h3>
+<h3 id="success-in-adc">Success in ADC<a href="#success-in-adc" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>The Internet bubble reached its peak in 2000, and this year was also the year when the most relevant manufacturers in this field were established. Fineground, a web optimization, application acceleration and security vendor; application front-end optimization vendor Redline; WAN optimization vendor Peribit. Application security vendor Magnifire. At the same time Array was also established this year. If we look through the information, we will find that at this stage the market will have a lot of terms about products. In addition to the &ldquo;Web switches&rdquo; mentioned above, there are also &ldquo;content switches&rdquo;, four-layer switches, and seven-layer switches. Manufacturers of different technical backgrounds are engaged in a secret struggle.</p>
 <p>In 2001, the U.S. stock market plummeted and the Internet company bubble burst. The business model of simply relying on simple Load Balancing for Internet Web sites is no longer sustainable. Combing the acquisitions in this field from 2000 to 2005, we can see that the market has become complicated, with a large number of manufacturers established and a large number of manufacturers acquiring:</p>
 <ul>
@@ -225,7 +217,7 @@
 <p>2016 is the inflection point of the enterprise market&rsquo;s perception of soft load. With the further development of enterprises' digital transformation, DevOps, dual-mode IT, elastic architecture, and enterprise private cloud, soft loads have begun to be widely mentioned and applied.</p>
 <p>Based on the understanding of the soft load market, F5 has released the Virtual Edition (VE) of TMOS since 2009, actively building the cloud initialization capabilities of related products, strengthening the ecological construction of DevOps tools such as Ansible/Terraform modules, etc., open command and statement -Style interface to achieve more Gitops capabilities. These capabilities allow companies to deploy F5 VE soft ADC products faster and better to meet business needs. There is an interesting number. F5 has deployed 50,000 sets of hardware devices in China in 19 years, with an average of more than 2,600 units per year. During the 2020 Spring Festival epidemic alone, it quickly helped users deploy 3000 sets of software ADCs. The advantages of easy deployment of soft loads have been greatly brought into play.</p>
 <p>Subsequently, in 2019, F5 acquired NGINX to further strengthen the soft load market.</p>
-<h3 id="back-to-simple--service-proxy">Back to Simple- Service Proxy</h3>
+<h3 id="back-to-simple--service-proxy">Back to Simple- Service Proxy<a href="#back-to-simple--service-proxy" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>With the development of application architecture, applications are transforming from traditional monolithic applications to distributed or microservices. Whether it is a distributed or microservice architecture, its core is to split multiple services of an application to form a relatively independent service unit. The direct result of the split is that an additional mechanism is needed to ensure that these independent work units can coordinate and unified work, which is inseparable from distributed computing, storage, messaging, and so on. When these independent service units need to communicate with each other, it is necessary to think about how to make these services that communicate through the network more reliable, safer, and more optimized. This is what the field of application delivery is concerned about, but it has changed from user-oriented and network-oriented to service-oriented. We call it Service Proxy.</p>
 <p>Access gateways in distributed systems or API gateways for microservices are typical ADC requirements, such as identity recognition, SSL offloading, content routing, application security, current and speed limiting, DDOS, etc. These scenarios have been driven by developers for a long time. Due to the characteristics of the software, it is easier for developers to access software products like NGINX. This is a typical change in user roles compared to traditional ADC products.</p>
 <p>In environments such as microservices and cloud natives, the communication interface between services is simpler and more unified, which makes the technical requirements for reverse proxy software simpler, and no longer need such a complex and rich special protocol support , No longer need complex network technical characteristics requirements. What is needed is for soft load products to have more dynamic configuration, which can be linked with the registration center and configuration center to realize the discovery of services and the introduction of strategies. The products need to be lightweight and easy to deploy and suitable for virtual machines, containers, etc. The use of these scenarios requires fast enough performance, sufficient observable data, and sufficient flexible deployment capabilities.</p>
@@ -238,54 +230,77 @@
 <p>The launch of these products allows F5 to quickly cover the three directions of cloud-native Service Proxy development.</p>
 <p><img src="4.png" alt=""></p>
 <p>(Three directions of Service Proxy development under cloud native)</p>
-<h3 id="facing-the-current--enterprise-cloud-native-application-service">Facing the current- Enterprise Cloud Native Application Service</h3>
+<h3 id="facing-the-current--enterprise-cloud-native-application-service">Facing the current- Enterprise Cloud Native Application Service<a href="#facing-the-current--enterprise-cloud-native-application-service" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>When we return to the actual situation of the enterprise and use a picture to express the changes in this related field, we can see that the deployment position of products in the related field is constantly improving, from basic network hardware to a cloud environment. The service component has become a logical resource object in the cloud native environment. From visible and tangible to visible and intangible, from visible and intangible to invisible and intangible. Enterprises should pay full attention to the selection of soft load products that can cover all scenarios to ensure that they can evolve their enterprise application architecture under unified technology and professional services to avoid technical risks.</p>
 <p><img src="5.png" alt=""></p>
 <p>(Load balancing, an ever-increasing position)</p>
 <p>Cloud native architecture is the future direction of enterprises, but the cloud native architecture of enterprises will not be achieved overnight. It must evolve slowly on top of the company&rsquo;s existing IT infrastructure. In such an evolutionary process, the cloud native environment that the company is building needs to use the company&rsquo;s existing infrastructure. The existing infrastructure of the enterprise must also be changed to the cloud-native environment, and the two need to be integrated with each other.</p>
 <p>This is true for infrastructure and so are people. With the improvement of enterprise platform-based capabilities, we can clearly see that I&amp;O personnel are becoming the main force of future data center technology innovation. The leading role personnel in this field have changed from network personnel to developers, and ultimately to platform personnel.</p>
-<h3 id="conclusion">Conclusion</h3>
+<h3 id="conclusion">Conclusion<a href="#conclusion" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
 <p>It can be seen that from 1996 to 2006, and then to 2016. Every 10 years of changes in the application delivery field have echoed the changes in market demand and are in line with the changes in application architecture. From simple Web load balancing to complex enterprise application delivery, from monolithic applications to distributed, microservice architecture. The target audience also ranges from network personnel to application personnel to today&rsquo;s platform and infrastructure personnel. Whether it is the complexity of ADC functions or the simplicity and efficiency of Service Proxy, products in the application delivery field have become the most important infrastructure components for enterprises.</p>
 
-</div>
+      </div></div>
+
+  
+  
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="/posts/learning-istio/setup/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Learning Istio | Setup</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="/posts/eli5-kubernetes-custom-resources/">
+                <span class="button__text">Kubernetes | ELI5: Kubernetes Custom Resources</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
 </div>
 
-        </div>
-      </div>
-    </div>
-    
+  
+
+  
+
+</div>
+
   </div>
 
-  <div class="sub-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="sub-footer-inner">
-          <ul>
-            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
   
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
-  
-
-  
-  
-  
+    <footer class="footer">
+  <div class="footer__inner">
     
-  
+      <div class="copyright">
+        <span>© 2021 Powered by <a href="http://gohugo.io">Hugo</a></span>
+    
+        <span>:: Theme made by <a href="https://twitter.com/panr">panr</a></span>
+      </div>
+  </div>
+</footer>
 
+<script src="/assets/main.js"></script>
+<script src="/assets/prism.js"></script>
+
+
+  <script src="/assets/languageSelector.js"></script>
+
+
+
+
+
+
+  
+</div>
 
 </body>
-
 </html>

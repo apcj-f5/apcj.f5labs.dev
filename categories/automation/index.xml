@@ -1,19 +1,99 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>automation on apcj@f5 technical blog</title>
+    <title>automation on apcj@f5 blog</title>
     <link>/categories/automation/</link>
-    <description>Recent content in automation on apcj@f5 technical blog</description>
+    <description>Recent content in automation on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 26 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/automation/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Terraform Maps</title>
+      <title>Automation | Terraform Maps</title>
       <link>/posts/automation/terraform-maps/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
       
       <guid>/posts/automation/terraform-maps/</guid>
       <description>Intro I&amp;rsquo;ve been doing a lot with terraform lately, and I&amp;rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&amp;rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&amp;rsquo;s essentially the same resource. Why should I do this? There has to be a better way.</description>
+      <content>&lt;h1 id=&#34;intro&#34;&gt;Intro&lt;/h1&gt;
+&lt;p&gt;I&amp;rsquo;ve been doing a lot with terraform lately, and I&amp;rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&amp;rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&amp;rsquo;s essentially the same resource. Why should I do this? &lt;strong&gt;There has to be a better way.&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&#34;what-is-a-map&#34;&gt;What is a map?&lt;/h2&gt;
+&lt;p&gt;In looking for a way to make my codebase cleaner and simpler, I started looking at using maps. I&amp;rsquo;ve not delved into them in depth before, so it was a fun thing to do on a rainy afternoon.&lt;/p&gt;
+&lt;p&gt;The terraform docs do a better job than I can of telling you what a map is - see &lt;a href=&#34;https://www.terraform.io/docs/language/expressions/types.html#maps-objects&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;why-are-maps-cool&#34;&gt;Why are maps cool?&lt;/h2&gt;
+&lt;p&gt;Maps are cool because they allow you to have groups of key value pairs that can be accessed in a neat way.&lt;/p&gt;
+&lt;h2 id=&#34;a-simple-example&#34;&gt;A simple example&lt;/h2&gt;
+&lt;p&gt;A very simple example of a map is as follows:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;variable &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;tcp_lb&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; map
+  default &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    unit-config-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8888&amp;#34;&lt;/span&gt;
+    unit-git-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8080&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You will notice that the map above is actually a variable. That&amp;rsquo;s right &lt;strong&gt;you can use a map as a variable&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;In this case, I am using a map to assign different ports to origin servers within a &lt;a href=&#34;http://volterra.io&#34;&gt;volterra&lt;/a&gt; resource.
+In this way, I don&amp;rsquo;t need to declare the same resource over and over, I can use a loop within my resource to access all of the items within my map.&lt;/p&gt;
+&lt;h2 id=&#34;the-resource&#34;&gt;The resource&lt;/h2&gt;
+&lt;p&gt;The resource that uses the map above looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;resource &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;volterra_tcp_loadbalancer&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;unit-config&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  for_each  &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.tcp_lb
+  name      &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.key&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+  namespace &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.ns
+
+  listen_port &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.value&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+  dns_volterra_managed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+  domains &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;var.domain_host&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;var.domain&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+  advertise_on_public_default_vip &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+
+  retract_cluster &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+
+  origin_pools_weights &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    pool &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+      name &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.key&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+      namespace &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.ns
+    &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+
+  hash_policy_choice_round_robin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; true
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There are two pieces to this resource that I need to point out.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;The for_each loop&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Accessing map keys and values&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;the-for_each-loop&#34;&gt;The for_each loop&lt;/h3&gt;
+&lt;p&gt;The for_each loop is used to loop through the map within the context of the resource.
+The for_each loop in terraofrm is documented &lt;a href=&#34;https://www.terraform.io/docs/language/meta-arguments/for_each.html#basic-syntax&#34;&gt;here&lt;/a&gt;. The interesting thing is that a for_each loop can &lt;strong&gt;accept a map&lt;/strong&gt; as an input!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;  for_each  &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; var.tcp_lb
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that the for_each loop references the variable that I defined above. The variable is actually a map, which the for_each loop can accept as an input.
+The for_each loop will loop through each key within the variable tcp_lb. In my case, the variable has two values.
+The for_each loop will run twice as it iterates over my map variable.&lt;/p&gt;
+&lt;h3 id=&#34;accessing-map-keys-and-values&#34;&gt;Accessing map keys and values&lt;/h3&gt;
+&lt;p&gt;The map that I have defined has two keys and two values.
+Each key and each value can be acess separately within the context of the &lt;strong&gt;for_each&lt;/strong&gt; loop.&lt;/p&gt;
+&lt;p&gt;In order to access each of the map values or names, I can use the following syntax:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;  name      &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.key&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;  listen_port &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;${&lt;/span&gt;each.value&lt;span style=&#34;color:#e6db74&#34;&gt;}&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;strong&gt;each.key&lt;/strong&gt; and &lt;strong&gt;each.value&lt;/strong&gt; keywords are used to access either the key or the value within the map.&lt;/p&gt;
+&lt;p&gt;In my case, on each iteration, the following will be true:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;variable &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;tcp_lb&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+  type &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; map
+  default &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+    unit-config-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8888&amp;#34;&lt;/span&gt;
+    unit-git-origin &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;8080&amp;#34;&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;One first iteration:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;each.key &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; unit-config-origin
+each.value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;8888&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;On the second iteration:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;each.key &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; unit-git-origin
+each.value &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;8080&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;Using terraform maps simplifies your code by reducing the number of resources that you need to duplicate. It also makes your code a lot more readable.&lt;/p&gt;
+&lt;p&gt;There are traps and pitfalls using this method if you have dependant resources, but I&amp;rsquo;ll cover this in another post. :)&lt;/p&gt;
+</content>
     </item>
     
   </channel>
