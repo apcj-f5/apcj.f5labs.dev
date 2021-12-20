@@ -53,7 +53,7 @@
     <loc>/categories/software/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/sql-server-kubernetes-2/</loc>
+    <loc>/posts/kubernetes/sql-server-kubernetes-2/</loc>
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/istio/</loc>
@@ -62,41 +62,59 @@
     <loc>/tags/jwt/</loc>
     <lastmod>2021-11-06T21:32:16+11:00</lastmod>
   </url><url>
-    <loc>/posts/jwt-auth/</loc>
+    <loc>/posts/learning-istio/jwt-auth/</loc>
     <lastmod>2021-11-06T21:32:16+11:00</lastmod>
   </url><url>
-    <loc>/posts/sql-server-kubernetes/</loc>
+    <loc>/posts/kubernetes/sql-server-kubernetes/</loc>
     <lastmod>2021-11-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/securing-egress-traffic-with-mtls/</loc>
+    <loc>/posts/learning-istio/securing-egress-traffic-with-mtls/</loc>
     <lastmod>2021-10-12T15:59:45+11:00</lastmod>
   </url><url>
     <loc>/categories/automation/</loc>
     <lastmod>2021-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/terraform-maps/</loc>
+    <loc>/posts/automation/terraform-maps/</loc>
     <lastmod>2021-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/why-isnt-service-entry-namespaced/</loc>
+    <loc>/posts/learning-istio/why-isnt-service-entry-namespaced/</loc>
     <lastmod>2021-09-04T23:36:07+10:00</lastmod>
   </url><url>
-    <loc>/posts/accessing-external-tcp-services-using-serviceentry/</loc>
+    <loc>/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/</loc>
     <lastmod>2021-08-16T11:31:40+10:00</lastmod>
   </url><url>
     <loc>/tags/nginx/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/nginx-unit/</loc>
+    <loc>/posts/development/nginx-unit/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/unit/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/ingress/</loc>
+    <loc>/posts/learning-istio/ingress/</loc>
     <lastmod>2021-08-02T16:25:55+10:00</lastmod>
   </url><url>
-    <loc>/posts/setup/</loc>
+    <loc>/posts/learning-istio/setup/</loc>
     <lastmod>2021-08-02T14:20:35+10:00</lastmod>
+  </url><url>
+    <loc>/tags/adc/</loc>
+    <lastmod>2021-07-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/cloud-native-application-service/</loc>
+    <lastmod>2021-07-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/f5/</loc>
+    <lastmod>2021-07-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/posts/from-lb-to-cloud-native-application-services/</loc>
+    <lastmod>2021-07-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/platform/</loc>
+    <lastmod>2021-07-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/service-proxy/</loc>
+    <lastmod>2021-07-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/eli5/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
@@ -110,7 +128,7 @@
     <loc>/tags/minimal/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/posts/smallest-container-ever/</loc>
+    <loc>/posts/kubernetes/smallest-container-ever/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/categories/testing/</loc>
@@ -121,6 +139,36 @@
   </url><url>
     <loc>/tags/s3/</loc>
     <lastmod>2021-06-11T14:52:29+10:00</lastmod>
+  </url><url>
+    <loc>/tags/envoy/</loc>
+    <lastmod>2020-07-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/gateway-port/</loc>
+    <lastmod>2020-07-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/ingressgateway/</loc>
+    <lastmod>2020-07-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/posts/istio-ingressgateay-port-relationship/</loc>
+    <lastmod>2020-07-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/posts/f5-envoy-cloud-native/</loc>
+    <lastmod>2020-06-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/posts/istio-traffic-control-deepdive/</loc>
+    <lastmod>2020-06-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/posts/f5-istio-work-together/</loc>
+    <lastmod>2020-06-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/posts/nginx-oauth2-oidc-series/</loc>
+    <lastmod>2020-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/oauth/</loc>
+    <lastmod>2020-05-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/tags/oidc/</loc>
+    <lastmod>2020-05-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/</loc>
     <lastmod>2018-11-28T15:14:39+10:00</lastmod>

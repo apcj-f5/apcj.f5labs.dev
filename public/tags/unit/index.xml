@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>unit on apcj@f5 technical articles</title>
+    <title>unit on apcj@f5 technical blog</title>
     <link>/tags/unit/</link>
-    <description>Recent content in unit on apcj@f5 technical articles</description>
+    <description>Recent content in unit on apcj@f5 technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/unit/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NGINX Unit</title>
-      <link>/posts/nginx-unit/</link>
+      <link>/posts/development/nginx-unit/</link>
       <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
       
-      <guid>/posts/nginx-unit/</guid>
+      <guid>/posts/development/nginx-unit/</guid>
       <description>Intro I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software. I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:
  Open Source Super cool software Extensible Makes my life as a developer easier  It pretty much ticks all the boxes.
 What is it? This one is a little harder to answer.</description>
