@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>oAuth on apcj@f5 technical blog</title>
+    <link>/tags/oauth/</link>
+    <description>Recent content in oAuth on apcj@f5 technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/oauth/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NGINX and oAuth2/OIDC series one</title>
+      <link>/posts/nginx-oauth2-oidc-series/</link>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/nginx-oauth2-oidc-series/</guid>
+      <description>NGINX as different role in oAuth/OIDC</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Service Proxy on apcj@f5 technical blog</title>
+    <link>/tags/service-proxy/</link>
+    <description>Recent content in Service Proxy on apcj@f5 technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 20 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/service-proxy/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>From load balancing to cloud native application services</title>
+      <link>/posts/from-lb-to-cloud-native-application-services/</link>
+      <pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/from-lb-to-cloud-native-application-services/</guid>
+      <description>The history of ADC, the future of Service Proxy, how do you understand the importance of ADC/Service Proxy in your infrastructure.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Terraform Maps - apcj@f5 technical blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="/"><img alt="Logo" src="/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="/"><img alt="Logo" src="/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="">
+      <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/kubernetes/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/kubernetes/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/learning-istio/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="active ">
+      <a href="/posts/automation/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/learning-istio/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/development/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/from-lb-to-cloud-native-application-services/">From load balancing to cloud native application services</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/kubernetes/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/istio-ingressgateay-port-relationship/">The rule of Istio Gateway port definition</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/f5-envoy-cloud-native/">How an application delivery veteran see Envoy in the era of cloud native</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/istio-traffic-control-deepdive/">Istio sidecar iptables and traffic steering detail</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/f5-istio-work-together/">F5 BIG-IP links Istio to enhance ingress service capabilities</a>
+    </li>
+    
+    <li class="">
+      <a href="/posts/nginx-oauth2-oidc-series/">NGINX and oAuth2/OIDC series one</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">Terraform Maps</h1>
+<div class="content ">
+  <h1 id="intro">Intro</h1>
+<p>I&rsquo;ve been doing a lot with terraform lately, and I&rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&rsquo;s essentially the same resource. Why should I do this? <strong>There has to be a better way.</strong></p>
+<h2 id="what-is-a-map">What is a map?</h2>
+<p>In looking for a way to make my codebase cleaner and simpler, I started looking at using maps. I&rsquo;ve not delved into them in depth before, so it was a fun thing to do on a rainy afternoon.</p>
+<p>The terraform docs do a better job than I can of telling you what a map is - see <a href="https://www.terraform.io/docs/language/expressions/types.html#maps-objects">here</a></p>
+<h2 id="why-are-maps-cool">Why are maps cool?</h2>
+<p>Maps are cool because they allow you to have groups of key value pairs that can be accessed in a neat way.</p>
+<h2 id="a-simple-example">A simple example</h2>
+<p>A very simple example of a map is as follows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">variable <span class="s2">&#34;tcp_lb&#34;</span> <span class="o">{</span>
+  <span class="nb">type</span> <span class="o">=</span> map
+  <span class="nv">default</span> <span class="o">=</span> <span class="o">{</span>
+    unit-config-origin <span class="o">=</span> <span class="s2">&#34;8888&#34;</span>
+    unit-git-origin <span class="o">=</span> <span class="s2">&#34;8080&#34;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>You will notice that the map above is actually a variable. That&rsquo;s right <strong>you can use a map as a variable</strong>.</p>
+<p>In this case, I am using a map to assign different ports to origin servers within a <a href="http://volterra.io">volterra</a> resource.
+In this way, I don&rsquo;t need to declare the same resource over and over, I can use a loop within my resource to access all of the items within my map.</p>
+<h2 id="the-resource">The resource</h2>
+<p>The resource that uses the map above looks like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">resource <span class="s2">&#34;volterra_tcp_loadbalancer&#34;</span> <span class="s2">&#34;unit-config&#34;</span> <span class="o">{</span>
+  <span class="nv">for_each</span>  <span class="o">=</span> var.tcp_lb
+  <span class="nv">name</span>      <span class="o">=</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">each</span><span class="p">.key</span><span class="si">}</span><span class="s2">&#34;</span>
+  <span class="nv">namespace</span> <span class="o">=</span> var.ns
+
+  <span class="nv">listen_port</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">each</span><span class="p">.value</span><span class="si">}</span><span class="s2">&#34;</span>
+  <span class="nv">dns_volterra_managed</span> <span class="o">=</span> <span class="nb">true</span>
+  <span class="nv">domains</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&#34;</span><span class="si">${</span><span class="nv">var</span><span class="p">.domain_host</span><span class="si">}</span><span class="s2">.</span><span class="si">${</span><span class="nv">var</span><span class="p">.domain</span><span class="si">}</span><span class="s2">&#34;</span><span class="o">]</span>
+  <span class="nv">advertise_on_public_default_vip</span> <span class="o">=</span> <span class="nb">true</span>
+
+  <span class="nv">retract_cluster</span> <span class="o">=</span> <span class="nb">true</span>
+
+  origin_pools_weights <span class="o">{</span>
+    pool <span class="o">{</span>
+      <span class="nv">name</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">each</span><span class="p">.key</span><span class="si">}</span><span class="s2">&#34;</span>
+      <span class="nv">namespace</span> <span class="o">=</span> var.ns
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="nv">hash_policy_choice_round_robin</span> <span class="o">=</span> <span class="nb">true</span>
+<span class="o">}</span>
+</code></pre></div><p>There are two pieces to this resource that I need to point out.</p>
+<ul>
+<li><strong>The for_each loop</strong></li>
+<li><strong>Accessing map keys and values</strong></li>
+</ul>
+<h3 id="the-for_each-loop">The for_each loop</h3>
+<p>The for_each loop is used to loop through the map within the context of the resource.
+The for_each loop in terraofrm is documented <a href="https://www.terraform.io/docs/language/meta-arguments/for_each.html#basic-syntax">here</a>. The interesting thing is that a for_each loop can <strong>accept a map</strong> as an input!</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">  <span class="nv">for_each</span>  <span class="o">=</span> var.tcp_lb
+</code></pre></div><p>Note that the for_each loop references the variable that I defined above. The variable is actually a map, which the for_each loop can accept as an input.
+The for_each loop will loop through each key within the variable tcp_lb. In my case, the variable has two values.
+The for_each loop will run twice as it iterates over my map variable.</p>
+<h3 id="accessing-map-keys-and-values">Accessing map keys and values</h3>
+<p>The map that I have defined has two keys and two values.
+Each key and each value can be acess separately within the context of the <strong>for_each</strong> loop.</p>
+<p>In order to access each of the map values or names, I can use the following syntax:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">  <span class="nv">name</span>      <span class="o">=</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">each</span><span class="p">.key</span><span class="si">}</span><span class="s2">&#34;</span>
+</code></pre></div><p>and</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">  <span class="nv">listen_port</span> <span class="o">=</span> <span class="s2">&#34;</span><span class="si">${</span><span class="nv">each</span><span class="p">.value</span><span class="si">}</span><span class="s2">&#34;</span>
+</code></pre></div><p>The <strong>each.key</strong> and <strong>each.value</strong> keywords are used to access either the key or the value within the map.</p>
+<p>In my case, on each iteration, the following will be true:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">variable <span class="s2">&#34;tcp_lb&#34;</span> <span class="o">{</span>
+  <span class="nb">type</span> <span class="o">=</span> map
+  <span class="nv">default</span> <span class="o">=</span> <span class="o">{</span>
+    unit-config-origin <span class="o">=</span> <span class="s2">&#34;8888&#34;</span>
+    unit-git-origin <span class="o">=</span> <span class="s2">&#34;8080&#34;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div><p>One first iteration:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">each.key <span class="o">=</span> unit-config-origin
+each.value <span class="o">=</span> <span class="m">8888</span>
+</code></pre></div><p>On the second iteration:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash">each.key <span class="o">=</span> unit-git-origin
+each.value <span class="o">=</span> <span class="m">8080</span>
+</code></pre></div><h2 id="conclusion">Conclusion</h2>
+<p>Using terraform maps simplifies your code by reducing the number of resources that you need to duplicate. It also makes your code a lot more readable.</p>
+<p>There are traps and pitfalls using this method if you have dependant resources, but I&rsquo;ll cover this in another post. :)</p>
+
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>
