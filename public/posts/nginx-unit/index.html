@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>NGINX Unit - apcj@f5 technical articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="apcj.f5labs.dev/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/apcj.f5labs.dev/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="active ">
+      <a href="apcj.f5labs.dev/posts/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">NGINX Unit</h1>
+<div class="content ">
+  <h1 id="intro">Intro</h1>
+<p>I recently discovered NGINX Unit - now there&rsquo;s a disclaimer here as well - I work for the company that produces this software.
+I do think that it&rsquo;s a very very cool piece of open source software, so it generally suits my ethos:</p>
+<ul>
+<li>Open Source</li>
+<li>Super cool software</li>
+<li>Extensible</li>
+<li>Makes my life as a developer easier</li>
+</ul>
+<p>It pretty much ticks all the boxes.</p>
+<h2 id="what-is-it">What is it?</h2>
+<p>This one is a little harder to answer.</p>
+<p><strong>It&rsquo;s a lot of things</strong></p>
+<p>I&rsquo;ll let the <a href="https://unit.nginx.org">unit webpage</a> do the talking here:</p>
+<p><strong>NGINX Unit is a polyglot app server, a reverse proxy, and a static file server, available for Unix-like systems.</strong></p>
+<p>Dare I say it&rsquo;s a lot more than that though.</p>
+<h2 id="in-a-nutshell">In a nutshell</h2>
+<p>In a nutshell, if I had to describe it I would say it&rsquo;s a multi language application server that has a declarative configuration and description interface.</p>
+<p>That&rsquo;s wordy but that&rsquo;s what it is to me.</p>
+<h2 id="why-is-this-important">Why is this important?</h2>
+<p>In a modern application ecosystem I have many services written in multiple languages.
+Some of these will be written in spring, some will be written in golang and some will be written in nodejs as examples.</p>
+<p>This is great because every team writes services the way that best fits them and makes sense for the delivery of that particular service. It lets teams operate at the speed they&rsquo;re comfortable with and means that services get delivered in the best way.</p>
+<ul>
+<li>What if I want services in different languages to coexist together?</li>
+<li>What if I want to describe my services in a common way?</li>
+<li>What I don&rsquo;t want my pipelines to be brittle and I want them to be templated?</li>
+</ul>
+<p>This is why I think Unit is important.</p>
+<p><img src="/images/unit.JPG" alt="unit.JPG"></p>
+<h2 id="multiple-languages">Multiple languages</h2>
+<p>NGINX Unit allows you to use multiple langugaes. In a modern application architecture, this is a very common thing to want to do.
+Multiple services, written by different teams in different languages - this is a completely common scenario.</p>
+<p>NGINX Unit allows you to deploy services written in multiple different languages on the same application server.
+This makes deployment easier and makes the whole dev experience a lot easier also.</p>
+<h2 id="declarative-configuration">Declarative configuration</h2>
+<p>NGINX Unit has a REST based declarative configuration.
+This is one of the other very nice things about Unit -  everything in the configuration is declarative. With a declarative configuration, everything is real time, and I don&rsquo;t need to worry about restarting applications.</p>
+<p>A simple configuration looks something like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-JSON" data-lang="JSON"><span class="p">{</span>
+        <span class="nt">&#34;listeners&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;*:8080&#34;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;applications/python&#34;</span>
+                <span class="p">},</span>
+
+                <span class="nt">&#34;*:80&#34;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;routes&#34;</span>
+                <span class="p">}</span>
+        <span class="p">},</span>
+
+        <span class="nt">&#34;routes&#34;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">&#34;share&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/pacman-unit/&#34;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">],</span>
+
+        <span class="nt">&#34;applications&#34;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="nt">&#34;python&#34;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;python&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/git-pull-api/&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;wsgi&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;callable&#34;</span><span class="p">:</span> <span class="s2">&#34;app&#34;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="components">Components</h2>
+<p>Each component of the configuration above allows you to step through connecting to, and serving my application.
+A picutre is worth a thousand words here, so here is one that I like as it explains the concepts of unit nicely.</p>
+<p><img src="/images/unit-config.JPG" alt="unit-config.JPG"></p>
+<p>Listeners expose the application publicly, and can have characteristics like ports, certificates, names and so on.
+Listeners can pass to either routes or directly to applications. In the case above, my first listener passes directly to my application named &ldquo;python&rdquo;.</p>
+<p>My second listener passes to a route. While I only have one route, it is possible to have multiple routes. Each route can have multiple conditions or matches and actions. In the case above, the route simply passes to a directory that serves out a static website (and yes it&rsquo;s pacman).</p>
+<p>Routes in unit are handled by a separate router process. This software based router handles request routing for unit.</p>
+<p>A more complex route block looks like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-JSON" data-lang="JSON">        <span class="s2">&#34;routes&#34;</span><span class="err">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                        <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;static.svkcode.org&#34;</span>
+                        <span class="p">},</span>
+
+                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">&#34;share&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/pacman-canvas&#34;</span>
+                        <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                        <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;api.svkcode.org&#34;</span>
+                        <span class="p">},</span>
+
+                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;upstreams/rr-lb&#34;</span>
+                        <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                        <span class="nt">&#34;match&#34;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">&#34;host&#34;</span><span class="p">:</span> <span class="s2">&#34;jsp.svkcode.org&#34;</span>
+                        <span class="p">},</span>
+
+                        <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="p">{</span>
+                                <span class="nt">&#34;pass&#34;</span><span class="p">:</span> <span class="s2">&#34;applications/java&#34;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+</code></pre></div><p>Each route in this case passes to a different application based on the incoming host header. In this way, the unit router can be used to handle incoming request routing at a very granular level.</p>
+<p>My application block is the last piece of the puzzle here.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-JSON" data-lang="JSON">        <span class="s2">&#34;applications&#34;</span><span class="err">:</span> <span class="p">{</span>
+                <span class="nt">&#34;python&#34;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;python&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;/www/git-pull-api/&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;module&#34;</span><span class="p">:</span> <span class="s2">&#34;wsgi&#34;</span><span class="p">,</span>
+                        <span class="nt">&#34;callable&#34;</span><span class="p">:</span> <span class="s2">&#34;app&#34;</span>
+                <span class="p">}</span>
+</code></pre></div><p>My application block tells unit to run my application.</p>
+<p><strong>That&rsquo;s right unit is an application server.</strong></p>
+<p>The example above is a python application, but unit can also run nodejs, java, golang, perl (yes really - though I haven&rsquo;t tried it), php, ruby, python and so on.</p>
+<p>The intention here is that unit handles instantiating the application and everything is configured via the declarative configuration language of unit in real time.</p>
+<h2 id="low-barrier-to-adoption">Low barrier to adoption</h2>
+<p>Unit offers a very low barrier to entry.</p>
+<ol>
+<li>The concepts are simple and sensible.</li>
+<li>The declarative configuration is JSON based with a &ldquo;get it, put it&rdquo; mentality.</li>
+<li>Everything is real time - make a change, it&rsquo;s reflected immediately.</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>NGINX Unit is a good application server, and has a lot of uses.
+Look out for additional posts on how to use it, how to configure it, and where it fits in a knative world.</p>
+
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/apcj.f5labs.dev/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>

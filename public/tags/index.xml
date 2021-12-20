@@ -6,7 +6,124 @@
     <description>Recent content in Tags on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jul 2021 14:50:02 +1000</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>argocd</title>
+      <link>apcj.f5labs.dev/tags/argocd/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/argocd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>aws</title>
+      <link>apcj.f5labs.dev/tags/aws/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/aws/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>eks</title>
+      <link>apcj.f5labs.dev/tags/eks/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/eks/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gitops</title>
+      <link>apcj.f5labs.dev/tags/gitops/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/gitops/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>iac</title>
+      <link>apcj.f5labs.dev/tags/iac/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/iac/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>kubernetes</title>
+      <link>apcj.f5labs.dev/tags/kubernetes/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>terraform</title>
+      <link>apcj.f5labs.dev/tags/terraform/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/terraform/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>containers</title>
+      <link>apcj.f5labs.dev/tags/containers/</link>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/containers/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>databases</title>
+      <link>apcj.f5labs.dev/tags/databases/</link>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/databases/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>istio</title>
+      <link>apcj.f5labs.dev/tags/istio/</link>
+      <pubDate>Sat, 06 Nov 2021 21:32:16 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/istio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>jwt</title>
+      <link>apcj.f5labs.dev/tags/jwt/</link>
+      <pubDate>Sat, 06 Nov 2021 21:32:16 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/jwt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nginx</title>
+      <link>apcj.f5labs.dev/tags/nginx/</link>
+      <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/nginx/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>unit</title>
+      <link>apcj.f5labs.dev/tags/unit/</link>
+      <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/unit/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>eli5</title>
       <link>apcj.f5labs.dev/tags/eli5/</link>
@@ -17,11 +134,20 @@
     </item>
     
     <item>
-      <title>kubernetes</title>
-      <link>apcj.f5labs.dev/tags/kubernetes/</link>
-      <pubDate>Sun, 18 Jul 2021 14:50:02 +1000</pubDate>
+      <title>minimal</title>
+      <link>apcj.f5labs.dev/tags/minimal/</link>
+      <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
       
-      <guid>apcj.f5labs.dev/tags/kubernetes/</guid>
+      <guid>apcj.f5labs.dev/tags/minimal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>s3</title>
+      <link>apcj.f5labs.dev/tags/s3/</link>
+      <pubDate>Fri, 11 Jun 2021 14:52:29 +1000</pubDate>
+      
+      <guid>apcj.f5labs.dev/tags/s3/</guid>
       <description></description>
     </item>
     

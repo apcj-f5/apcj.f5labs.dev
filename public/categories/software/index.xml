@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>software on apcj@f5 technical articles</title>
+    <link>apcj.f5labs.dev/categories/software/</link>
+    <description>Recent content in software on apcj@f5 technical articles</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 01 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="apcj.f5labs.dev/categories/software/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SQL Server on Kubernetes - Part 2</title>
+      <link>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</link>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</guid>
+      <description>Intro So in my last post I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.
+This post is going to focus on the storage components of running a database on Kubernetes.
+Why do I need persistent storage Persistent storage as the name implies allows you to store your data between container restarts.</description>
+    </item>
+    
+    <item>
+      <title>SQL Server on Kubernetes - Part 1</title>
+      <link>apcj.f5labs.dev/posts/sql-server-kubernetes/</link>
+      <pubDate>Mon, 01 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes/</guid>
+      <description>Intro Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster. Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it. I decided to give it a go recently on Kubernetes, and get it all working.
+This is part one, where I deploy SQL server without persistent storage. In part two, I will discuss using persistent storage.</description>
+    </item>
+    
+    <item>
+      <title>Terraform Maps</title>
+      <link>apcj.f5labs.dev/posts/terraform-maps/</link>
+      <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/terraform-maps/</guid>
+      <description>Intro I&amp;rsquo;ve been doing a lot with terraform lately, and I&amp;rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&amp;rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&amp;rsquo;s essentially the same resource. Why should I do this? There has to be a better way.</description>
+    </item>
+    
+    <item>
+      <title>NGINX Unit</title>
+      <link>apcj.f5labs.dev/posts/nginx-unit/</link>
+      <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/nginx-unit/</guid>
+      <description>Intro I recently discovered NGINX Unit - now there&amp;rsquo;s a disclaimer here as well - I work for the company that produces this software. I do think that it&amp;rsquo;s a very very cool piece of open source software, so it generally suits my ethos:
+ Open Source Super cool software Extensible Makes my life as a developer easier  It pretty much ticks all the boxes.
+What is it? This one is a little harder to answer.</description>
+    </item>
+    
+  </channel>
+</rss>

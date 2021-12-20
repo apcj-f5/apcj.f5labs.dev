@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Learning Istio | Setup - apcj@f5 technical articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="apcj.f5labs.dev/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/apcj.f5labs.dev/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="active ">
+      <a href="apcj.f5labs.dev/posts/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">Learning Istio | Setup</h1>
+<div class="content ">
+  <p>In this series, we will be testing out several features in Istio with a local Kubernetes (k3s) cluster.</p>
+<h1 id="deploy-k3s-cluster">Deploy k3s cluster</h1>
+<p>First step is to deploy the k8s cluster with <a href="https://k3d.io/">k3d</a> - a wrapper to run k3s in docker. Start by creating a k3d config file:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># k3d-istio.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">k3d.io/v1alpha2</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Simple</span><span class="w">
+</span><span class="w"></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">istio</span><span class="w">
+</span><span class="w"></span><span class="nt">servers</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w"></span><span class="nt">agents</span><span class="p">:</span><span class="w"> </span><span class="m">2</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="c"># for exposing Istio ingress on localhost</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="p">:</span><span class="m">80</span><span class="w">
+</span><span class="w">    </span><span class="nt">nodeFilters</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">loadbalancer</span><span class="w">
+</span><span class="w">  </span>- <span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8443</span><span class="p">:</span><span class="m">443</span><span class="w">
+</span><span class="w">    </span><span class="nt">nodeFilters</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">loadbalancer</span><span class="w">
+</span><span class="w"></span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">k3s</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">extraServerArgs</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- --<span class="kc">no</span>-<span class="l">deploy=traefik </span><span class="w"> </span><span class="c"># we will be using Istio ingress instead</span><span class="w">
+</span></code></pre></div><p>Deploy the cluster with k3d</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">k3d cluster create --config k3d-istio.yaml
+</code></pre></div><p>Once the cluster has been deployed, configure <code>kubectl</code> to use the newly created context <code>k3d-istio</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">kubectl config use-context k3d-istio
+</code></pre></div><p>Verify cluster creation by running</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">kubectl cluster-info
+</code></pre></div><hr>
+<h1 id="deploy-sample-application">Deploy sample application</h1>
+<p>Deploy the sample <a href="https://istio.io/latest/docs/examples/bookinfo/#deploying-the-application">Bookinfo</a> application so that we can observe the difference Istio brings</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">kubectl create ns bookinfo
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.10/samples/bookinfo/platform/kube/bookinfo.yaml
+</code></pre></div><p>You should see some pods created in the namespace</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+details-v1-79f774bdb9-swd8j       1/1     Running   <span class="m">0</span>          42m
+ratings-v1-b6994bb9-vgx86         1/1     Running   <span class="m">0</span>          42m
+productpage-v1-6b746f74dc-wkd2r   1/1     Running   <span class="m">0</span>          42m
+reviews-v1-545db77b95-vcps9       1/1     Running   <span class="m">0</span>          42m
+reviews-v2-7bf8c9648f-4tscf       1/1     Running   <span class="m">0</span>          42m
+reviews-v3-84779c7bbc-tgxx7       1/1     Running   <span class="m">0</span>          42m
+</code></pre></div><p>To access the Bookinfo application, port forward the <code>productpage</code> service to localhost:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">kubectl port-forward svc/productpage <span class="m">9080</span>
+</code></pre></div><p>You should now be able to see the product page by browsing to <a href="http://localhost:9080/productpage">http://localhost:9080/productpage</a>.</p>
+<hr>
+<h1 id="install-istio">Install Istio</h1>
+<blockquote>
+<p>This section is largely based on Istio&rsquo;s <a href="https://istio.io/latest/docs/setup/getting-started/">quick start guide</a> with some minor differences to how the application is accessed (due to k3s networking)</p>
+</blockquote>
+<p>We will be using <code>istioctl</code> to install Istio in the cluster. See <a href="https://istio.io/latest/docs/setup/install/">Istio Installation Guides</a> for alternative installation methods.</p>
+<p>Follow the instructions <a href="https://istio.io/latest/docs/setup/getting-started/#download">here</a> to install the <code>istioctl</code> binary. Verify that <code>istioctl</code> has been installed by running <code>istioctl version</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">istioctl version
+</code></pre></div><p>Next, install Istio with the <code>demo</code> profile in the cluster</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">istioctl install --set <span class="nv">profile</span><span class="o">=</span>demo -y
+</code></pre></div><p>The <code>demo</code> profile comes with all the Istio core components, and enables high levels of tracing and access logging. See <a href="https://istio.io/latest/docs/setup/additional-setup/config-profiles/">Istio Installation Configuration Profiles</a> for more information on all supported configuration profiles.</p>
+<p>After a while, you should be able to see all Istio core components deployed in the <code>istio-system</code> namespace</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl -n istio-system get all
+NAME                                       READY   STATUS    RESTARTS   AGE
+pod/istiod-568d797f55-j2z9p                1/1     Running   <span class="m">0</span>          15m
+pod/svclb-istio-ingressgateway-nvbs8       5/5     Running   <span class="m">0</span>          14m
+pod/svclb-istio-ingressgateway-2r9xx       5/5     Running   <span class="m">0</span>          14m
+pod/svclb-istio-ingressgateway-c62h4       5/5     Running   <span class="m">0</span>          14m
+pod/istio-egressgateway-5547fcc8fc-cqnzs   1/1     Running   <span class="m">0</span>          14m
+pod/istio-ingressgateway-8f568d595-q4g96   1/1     Running   <span class="m">0</span>          14m
+
+NAME                           TYPE           CLUSTER-IP      EXTERNAL-IP                        PORT<span class="o">(</span>S<span class="o">)</span>
+                                                      AGE
+service/istiod                 ClusterIP      10.43.189.242   &lt;none&gt;                             15010/TCP,15012/TCP,443/TCP,15014/TCP                                        15m
+service/istio-egressgateway    ClusterIP      10.43.162.21    &lt;none&gt;                             80/TCP,443/TCP
+                                                      14m
+service/istio-ingressgateway   LoadBalancer   10.43.59.75     172.22.0.2,172.22.0.3,172.22.0.4   15021:31379/TCP,80:30381/TCP,443:32247/TCP,31400:31774/TCP,15443:32131/TCP   14m
+
+NAME                                        DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+daemonset.apps/svclb-istio-ingressgateway   <span class="m">3</span>         <span class="m">3</span>         <span class="m">3</span>       <span class="m">3</span>            <span class="m">3</span>           &lt;none&gt;          14m
+
+NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/istiod                 1/1     <span class="m">1</span>            <span class="m">1</span>           15m
+deployment.apps/istio-egressgateway    1/1     <span class="m">1</span>            <span class="m">1</span>           14m
+deployment.apps/istio-ingressgateway   1/1     <span class="m">1</span>            <span class="m">1</span>           14m
+
+NAME                                             DESIRED   CURRENT   READY   AGE
+replicaset.apps/istiod-568d797f55                <span class="m">1</span>         <span class="m">1</span>         <span class="m">1</span>       15m
+replicaset.apps/istio-egressgateway-5547fcc8fc   <span class="m">1</span>         <span class="m">1</span>         <span class="m">1</span>       14m
+replicaset.apps/istio-ingressgateway-8f568d595   <span class="m">1</span>         <span class="m">1</span>         <span class="m">1</span>       14m
+</code></pre></div><hr>
+<h1 id="enabling-istio-sidecar-injection">Enabling Istio sidecar injection</h1>
+<p>Now that we have everything set up, let&rsquo;s begin by enabling Istio in our application namespace <code>default</code> by adding the label <code>istio-injection=enabled</code> to the namespace:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">kubectl label namespace default istio-injection<span class="o">=</span>enabled
+</code></pre></div><p>At this point, there should be no changes to the bookinfo application (note the container count is still <code>1/1</code> for all pods):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+details-v1-79f774bdb9-swd8j       1/1     Running   <span class="m">0</span>          56m
+ratings-v1-b6994bb9-vgx86         1/1     Running   <span class="m">0</span>          56m
+productpage-v1-6b746f74dc-wkd2r   1/1     Running   <span class="m">0</span>          56m
+reviews-v1-545db77b95-vcps9       1/1     Running   <span class="m">0</span>          56m
+reviews-v2-7bf8c9648f-4tscf       1/1     Running   <span class="m">0</span>          56m
+reviews-v3-84779c7bbc-tgxx7       1/1     Running   <span class="m">0</span>          56m
+</code></pre></div><p>To get the sidecar injected, we need to get the pods redeployed by deleting the existing ones with the command</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">kubectl get pods --no-headers <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span> <span class="p">|</span> xargs kubectl delete pod
+</code></pre></div><p>The pods should be redeployed with 2 containers in each of them</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl get pods
+NAME                              READY   STATUS    RESTARTS   AGE
+reviews-v1-545db77b95-5c5z4       2/2     Running   <span class="m">0</span>          91s
+ratings-v1-b6994bb9-v2mc4         2/2     Running   <span class="m">0</span>          91s
+productpage-v1-6b746f74dc-wjkr5   2/2     Running   <span class="m">0</span>          91s
+details-v1-79f774bdb9-fm7jd       2/2     Running   <span class="m">0</span>          91s
+reviews-v2-7bf8c9648f-b9mrh       2/2     Running   <span class="m">0</span>          91s
+reviews-v3-84779c7bbc-lvrwv       2/2     Running   <span class="m">0</span>          91s
+</code></pre></div><p>with the new container being the Istio sidecar proxy, as demonstrated in the following command</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh">$ kubectl get pods productpage-v1-6b746f74dc-wjkr5 -o <span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{range .spec.containers[*]}{.image}{&#34;\n&#34;}{end}&#39;</span>
+docker.io/istio/examples-bookinfo-productpage-v1:1.16.2
+docker.io/istio/proxyv2:1.10.3
+</code></pre></div><hr>
+<h1 id="security-hardening">Security Hardening</h1>
+<h2 id="mutual-tls">Mutual TLS</h2>
+<p>By default, Istio configures the destination workloads using <code>PERMISSIVE</code> mode, where a service can accept both plain text and mutual TLS traffic. To ensure all our cluster traffic is encrypted, we will change this to <code>STRICT</code> mode.</p>
+<p>There are two spots to enforce this</p>
+<ol>
+<li>By namespace</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl apply -n &lt;namespace&gt; -f - &lt;&lt;EOF
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: &#34;default&#34;
+spec:
+  mtls:
+    mode: STRICT
+EOF
+</code></pre></div><ol start="2">
+<li>Globally - note the resource is applied in the <code>istio-system</code> namespace.</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl apply -n istio-system -f - &lt;&lt;EOF
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: &#34;default&#34;
+spec:
+  mtls:
+    mode: STRICT
+EOF
+</code></pre></div><h2 id="outbound-traffic-policy">Outbound Traffic Policy</h2>
+<p>To ensure we have better control of traffic exiting the cluster to reach external services, we will be configuring the Istio <code>meshConfig.outboundTrafficPolicy.mode</code> option to <code>REGISTRY_ONLY</code>. This means that pods/sidecars in the cluster are only able to reach external services if they are first defined in Istio&rsquo;s internal service registry (via <a href="https://istio.io/latest/docs/reference/config/networking/service-entry/">ServiceEntry</a> definitions).</p>
+<p>Use <code>istioctl</code> to enforce the policy</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">istioctl install --set profile=demo -y --set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY
+</code></pre></div><p>Verify the configuration is applied correctly</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl get istiooperator installed-state -n istio-system -o jsonpath=&#39;{.spec.meshConfig.outboundTrafficPolicy.mode}&#39;
+REGISTRY_ONLY
+</code></pre></div><hr>
+<h1 id="next-steps">Next steps</h1>
+<p>Now that we have a Kubernetes cluster with Istio installed, and a sample application with Istio sidecar injected, we should be ready to test out some Istio features in future articles.</p>
+
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/apcj.f5labs.dev/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>

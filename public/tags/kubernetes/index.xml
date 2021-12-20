@@ -6,7 +6,103 @@
     <description>Recent content in kubernetes on apcj@f5 technical articles</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 18 Jul 2021 14:50:02 +1000</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="apcj.f5labs.dev/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ephemeral Kubernetes Lab with IaC and GitOps</title>
+      <link>apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</link>
+      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</guid>
+      <description>I&amp;rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&amp;rsquo;m used to is a no-go. I need a setup that meets the following requirements:
+ Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &amp;ldquo;just the way I left it there last night&amp;rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post.</description>
+    </item>
+    
+    <item>
+      <title>SQL Server on Kubernetes - Part 2</title>
+      <link>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</link>
+      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes-2/</guid>
+      <description>Intro So in my last post I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.
+This post is going to focus on the storage components of running a database on Kubernetes.
+Why do I need persistent storage Persistent storage as the name implies allows you to store your data between container restarts.</description>
+    </item>
+    
+    <item>
+      <title>Learning Istio | JWT Auth</title>
+      <link>apcj.f5labs.dev/posts/jwt-auth/</link>
+      <pubDate>Sat, 06 Nov 2021 21:32:16 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/jwt-auth/</guid>
+      <description>In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
+ Is the JWT issued by the right party Is the client who they claim to be  The logic for the checks above are usually coded into the application.</description>
+    </item>
+    
+    <item>
+      <title>SQL Server on Kubernetes - Part 1</title>
+      <link>apcj.f5labs.dev/posts/sql-server-kubernetes/</link>
+      <pubDate>Mon, 01 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/sql-server-kubernetes/</guid>
+      <description>Intro Recently, I&amp;rsquo;ve been working with a customer who wants to provide databases on their Kubernetes cluster. Ever since Microsoft&amp;rsquo;s SQL Server was released on Linux some years ago, I&amp;rsquo;ve been fascinated with it. I decided to give it a go recently on Kubernetes, and get it all working.
+This is part one, where I deploy SQL server without persistent storage. In part two, I will discuss using persistent storage.</description>
+    </item>
+    
+    <item>
+      <title>Learning Istio | Securing Egress Traffic With mTLS</title>
+      <link>apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/</link>
+      <pubDate>Tue, 12 Oct 2021 15:59:45 +1100</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/</guid>
+      <description>There are times when applications deployed in Kubernetes need to communicate with external services that requires mTLS authentication, where the applications have to present client certificates signed by a common root/intermediate CA when accessing the service. This can lead to unpleasant scenarios where
+ application owners have to keep track of certificates for each of their applications applications written in different language/libraries have different ways of implementing mTLS connections  As an application owner, I would prefer to just deal with plain ol&#39; HTTP on port 80, and not have to modify the application to handle HTTPS or mTLS.</description>
+    </item>
+    
+    <item>
+      <title>Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</title>
+      <link>apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/</link>
+      <pubDate>Sat, 04 Sep 2021 23:36:07 +1000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/</guid>
+      <description>I got a question on how we can restrict access to certain external endpoints on a per namespace basis. There was an idea to use Istio&amp;rsquo;s egress gateway to control access to external endpoints, though I&amp;rsquo;m not convinced that&amp;rsquo;s a valid use case for an egress gateway today. So I went off to do some investigation, and found some options:
+ Specifying which namespaces can access certain hosts defined in the ServiceEntry Specifying which endpoints can be accessed from a namespace  But before that, a bit of back story of how we got here&amp;hellip;</description>
+    </item>
+    
+    <item>
+      <title>Learning Istio | Accessing external TCP services using ServiceEntry</title>
+      <link>apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/</link>
+      <pubDate>Mon, 16 Aug 2021 11:31:40 +1000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/</guid>
+      <description>In this post, we will be testing Istio&amp;rsquo;s ServiceEntry by accessing a PostgreDB database hosted externally from the Kubernetes cluster.
+Setup &amp;ldquo;External&amp;rdquo; PostgresDB service Since we are running the Kubernetes cluster locally in Docker containers using k3d, we can create an &amp;ldquo;external&amp;rdquo; service by running a PostgresDB Docker container on the same host and expose its ports to localhost.
+Create a local PostgresDB container database using Docker
+docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres Create a test database app_db</description>
+    </item>
+    
+    <item>
+      <title>Learning Istio | Ingress</title>
+      <link>apcj.f5labs.dev/posts/ingress/</link>
+      <pubDate>Mon, 02 Aug 2021 16:25:55 +1000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/ingress/</guid>
+      <description>In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
+Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
+Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
+kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes.</description>
+    </item>
+    
+    <item>
+      <title>Learning Istio | Setup</title>
+      <link>apcj.f5labs.dev/posts/setup/</link>
+      <pubDate>Mon, 02 Aug 2021 14:20:35 +1000</pubDate>
+      
+      <guid>apcj.f5labs.dev/posts/setup/</guid>
+      <description>In this series, we will be testing out several features in Istio with a local Kubernetes (k3s) cluster.
+Deploy k3s cluster First step is to deploy the k8s cluster with k3d - a wrapper to run k3s in docker. Start by creating a k3d config file:
+# k3d-istio.yamlapiVersion:k3d.io/v1alpha2kind:Simplename:istioservers:1agents:2ports:# for exposing Istio ingress on localhost- port:8080:80nodeFilters:- loadbalancer- port:8443:443nodeFilters:- loadbalanceroptions:k3s:extraServerArgs:- --no-deploy=traefik # we will be using Istio ingress insteadDeploy the cluster with k3d</description>
+    </item>
+    
     <item>
       <title>ELI5: Kubernetes Custom Resources</title>
       <link>apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/</link>

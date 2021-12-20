@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Ephemeral Kubernetes Lab with IaC and GitOps - apcj@f5 technical articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="apcj.f5labs.dev/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/apcj.f5labs.dev/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="active ">
+      <a href="apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">Ephemeral Kubernetes Lab with IaC and GitOps</h1>
+<div class="content ">
+  <p>I&rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&rsquo;m used to is a no-go. I need a setup that meets the following requirements:</p>
+<ul>
+<li>Simple to create and tear down</li>
+<li>Applications must be pre-deployed when the cluster is up, as close to &ldquo;just the way I left it there last night&rdquo; as possible</li>
+<li>cost $0 when the setup has been switched off</li>
+</ul>
+<p>I eventually settled on the idea of an ephemeral Kubernetes lab environment using <a href="#infrastructure-as-code-using-terraform">Infrastructure as Code (IaC)</a> and <a href="#k8s-resource-management-via-gitops-using-argo-cd">GitOps</a> practices, which I will cover in this post. You can follow along by cross referencing the code found here:</p>
+<blockquote>
+<p><a href="https://github.com/leonseng/terraform-everything/tree/master/eks-gitops">https://github.com/leonseng/terraform-everything/tree/master/eks-gitops</a></p>
+</blockquote>
+<h1 id="infrastructure-as-code-using-terraform">Infrastructure as Code using Terraform</h1>
+<p>Starting with the Kubernetes cluster, using a managed Kubernetes offering makes sense for me as my current focus is on Kubernetes applications.</p>
+<blockquote>
+<p>If cluster customization is of importance, one can deploy Kubernetes on the cloud computes using tools like <a href="https://github.com/kubernetes/kops">kops</a> or <a href="https://github.com/kubernetes-sigs/kubespray">kubespray</a>, similarly adopting IaC practices detailed below.</p>
+</blockquote>
+<p>I went with <a href="https://aws.amazon.com/eks/">EKS</a> as I am more familiar with AWS. An EKS cluster (or any other managed Kubernetes offerings in the public cloud) has a lot of dependencies on other cloud resources, such as computes, gateways, security policies and more. Rather than figuring out <em>when</em> to create <em>what</em>, <a href="https://www.terraform.io/">Terraform</a> can be used to define all the cloud resources needed for a functional EKS cluster in a declarative manner. In addition, Terraform modules such as <a href="https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest">vpc</a> and <a href="https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest">eks</a> can be used to further abstract away the web of dependencies. All it takes is a couple of Terraform modules and some data sources to create the cluster, as seen here:</p>
+<blockquote>
+<p><a href="https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/eks.tf">https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/eks.tf</a></p>
+</blockquote>
+<p>With the cluster sorted, I turn my attention to deploying Kubernetes resources/applications in the cluster.</p>
+<h1 id="k8s-resource-management-via-gitops-using-argo-cd">K8s resource management via GitOps using Argo CD</h1>
+<p>It&rsquo;s instinctive to start running <code>kubectl</code> commands to deploy Kubernetes resources that make up your application in the cluster, but keeping track of them gets harder overtime. If the cluster is to be rebuilt on a regular basis, we&rsquo;d best hope we have a record of what&rsquo;s deployed in it, and what better option than storing the Kubernetes manifests in a Git repository where the IaC definitions are also stored. With the desired state of applications in Git, the next step is ensuring the cluster state reflects the desired state. This is where GitOps comes in.</p>
+<p>GitOps can be briefly described as an automated workflow that ensures the state of the cluster and its applications matches the desired state from the source of truth, or Git repositories in the case. GitOps achieves this with one of the two patterns below:</p>
+<ol>
+<li>
+<p>Changes are <strong>pushed</strong> to the cluster</p>
+<p>Continuous deployment workflow applies the resource manifests on our cluster whenever there are changes in the Git repository. This can be done using simple Bash scripts, or orchestration tools like Ansible. A problem arises when there are multiple deployment workflows targeting the same cluster. As each workflow may not have a complete view of the cluster, it could lead to an inconsistent state in the cluster.</p>
+</li>
+<li>
+<p>Changes are <strong>pulled</strong> into the cluster</p>
+<p>Officially the preferred pattern in <a href="https://opengitops.dev/blog/1.0-announcement/">OpenGitOps v1.0.0</a> - an agent in the cluster continuously polls the desired state from a remote Git repository, and applies the changes in the cluster. <a href="https://argo-cd.readthedocs.io/en/stable/%5D">Argo CD</a> and <a href="https://fluxcd.io/docs/">Flux</a> are two popular GitOps tools that employs this pattern.</p>
+</li>
+</ol>
+<p>For this article, I will be using Argo CD, mainly for its explicit support for the <a href="#the-one-app-to-rule-them-all">App of Apps pattern</a> which I will cover in a section further down.</p>
+<h2 id="argo-cd-applications">Argo CD Applications</h2>
+<p>In Argo CD, a Kubernetes application are defined via an <a href="https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#applications"><code>Application</code> custom resource (CR)</a>. An <code>Application</code> CR provides Argo CD with the following information:</p>
+<ul>
+<li><strong>source</strong>: the Git repository, revision and path to where the collection of Kubernetes resource manifests are stored</li>
+<li><strong>destination</strong>: the target cluster (Argo CD supports multi-cluster GitOps) and namespace to apply/deploy Kubernetes resource manifests in</li>
+</ul>
+<p>An <code>Application</code> CR can be as simple as this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps.git
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guestbook
+</code></pre></div><p>The diagram below shows how an application is deployed with Argo CD:</p>
+<p><img src="/images/argocd-basic.png" alt="Basic Argo CD workflow"></p>
+<ol>
+<li>User creates/modifies and uploads Kubernetes resource manifests (e.g. Deployment, ConfigMap, Service etc) for an application into a Git repository.</li>
+<li>(<strong>manual step in cluster</strong>) User deploys an <code>Application</code> CR.</li>
+<li>Argo CD inspects <code>Application</code> CR to discover the Git repository.</li>
+<li>Argo CD pulls the Kubernetes resource manifests from the Git repository.</li>
+<li>Argo CD applies/deploys the Kubernetes resource manifests into the target cluster and namespace per the <code>Application</code> CR.</li>
+</ol>
+<p>And just like that, our application deployment has been turned into code. Pretty cool! But we can do better&hellip;</p>
+<h2 id="the-one-app-to-rule-them-all">The One App To Rule Them All</h2>
+<p>The previous workflow still involves a manual step on the cluster - creating the <code>Application</code> CR in the cluster. If the user forgets or makes a mistake, the state of the cluster will not reflect the desired state defined in the Git repository. In order to deal with such scenarios, let&rsquo;s turn to the <a href="https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern">App of Apps pattern</a>.</p>
+<p>Remember that an <code>Application</code> CR just points the agent to where the Kubernetes resource manifests are, there&rsquo;s no limitation on what kind of resources it supports. Naturally, this can be extended to other <code>Application</code> CRs! Here&rsquo;s how it works:</p>
+<p><img src="/images/argocd-app-of-apps.png" alt="Argo CD app of apps workflow"></p>
+<p>Let&rsquo;s start with the <!-- raw HTML omitted --><strong>red</strong><!-- raw HTML omitted --> flow that shows the bootstrapping:</p>
+<ol>
+<li>User creates a bootstrap Git repository to store <code>Application</code> CRs for the actual applications we want to deploy.</li>
+<li>User deploys a bootstrap <code>Application</code> CR on the cluster.</li>
+<li>Argo CD inspects the bootstrap <code>Application</code> CR to discover the bootstrap Git repository.</li>
+<li>Argo CD agent starts monitoring the Git repository for new <code>Application</code> CRs.</li>
+</ol>
+<p>Once the cluster has been bootstrapped (which only has to be done once when the cluster is being set up), let&rsquo;s go through the <!-- raw HTML omitted --><strong>green</strong><!-- raw HTML omitted --> flow to see how applications are deployed/modified:</p>
+<ol>
+<li>User creates/modifies and uploads Kubernetes resource manifests (e.g. Deployment, ConfigMap, Service etc) for an application into an application Git repository.</li>
+<li>User creates/modifies and uploads an <code>Application</code> CR for the above application into the bootstrap Git repository.</li>
+<li>Argo CD discovers new <code>Application</code> CR in the bootstrap Git repository.</li>
+<li>Argo CD deploys the <code>Application</code> CR in the cluster, and from it, discover the application Git repository.</li>
+<li>Argo CD pulls the Kubernetes resource manifests from the application Git repository</li>
+<li>Argo CD applies the Kubernetes resource manifests into the target cluster and namespace per the <code>Application</code> CR.</li>
+</ol>
+<p>Using the App of Apps pattern means we only have to maintain the desired state of our applications through Git, and Argo CD would automatically apply the desired state in the cluster.</p>
+<p>Phew&hellip; that was a lot to take in 😅. Hopefully we are now in the right head space to move on to the next section where we automate the bootstrapping via Terraform.</p>
+<h2 id="terraforming-gitops">Terraforming GitOps</h2>
+<p>To integrate this GitOps workflow and the App of Apps pattern with the <a href="#infrastructure-as-code-with-terraform">IaC</a> definitions, we use Terraform to:</p>
+<ol>
+<li>
+<p>Install Argo CD in the cluster</p>
+<p>I found two Terraform providers which can manage Kubernetes resources:</p>
+<ul>
+<li><a href="https://registry.terraform.io/providers/hashicorp/kubernetes/latest">kubernetes</a> - officially supported by HashiCorp, but requires Kubernetes resources to be defined in the Terraform&rsquo;s syntax HCL instead of YAML. It also does not support defining a CRD and any corresponding CRs within the same Terraform project, as the CRD won&rsquo;t exist when Terraform is processing the CRs in the planning stage.</li>
+<li><a href="https://registry.terraform.io/providers/gavinbunney/kubectl/latest">kubectl</a> - allows you to work in YAML and supports overwriting namespaces in the manifest. However, when performing <code>terraform destroy</code>, it does not seem to wait for resources to be fully deleted before marking them as destroyed (see <a href="https://github.com/gavinbunney/terraform-provider-kubectl/issues/109">issue</a>).</li>
+</ul>
+<p>Neither of them are perfect, but I&rsquo;m inclined to use the <a href="https://registry.terraform.io/providers/hashicorp/kubernetes/latest">kubernetes</a> provider for the official support, and deviate when it doesn&rsquo;t work.</p>
+</li>
+<li>
+<p>Bootstrap the cluster with an <code>Application</code> CR to utilize the App of Apps pattern.</p>
+<p>As explained earlier, this <code>Application</code> CR (see <a href="https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/bootstrap-app.yaml.tpl">manifest</a>) is responsible for defining the deployment of all other applications that we actually want running in our cluster. It simply points to a repository that looks something like this:</p>
+<blockquote>
+<p><a href="https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/argocd-apps">https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/argocd-apps</a></p>
+</blockquote>
+<p>where there are two applications to be deployed - <a href="https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/httpbin">httpbin</a> and <a href="https://github.com/leonseng/terraform-everything/tree/master/eks-gitops/demo/nginx">nginx</a>.</p>
+</li>
+</ol>
+<p>The full Terraform file can be seen here:</p>
+<blockquote>
+<p><a href="https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/argocd.tf">https://github.com/leonseng/terraform-everything/blob/master/eks-gitops/argocd.tf</a></p>
+</blockquote>
+<h1 id="finale">Finale</h1>
+<p>With the Terraform files and application manifests in their respective Git repositories, we can kick off the deployment with the Terraform commands</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">terraform init
+terraform apply -auto-approve
+</code></pre></div><p>And at the end of the day, shutting it down is as easy as running</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">terraform destroy -auto-approve
+</code></pre></div><p>Is it perfect? No. I need to be conscious of storing my application manifests in Git, which will slow me down. And occasionally, the destroy process fails due to some orphaned cloud resources (work in progress). But what I have now is an on/off button for my Kubernetes lab in the cloud, which should keep the IT department of my back 😁.</p>
+
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/apcj.f5labs.dev/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>

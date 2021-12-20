@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>SQL Server on Kubernetes - Part 2 - apcj@f5 technical articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="apcj.f5labs.dev/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/apcj.f5labs.dev/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="active ">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">SQL Server on Kubernetes - Part 2</h1>
+<div class="content ">
+  <h1 id="intro">Intro</h1>
+<p>So in my last <a href="https://codecowboy.io/kubernetes/sql-server-kubernetes/">post</a> I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.</p>
+<p>This post is going to focus on the storage components of running a database on Kubernetes.</p>
+<h2 id="why-do-i-need-persistent-storage">Why do I need persistent storage</h2>
+<p>Persistent storage as the name implies allows you to store your data between container restarts. This is important where data is stored in a database. You actually want your data to be persisted.</p>
+<h2 id="how-do-i-do-this-in-kubernetes">How do I do this in kubernetes?</h2>
+<p>Kubernetes has two concepts that allow you to persist data that we are going to use. The first is a persistent volume claim, the second is a persistent volume mount</p>
+<h2 id="persistent-volume-claim">Persistent Volume Claim</h2>
+<p>In Kubernetes a persistent volume claim is a way of &ldquo;grabbing some storage&rdquo; if you&rsquo;re a user. The Kubernetes documentation describes this much more eloquently as &ldquo;a request for storage from a user&rdquo; and &ldquo;the persistent volume API abstracts the details of storage from the user&rdquo;.</p>
+<p>This is documented <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">here</a></p>
+<p>In order to create a persistent volume claim, you can use a manifest like the one below.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Yaml" data-lang="Yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">PersistentVolumeClaim</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-data</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">accessModes</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span>- <span class="l">ReadWriteOnce</span><span class="w">
+</span><span class="w">  </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">requests</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="l">100Mi</span><span class="w">
+</span><span class="w">  </span><span class="nt">volumeMode</span><span class="p">:</span><span class="w"> </span><span class="l">Filesystem</span><span class="w">
+</span></code></pre></div><p>This will request 100M as a filesystem mount with a Read and Write access mode, within the namespace mssql.</p>
+<p>Once I have a claim, I can create a pod that utilises the claim, and mounts a filesystem.</p>
+<h2 id="persistent-storage-volumes">Persistent Storage Volumes</h2>
+<p>Pods can use a claim as a volume. In order to do this, the following is added to the Deployment definition.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Yaml" data-lang="Yaml"><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssqldb</span><span class="w">
+</span><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/opt/mssql</span><span class="w">
+</span><span class="w">      </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssqldb</span><span class="w">
+</span><span class="w">        </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-data</span><span class="w">
+</span></code></pre></div><p>This mounts the volume by mapping to a claim name.</p>
+<p>Note that the claim name is the same as our claim name in our PersistentVolumeClaim definition above. This essentially makes the &ldquo;raw disk&rdquo; available to the pod.</p>
+<p>The volume mount, mounts the volume as a filesystem within the container or pod. The reason that I can do this is that the volume mode in my PersistentVolumeClaim is set to Filesystem. This allows the volume to be mounted as a filesystem within the container / pod.</p>
+<p>The full definition is below.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Yaml" data-lang="Yaml"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l">apps/v1</span><span class="w">
+</span><span class="w"></span><span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l">Deployment</span><span class="w">
+</span><span class="w"></span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
+</span><span class="w">  </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
+</span><span class="w"></span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span><span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">matchLabels</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
+</span><span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">Recreate</span><span class="w">
+</span><span class="w">  </span><span class="nt">template</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">app</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-a</span><span class="w">
+</span><span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span><span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span><span class="w">      </span><span class="nt">securityContext</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span><span class="nt">fsGroup</span><span class="p">:</span><span class="w"> </span><span class="m">1000</span><span class="w">
+</span><span class="w">      </span><span class="nt">containers</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
+</span><span class="w">        </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">mcr.microsoft.com/mssql/rhel/server:2019-latest</span><span class="w">
+</span><span class="w">        </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">containerPort</span><span class="p">:</span><span class="w"> </span><span class="m">1433</span><span class="w">
+</span><span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-port</span><span class="w">
+</span><span class="w">          </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">TCP</span><span class="w">
+</span><span class="w">        </span><span class="nt">env</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MSSQL_PID</span><span class="w">
+</span><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Developer&#34;</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ACCEPT_EULA</span><span class="w">
+</span><span class="w">          </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;Y&#34;</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">MSSQL_SA_PASSWORD</span><span class="w">
+</span><span class="w">          </span><span class="nt">valueFrom</span><span class="p">:</span><span class="w">
+</span><span class="w">            </span><span class="nt">secretKeyRef</span><span class="p">:</span><span class="w">
+</span><span class="w">              </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssql</span><span class="w">
+</span><span class="w">              </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">SA_PASSWORD</span><span class="w">
+</span><span class="w">        </span><span class="nt">volumeMounts</span><span class="p">:</span><span class="w">
+</span><span class="w">        </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssqldb</span><span class="w">
+</span><span class="w">          </span><span class="nt">mountPath</span><span class="p">:</span><span class="w"> </span><span class="l">/var/opt/mssql</span><span class="w">
+</span><span class="w">      </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">mssqldb</span><span class="w">
+</span><span class="w">        </span><span class="nt">persistentVolumeClaim</span><span class="p">:</span><span class="w">
+</span><span class="w">          </span><span class="nt">claimName</span><span class="p">:</span><span class="w"> </span><span class="l">mssql-data</span><span class="w">
+</span></code></pre></div><h2 id="inside-the-container">Inside the container</h2>
+<p>Inside the container I see the following</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora mssql<span class="o">]</span><span class="c1"># kubectl exec -it mssql-a-59b4fbc56d-68rzj -n mssql /bin/bash</span>
+
+bash-4.4$
+bash-4.4$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          80G  4.3G   76G   6% /
+tmpfs            64M     <span class="m">0</span>   64M   0% /dev
+tmpfs           7.9G     <span class="m">0</span>  7.9G   0% /sys/fs/cgroup
+/dev/xvda1       80G  4.3G   76G   6% /etc/hosts
+shm              64M     <span class="m">0</span>   64M   0% /dev/shm
+
+/dev/xvdca      976M  112M  849M  12% /var/opt/mssql
+
+tmpfs           7.9G   12K  7.9G   1% /run/secrets/kubernetes.io/serviceaccount
+tmpfs           7.9G     <span class="m">0</span>  7.9G   0% /proc/acpi
+tmpfs           7.9G     <span class="m">0</span>  7.9G   0% /proc/scsi
+tmpfs           7.9G     <span class="m">0</span>  7.9G   0% /sys/firmware
+
+</code></pre></div><p>You can see that the /var/opt/mssql filesystem is a filesystem that I can put data into.
+In my case, this is the default data directory for my SQL Server database.</p>
+<h2 id="how-do-i-check-this">How do I check this?</h2>
+<p>If you want to check a persistent volume claim use the following commands.
+<em>kubectl get pvc</em> will show the current persistent volume claims and their status.</p>
+<p>For each persistent volume, you should be able to see the mode, capacity, storageclass and so on.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora mssql<span class="o">]</span><span class="c1"># kubectl get pvc -n mssql</span>
+NAME         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mssql-data   Bound    pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371   1Gi        RWO            gp2            33h
+</code></pre></div><p>Further information can be gained by using the describe key word.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora mssql<span class="o">]</span><span class="c1"># kubectl describe  pvc -n mssql</span>
+Name:          mssql-data
+Namespace:     mssql
+StorageClass:  gp2
+Status:        Bound
+Volume:        pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371
+Labels:        &lt;none&gt;
+Annotations:   pv.kubernetes.io/bind-completed: yes
+               pv.kubernetes.io/bound-by-controller: yes
+               volume.beta.kubernetes.io/storage-provisioner: kubernetes.io/aws-ebs
+               volume.kubernetes.io/selected-node: ip-192-168-44-199.ap-southeast-2.compute.internal
+Finalizers:    <span class="o">[</span>kubernetes.io/pvc-protection<span class="o">]</span>
+Capacity:      1Gi
+Access Modes:  RWO
+VolumeMode:    Filesystem
+Used By:       mssql-a-59b4fbc56d-68rzj
+Events:        &lt;none&gt;
+</code></pre></div><p>In order to see the actual volumes you can use the following commands.</p>
+<p>This shows the volume, it&rsquo;s status and storage class, as well as the associated volume claim, including the namespace that the volume claim lives in.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora mssql<span class="o">]</span><span class="c1"># kubectl get pv</span>
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM              STORAGECLASS   REASON   AGE
+pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371   1Gi        RWO            Delete           Bound    mssql/mssql-data   gp2                     33h
+</code></pre></div><p>Similarly, when I perform a describe against the volume, we can see that this is running in AWS, we can see the type of storage and so on.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-Bash" data-lang="Bash"><span class="o">[</span>root@fedora mssql<span class="o">]</span><span class="c1"># kubectl describe pv</span>
+Name:              pvc-5cd23b78-9feb-4db0-b2b0-dca7f6b56371
+Labels:            failure-domain.beta.kubernetes.io/region<span class="o">=</span>ap-southeast-2
+                   failure-domain.beta.kubernetes.io/zone<span class="o">=</span>ap-southeast-2c
+Annotations:       kubernetes.io/createdby: aws-ebs-dynamic-provisioner
+                   pv.kubernetes.io/bound-by-controller: yes
+                   pv.kubernetes.io/provisioned-by: kubernetes.io/aws-ebs
+Finalizers:        <span class="o">[</span>kubernetes.io/pv-protection<span class="o">]</span>
+StorageClass:      gp2
+Status:            Bound
+Claim:             mssql/mssql-data
+Reclaim Policy:    Delete
+Access Modes:      RWO
+VolumeMode:        Filesystem
+Capacity:          1Gi
+Node Affinity:
+  Required Terms:
+    Term 0:        failure-domain.beta.kubernetes.io/zone in <span class="o">[</span>ap-southeast-2c<span class="o">]</span>
+                   failure-domain.beta.kubernetes.io/region in <span class="o">[</span>ap-southeast-2<span class="o">]</span>
+Message:
+Source:
+    Type:       AWSElasticBlockStore <span class="o">(</span>a Persistent Disk resource in AWS<span class="o">)</span>
+    VolumeID:   aws://ap-southeast-2c/vol-087cd704ef36ad587
+    FSType:     ext4
+    Partition:  <span class="m">0</span>
+    ReadOnly:   <span class="nb">false</span>
+Events:         &lt;none&gt;
+</code></pre></div><h2 id="what-if-the-pod-restarts">What if the pod restarts?</h2>
+<p>If the pod restarts, the newly scheduled pod will use the existing PVC and your data will still be there!</p>
+<p>This may cause transaction problems in your database, but for the most part the data will still be there.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Persistent volumes are cool, and they make your life running databases, but really persisting any storage on Kubernetes easier.</p>
+<p>I hope you had fun reading, look out for more topics soon!</p>
+
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/apcj.f5labs.dev/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>
