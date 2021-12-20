@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Learning Istio | Why Isn&#39;t Service Entry Namespaced!? - apcj@f5 technical articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="apcj.f5labs.dev/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/apcj.f5labs.dev/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="active ">
+      <a href="apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</h1>
+<div class="content ">
+  <p>I got a question on how we can restrict access to certain external endpoints on a per namespace basis. There was an idea to use Istio&rsquo;s <code>egress gateway</code> to control access to external endpoints, though I&rsquo;m not convinced that&rsquo;s a valid <a href="https://istio.io/latest/docs/tasks/traffic-management/egress/egress-gateway/#use-case">use case for an <code>egress gateway</code></a> today. So I went off to do some investigation, and found some options:</p>
+<ol>
+<li><a href="#exportto">Specifying which namespaces can access certain hosts defined in the <code>ServiceEntry</code></a></li>
+<li><a href="#sidecar-resource">Specifying which endpoints can be accessed from a namespace</a></li>
+</ol>
+<p>But before that, a bit of back story of how we got here&hellip;</p>
+<h2 id="a-naive-beginning">A naive beginning</h2>
+<p>First, I updated Istio <code>outboundTrafficPolicy</code> to <code>REGISTRY_ONLY</code> so that we need to EXPLICITLY allow connectivity to external endpoints</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">istioctl install --set profile=demo --set meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY -y
+</code></pre></div><p>To test the access restriction, I deployed a <code>debian</code> pod in the <code>default</code> namespace</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create deployment debian --image debian --replicas=1 -- tail -f /dev/null
+</code></pre></div><p>and tried running <code>apt update</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="err">$</span> <span class="nx">kubectl</span> <span class="nx">exec</span> <span class="o">-</span><span class="nx">it</span> <span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span> <span class="o">--</span> <span class="nx">bash</span>
+<span class="nx">Defaulting</span> <span class="nx">container</span> <span class="nx">name</span> <span class="nx">to</span> <span class="nx">debian</span><span class="p">.</span>
+<span class="nx">Use</span> <span class="err">&#39;</span><span class="nx">kubectl</span> <span class="nx">describe</span> <span class="nx">pod</span><span class="o">/</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span> <span class="o">-</span><span class="nx">n</span> <span class="k">default</span><span class="err">&#39;</span> <span class="nx">to</span> <span class="nx">see</span> <span class="nx">all</span> <span class="nx">of</span> <span class="nx">the</span> <span class="nx">containers</span> <span class="nx">in</span> <span class="nx">this</span> <span class="nx">pod</span><span class="p">.</span>
+<span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span><span class="p">:</span><span class="o">/</span><span class="err">#</span>
+<span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span><span class="p">:</span><span class="o">/</span><span class="err">#</span> <span class="nx">apt</span><span class="o">-</span><span class="nx">get</span> <span class="nx">update</span>
+<span class="nx">Err</span><span class="p">:</span><span class="mi">1</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.130.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Err</span><span class="p">:</span><span class="mi">2</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.30.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Err</span><span class="p">:</span><span class="mi">3</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.30.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Reading</span> <span class="kn">package</span> <span class="nx">lists</span><span class="o">...</span> <span class="nx">Done</span>
+<span class="nx">N</span><span class="p">:</span> <span class="nx">See</span> <span class="nx">apt</span><span class="o">-</span><span class="nf">secure</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="nx">manpage</span> <span class="k">for</span> <span class="nx">repository</span> <span class="nx">creation</span> <span class="nx">and</span> <span class="nx">user</span> <span class="nx">configuration</span> <span class="nx">details</span><span class="p">.</span>
+<span class="nx">N</span><span class="p">:</span> <span class="nx">Updating</span> <span class="nx">from</span> <span class="nx">such</span> <span class="nx">a</span> <span class="nx">repository</span> <span class="nx">can</span><span class="err">&#39;</span><span class="nx">t</span> <span class="nx">be</span> <span class="nx">done</span> <span class="nx">securely</span><span class="p">,</span> <span class="nx">and</span> <span class="nx">is</span> <span class="nx">therefore</span> <span class="nx">disabled</span> <span class="nx">by</span> <span class="k">default</span><span class="p">.</span>
+<span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease&#39; is not signed.
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security/dists/bullseye-security/InRelease  502  Bad Gateway [IP: 151.101.130.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian/dists/bullseye/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease&#39; is not signed.
+</span><span class="c1"></span><span class="nx">N</span><span class="p">:</span> <span class="nx">Updating</span> <span class="nx">from</span> <span class="nx">such</span> <span class="nx">a</span> <span class="nx">repository</span> <span class="nx">can</span><span class="err">&#39;</span><span class="nx">t</span> <span class="nx">be</span> <span class="nx">done</span> <span class="nx">securely</span><span class="p">,</span> <span class="nx">and</span> <span class="nx">is</span> <span class="nx">therefore</span> <span class="nx">disabled</span> <span class="nx">by</span> <span class="k">default</span><span class="p">.</span>
+<span class="nx">N</span><span class="p">:</span> <span class="nx">See</span> <span class="nx">apt</span><span class="o">-</span><span class="nf">secure</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="nx">manpage</span> <span class="k">for</span> <span class="nx">repository</span> <span class="nx">creation</span> <span class="nx">and</span> <span class="nx">user</span> <span class="nx">configuration</span> <span class="nx">details</span><span class="p">.</span>
+<span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian/dists/bullseye-updates/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease&#39; is not signed.
+</span><span class="c1"></span><span class="nx">N</span><span class="p">:</span> <span class="nx">Updating</span> <span class="nx">from</span> <span class="nx">such</span> <span class="nx">a</span> <span class="nx">repository</span> <span class="nx">can</span><span class="err">&#39;</span><span class="nx">t</span> <span class="nx">be</span> <span class="nx">done</span> <span class="nx">securely</span><span class="p">,</span> <span class="nx">and</span> <span class="nx">is</span> <span class="nx">therefore</span> <span class="nx">disabled</span> <span class="nx">by</span> <span class="k">default</span><span class="p">.</span>
+<span class="nx">N</span><span class="p">:</span> <span class="nx">See</span> <span class="nx">apt</span><span class="o">-</span><span class="nf">secure</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="nx">manpage</span> <span class="k">for</span> <span class="nx">repository</span> <span class="nx">creation</span> <span class="nx">and</span> <span class="nx">user</span> <span class="nx">configuration</span> <span class="nx">details</span><span class="p">.</span>
+<span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span><span class="p">:</span><span class="o">/</span><span class="err">#</span>
+</code></pre></div><p>As expected the command fails when <code>apt update</code> tries to reach external endpoints <code>security.debian.org</code> and <code>deb.debian.org</code>, due to the endpoints not being defined in the registry.</p>
+<p>I then created a <code>ServiceEntry</code> matching the two hostnames</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create -f - &lt;&lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: debian-org
+spec:
+  hosts:
+  - security.debian.org
+  - deb.debian.org
+  location: MESH_EXTERNAL
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  resolution: DNS
+EOF
+</code></pre></div><p>and re-ran <code>apt update</code>. This time it ran successfully as expected.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="err">$</span> <span class="nx">kubectl</span> <span class="nx">exec</span> <span class="o">-</span><span class="nx">it</span> <span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span> <span class="o">--</span> <span class="nx">bash</span>
+<span class="nx">Defaulting</span> <span class="nx">container</span> <span class="nx">name</span> <span class="nx">to</span> <span class="nx">debian</span><span class="p">.</span>
+<span class="nx">Use</span> <span class="err">&#39;</span><span class="nx">kubectl</span> <span class="nx">describe</span> <span class="nx">pod</span><span class="o">/</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span> <span class="o">-</span><span class="nx">n</span> <span class="k">default</span><span class="err">&#39;</span> <span class="nx">to</span> <span class="nx">see</span> <span class="nx">all</span> <span class="nx">of</span> <span class="nx">the</span> <span class="nx">containers</span> <span class="nx">in</span> <span class="nx">this</span> <span class="nx">pod</span><span class="p">.</span>
+<span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span><span class="p">:</span><span class="o">/</span><span class="err">#</span> <span class="nx">apt</span> <span class="nx">update</span>
+<span class="nx">Hit</span><span class="p">:</span><span class="mi">1</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease
+</span><span class="c1"></span><span class="nx">Get</span><span class="p">:</span><span class="mi">2</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease [113 kB]
+</span><span class="c1"></span><span class="nx">Get</span><span class="p">:</span><span class="mi">3</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease [36.8 kB]
+</span><span class="c1"></span><span class="nx">Get</span><span class="p">:</span><span class="mi">4</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye/main amd64 Packages [8178 kB]
+</span><span class="c1"></span><span class="nx">Fetched</span> <span class="mi">8327</span> <span class="nx">kB</span> <span class="nx">in</span> <span class="mi">3</span><span class="nf">s</span> <span class="p">(</span><span class="mi">2812</span> <span class="nx">kB</span><span class="o">/</span><span class="nx">s</span><span class="p">)</span>
+<span class="nx">Reading</span> <span class="kn">package</span> <span class="nx">lists</span><span class="o">...</span> <span class="nx">Done</span>
+<span class="nx">Building</span> <span class="nx">dependency</span> <span class="nx">tree</span><span class="o">...</span> <span class="nx">Done</span>
+<span class="nx">Reading</span> <span class="nx">state</span> <span class="nx">information</span><span class="o">...</span> <span class="nx">Done</span>
+<span class="nx">All</span> <span class="nx">packages</span> <span class="nx">are</span> <span class="nx">up</span> <span class="nx">to</span> <span class="nx">date</span><span class="p">.</span>
+<span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="mi">9</span><span class="nx">x7lt</span><span class="p">:</span><span class="o">/</span><span class="err">#</span>
+</code></pre></div><p>Now, I thought this would be the end of the story. All I have to do is to only allow cluster admins the permissions for creating <code>ServiceEntry</code> resources, and developers would have to engage cluster admins to get access to external resources!</p>
+<h2 id="plot-twist">Plot twist</h2>
+<p>But I figured this came to me too easily&hellip; they should have figured it out without asking for help. So, I tried repeating the test from another namespace <code>newguy</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create ns newguy
+kubectl label namespace newguy istio-injection=enabled
+kubectl -n newguy create deployment debian --image debian --replicas=1 -- tail -f /dev/null
+</code></pre></div><p>Lo and behold, when I run <code>apt update</code> in this container, it worked&hellip; when I thought it shouldn&rsquo;t&hellip;</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="err">$</span> <span class="nx">kubectl</span> <span class="o">-</span><span class="nx">n</span> <span class="nx">newguy</span> <span class="nx">exec</span> <span class="o">-</span><span class="nx">it</span> <span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span> <span class="o">--</span> <span class="nx">bash</span>
+<span class="nx">Defaulting</span> <span class="nx">container</span> <span class="nx">name</span> <span class="nx">to</span> <span class="nx">debian</span><span class="p">.</span>
+<span class="nx">Use</span> <span class="err">&#39;</span><span class="nx">kubectl</span> <span class="nx">describe</span> <span class="nx">pod</span><span class="o">/</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span> <span class="o">-</span><span class="nx">n</span> <span class="nx">newguy</span><span class="err">&#39;</span> <span class="nx">to</span> <span class="nx">see</span> <span class="nx">all</span> <span class="nx">of</span> <span class="nx">the</span> <span class="nx">containers</span> <span class="nx">in</span> <span class="nx">this</span> <span class="nx">pod</span><span class="p">.</span>
+<span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span><span class="p">:</span><span class="o">/</span><span class="err">#</span> <span class="nx">apt</span> <span class="nx">update</span>
+<span class="nx">Get</span><span class="p">:</span><span class="mi">1</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease [113 kB]
+</span><span class="c1"></span><span class="nx">Get</span><span class="p">:</span><span class="mi">2</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease [36.8 kB]
+</span><span class="c1"></span><span class="nx">Get</span><span class="p">:</span><span class="mi">3</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye/main amd64 Packages [8178 kB]
+</span><span class="c1"></span><span class="nx">Get</span><span class="p">:</span><span class="mi">4</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease [44.1 kB]
+</span><span class="c1"></span><span class="nx">Get</span><span class="p">:</span><span class="mi">5</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security/main amd64 Packages [29.4 kB]
+</span><span class="c1"></span><span class="nx">Fetched</span> <span class="mi">8401</span> <span class="nx">kB</span> <span class="nx">in</span> <span class="mi">3</span><span class="nf">s</span> <span class="p">(</span><span class="mi">3267</span> <span class="nx">kB</span><span class="o">/</span><span class="nx">s</span><span class="p">)</span>
+<span class="nx">Reading</span> <span class="kn">package</span> <span class="nx">lists</span><span class="o">...</span> <span class="nx">Done</span>
+<span class="nx">Building</span> <span class="nx">dependency</span> <span class="nx">tree</span><span class="o">...</span> <span class="nx">Done</span>
+<span class="nx">Reading</span> <span class="nx">state</span> <span class="nx">information</span><span class="o">...</span> <span class="nx">Done</span>
+<span class="nx">All</span> <span class="nx">packages</span> <span class="nx">are</span> <span class="nx">up</span> <span class="nx">to</span> <span class="nx">date</span><span class="p">.</span>
+<span class="nx">root</span><span class="err">@</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span><span class="p">:</span><span class="o">/</span><span class="err">#</span>
+</code></pre></div><p>Turns out that by default, many of Istio&rsquo;s resources are translated to configurations which are applied to the sidecar proxies in all namespaces. Here&rsquo;s one from Istio&rsquo;s <a href="https://istio.io/latest/docs/reference/config/networking/service-entry/">ServiceEntry</a> documentation:</p>
+<blockquote>
+<p>The &lsquo;exportTo&rsquo; field allows for control over the visibility of a service declaration to other namespaces in the mesh. By default, a service is exported to all namespaces.</p>
+</blockquote>
+<p>So, that means by default, my <code>newguy:debian</code> pod contains configuration to get to the <code>*.debian.org</code> hosts from the <code>ServiceEntry</code> definition in the default namespace. I want the opposite of that - I don&rsquo;t want the <code>istio-proxy</code> in the <code>newguy</code> namespace to pick up configuration defined in other namespaces.</p>
+<p>Now that we&rsquo;ve established our problem, let&rsquo;s set out to explore the options:</p>
+<ol>
+<li><a href="#exportto">Specifying which namespaces can access certain hosts defined in the <code>ServiceEntry</code></a></li>
+<li><a href="#sidecar-resource">Specifying which endpoints can be accessed from a namespace</a></li>
+</ol>
+<h2 id="exportto">exportTo</h2>
+<p>The most direct way is to use the <code>exportTo</code> attribute in <code>ServiceEntry</code> to specify the namespaces in which pods are allowed to access the external endpoints. To achieve that, I updated the <code>ServiceEntry</code> to only export to the namespace in which it&rsquo;s defined, or just <code>&quot;.&quot;</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl apply -f - &lt;&lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: debian-org
+spec:
+  exportTo:
+  - &#34;.&#34;
+  hosts:
+  - security.debian.org
+  - deb.debian.org
+  location: MESH_EXTERNAL
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  resolution: DNS
+EOF
+</code></pre></div><p>The container in the <code>newguy</code> namespace is no longer able to access the endpoints:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="err">$</span> <span class="nx">kubectl</span> <span class="o">-</span><span class="nx">n</span> <span class="nx">newguy</span> <span class="nx">exec</span> <span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span> <span class="o">--</span> <span class="nx">apt</span> <span class="nx">update</span>
+<span class="nx">Defaulted</span> <span class="nx">container</span> <span class="s">&#34;debian&#34;</span> <span class="nx">out</span> <span class="nx">of</span><span class="p">:</span> <span class="nx">debian</span><span class="p">,</span> <span class="nx">istio</span><span class="o">-</span><span class="nx">proxy</span><span class="p">,</span> <span class="nx">istio</span><span class="o">-</span><span class="nf">init</span> <span class="p">(</span><span class="nx">init</span><span class="p">)</span>
+
+<span class="nx">WARNING</span><span class="p">:</span> <span class="nx">apt</span> <span class="nx">does</span> <span class="nx">not</span> <span class="nx">have</span> <span class="nx">a</span> <span class="nx">stable</span> <span class="nx">CLI</span> <span class="kd">interface</span><span class="p">.</span> <span class="nx">Use</span> <span class="nx">with</span> <span class="nx">caution</span> <span class="nx">in</span> <span class="nx">scripts</span><span class="p">.</span>
+
+<span class="nx">Err</span><span class="p">:</span><span class="mi">1</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.30.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Err</span><span class="p">:</span><span class="mi">2</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.30.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Err</span><span class="p">:</span><span class="mi">3</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.2.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Reading</span> <span class="kn">package</span> <span class="nx">lists</span><span class="o">...</span>
+<span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease&#39; is no longer signed.
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian/dists/bullseye/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian/dists/bullseye-updates/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease&#39; is no longer signed.
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security/dists/bullseye-security/InRelease  502  Bad Gateway [IP: 151.101.2.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease&#39; is no longer signed.
+</span><span class="c1"></span><span class="nx">command</span> <span class="nx">terminated</span> <span class="nx">with</span> <span class="nx">exit</span> <span class="nx">code</span> <span class="mi">100</span>
+</code></pre></div><h2 id="sidecar-resource">Sidecar resource</h2>
+<p>The <code>exportTo</code> attribute presents a per <code>ServiceEntry</code> way of controlling access. To achieve a per namespace way of access control, we can turn to the <code>Sidecar</code>. No, not the <code>istio-proxy</code> sidecars that come with pods. I&rsquo;m talking about the <a href="https://istio.io/latest/docs/reference/config/networking/sidecar/">Sidecar</a> custom resource.</p>
+<blockquote>
+<p>By default, Istio will program all sidecar proxies in the mesh with the necessary configuration required to reach every workload instance in the mesh, as well as accept traffic on all the ports associated with the workload. The Sidecar configuration provides a way to fine tune the set of ports, protocols that the proxy will accept when forwarding traffic to and from the workload. In addition, it is possible to restrict the set of services that the proxy can reach when forwarding outbound traffic from workload instances.</p>
+</blockquote>
+<p>To demonstrate, I created the following <code>Sidecar</code> definition in the <code>newguy</code> namespace which only allows egress traffic only to other workloads in the same namespace as well as to services in the <code>istio-system</code> namespace.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl -n newguy create -f - &lt;&lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: default
+spec:
+  egress:
+  - hosts:
+    - &#34;./*&#34;
+    - &#34;istio-system/*&#34;
+EOF
+</code></pre></div><p>When I try running <code>apt update</code> in the <code>newguy</code> namespace again:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="err">$</span> <span class="nx">kubectl</span> <span class="o">-</span><span class="nx">n</span> <span class="nx">newguy</span> <span class="nx">exec</span> <span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span> <span class="o">--</span> <span class="nx">apt</span> <span class="nx">update</span>
+<span class="nx">Defaulting</span> <span class="nx">container</span> <span class="nx">name</span> <span class="nx">to</span> <span class="nx">debian</span><span class="p">.</span>
+<span class="nx">Use</span> <span class="err">&#39;</span><span class="nx">kubectl</span> <span class="nx">describe</span> <span class="nx">pod</span><span class="o">/</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span> <span class="o">-</span><span class="nx">n</span> <span class="nx">newguy</span><span class="err">&#39;</span> <span class="nx">to</span> <span class="nx">see</span> <span class="nx">all</span> <span class="nx">of</span> <span class="nx">the</span> <span class="nx">containers</span> <span class="nx">in</span> <span class="nx">this</span> <span class="nx">pod</span><span class="p">.</span>
+
+<span class="nx">WARNING</span><span class="p">:</span> <span class="nx">apt</span> <span class="nx">does</span> <span class="nx">not</span> <span class="nx">have</span> <span class="nx">a</span> <span class="nx">stable</span> <span class="nx">CLI</span> <span class="kd">interface</span><span class="p">.</span> <span class="nx">Use</span> <span class="nx">with</span> <span class="nx">caution</span> <span class="nx">in</span> <span class="nx">scripts</span><span class="p">.</span>
+
+<span class="nx">Err</span><span class="p">:</span><span class="mi">1</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.66.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Err</span><span class="p">:</span><span class="mi">2</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.30.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Err</span><span class="p">:</span><span class="mi">3</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease
+</span><span class="c1"></span>  <span class="mi">502</span>  <span class="nx">Bad</span> <span class="nx">Gateway</span> <span class="p">[</span><span class="nx">IP</span><span class="p">:</span> <span class="mf">151.101.30.132</span> <span class="mi">80</span><span class="p">]</span>
+<span class="nx">Reading</span> <span class="kn">package</span> <span class="nx">lists</span><span class="o">...</span>
+<span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease&#39; is no longer signed.
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security/dists/bullseye-security/InRelease  502  Bad Gateway [IP: 151.101.66.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian/dists/bullseye/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease&#39; is no longer signed.
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">Failed</span> <span class="nx">to</span> <span class="nx">fetch</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian/dists/bullseye-updates/InRelease  502  Bad Gateway [IP: 151.101.30.132 80]
+</span><span class="c1"></span><span class="nx">E</span><span class="p">:</span> <span class="nx">The</span> <span class="nx">repository</span> <span class="err">&#39;</span><span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease&#39; is no longer signed.
+</span><span class="c1"></span><span class="nx">command</span> <span class="nx">terminated</span> <span class="nx">with</span> <span class="nx">exit</span> <span class="nx">code</span> <span class="mi">100</span>
+</code></pre></div><p>It fails as expected! And when I add the two hostnames in the egress hosts list of the <code>Sidecar</code> resource:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl -n newguy apply -f - &lt;&lt;EOF
+apiVersion: networking.istio.io/v1beta1
+kind: Sidecar
+metadata:
+  name: default
+spec:
+  egress:
+  - hosts:
+    - &#34;./*&#34;
+    - &#34;istio-system/*&#34;
+    - &#34;default/security.debian.org&#34;
+    - &#34;default/deb.debian.org&#34;
+EOF
+</code></pre></div><p><code>apt update</code> now runs successfully!</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="err">$</span> <span class="nx">kubectl</span> <span class="o">-</span><span class="nx">n</span> <span class="nx">newguy</span> <span class="nx">exec</span> <span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span> <span class="o">--</span> <span class="nx">apt</span> <span class="nx">update</span>
+<span class="nx">Defaulting</span> <span class="nx">container</span> <span class="nx">name</span> <span class="nx">to</span> <span class="nx">debian</span><span class="p">.</span>
+<span class="nx">Use</span> <span class="err">&#39;</span><span class="nx">kubectl</span> <span class="nx">describe</span> <span class="nx">pod</span><span class="o">/</span><span class="nx">debian</span><span class="o">-</span><span class="mi">8484</span><span class="nx">c5df49</span><span class="o">-</span><span class="nx">dpf2h</span> <span class="o">-</span><span class="nx">n</span> <span class="nx">newguy</span><span class="err">&#39;</span> <span class="nx">to</span> <span class="nx">see</span> <span class="nx">all</span> <span class="nx">of</span> <span class="nx">the</span> <span class="nx">containers</span> <span class="nx">in</span> <span class="nx">this</span> <span class="nx">pod</span><span class="p">.</span>
+
+<span class="nx">WARNING</span><span class="p">:</span> <span class="nx">apt</span> <span class="nx">does</span> <span class="nx">not</span> <span class="nx">have</span> <span class="nx">a</span> <span class="nx">stable</span> <span class="nx">CLI</span> <span class="kd">interface</span><span class="p">.</span> <span class="nx">Use</span> <span class="nx">with</span> <span class="nx">caution</span> <span class="nx">in</span> <span class="nx">scripts</span><span class="p">.</span>
+
+<span class="nx">Hit</span><span class="p">:</span><span class="mi">1</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//security.debian.org/debian-security bullseye-security InRelease
+</span><span class="c1"></span><span class="nx">Hit</span><span class="p">:</span><span class="mi">2</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye InRelease
+</span><span class="c1"></span><span class="nx">Hit</span><span class="p">:</span><span class="mi">3</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//deb.debian.org/debian bullseye-updates InRelease
+</span><span class="c1"></span><span class="nx">Reading</span> <span class="kn">package</span> <span class="nx">lists</span><span class="o">...</span>
+<span class="nx">Building</span> <span class="nx">dependency</span> <span class="nx">tree</span><span class="o">...</span>
+<span class="nx">Reading</span> <span class="nx">state</span> <span class="nx">information</span><span class="o">...</span>
+<span class="nx">All</span> <span class="nx">packages</span> <span class="nx">are</span> <span class="nx">up</span> <span class="nx">to</span> <span class="nx">date</span><span class="p">.</span>
+<span class="err">$</span>
+</code></pre></div>
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/apcj.f5labs.dev/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>

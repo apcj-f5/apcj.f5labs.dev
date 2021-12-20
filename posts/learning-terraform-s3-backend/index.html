@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Learning Terraform S3 Backend - apcj@f5 technical articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="apcj.f5labs.dev/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/apcj.f5labs.dev/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="active ">
+      <a href="apcj.f5labs.dev/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">Learning Terraform S3 Backend</h1>
+<div class="content ">
+  <p>I have had basic experience playing with Terraform to instantiate resources in Kubernetes and AWS, but my previous attempts left me with a thought, how do I implement this at work and scale it up to the team?</p>
+<p>Terraform creates a local state file which seems like a pain to share around a team. This is when I found out about remote backends. And this is my attempt to learn <a href="https://www.terraform.io/docs/language/settings/backends/s3.html">Terraform S3 backend</a>.</p>
+<h1 id="setup">Setup</h1>
+<p>Terraform S3 backend stores the state file in an AWS S3 bucket, and if required, uses DynamoDB to manage state locking (highly recommended when working in a team).</p>
+<p>So&hellip; to manage infrastructure using Terraform, I first need to deploy the supporting infrastructure 😅</p>
+<p>🐔 and 🥚 problem much?</p>
+<p>There are guides online to perform this setup using Terraform, but I&rsquo;ll keep it simple for now and do it manually through AWS console.</p>
+<ul>
+<li>Create an S3 bucket</li>
+<li>Create DynamoDB table</li>
+<li>Create a role with policy to interact with S3 and DynamoDB (I called it <code>terraform-backend-role</code>)</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">{
+    &#34;Version&#34;: &#34;2012-10-17&#34;,
+    &#34;Statement&#34;: [
+        {
+            &#34;Sid&#34;: &#34;VisualEditor0&#34;,
+            &#34;Effect&#34;: &#34;Allow&#34;,
+            &#34;Action&#34;: [
+                &#34;s3:PutObject&#34;,
+                &#34;s3:GetObject&#34;,
+                &#34;dynamodb:PutItem&#34;,
+                &#34;dynamodb:DeleteItem&#34;,
+                &#34;dynamodb:GetItem&#34;,
+                &#34;s3:ListBucket&#34;
+            ],
+            &#34;Resource&#34;: [
+                &#34;arn:aws:dynamodb:ap-southeast-2:&lt;account ID&gt;:table/TerraformLocks&#34;,
+                &#34;arn:aws:s3:::ls-terraform-bucket/terraform.tfstate&#34;,
+                &#34;arn:aws:s3:::ls-terraform-bucket&#34;
+            ]
+        }
+    ]
+}
+</code></pre></div><ul>
+<li>Give the IAM user the appropriate policy to assume the role above.</li>
+</ul>
+<p>With all that done, we should be good to go.</p>
+<h1 id="using-terraform">Using Terraform</h1>
+<p>I will be using the <a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs">AWS provider</a> to create the EC2 instance.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># main.tf
+terraform {
+  backend &#34;s3&#34; {
+    bucket = &#34;ls-terraform-bucket&#34;
+    key = &#34;terraform.tfstate&#34;
+    region = &#34;ap-southeast-2&#34;
+    encrypt = true
+
+    dynamodb_table = &#34;TerraformLocks&#34;
+
+    role_arn = &#34;arn:aws:iam::&lt;account_id&gt;:role/terraform-backend-role&#34;
+  }
+}
+
+provider &#34;aws&#34; {
+  region = &#34;ap-southeast-2&#34;
+}
+
+resource &#34;aws_instance&#34; &#34;terraform-test&#34; {
+  ami = &#34;ami-0186908e2fdeea8f3&#34;
+  instance_type = &#34;t3.micro&#34;
+  availability_zone = &#34;ap-southeast-2a&#34;
+}
+</code></pre></div><p>To run Terraform apply, I need to provide it with my AWS authentication details, which I do by exporting the <code>AWS_ACCESS_KEY_ID</code> and <code>AWS_SECRET_ACCESS_KEY</code> environment variables.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ export AWS_ACCESS_KEY_ID=&#34;anaccesskey&#34;
+$ export AWS_SECRET_ACCESS_KEY=&#34;asecretkey&#34;
+$ terraform plan
+$ terraform apply
+</code></pre></div><p>I quickly ran into permission errors, but the error message isn&rsquo;t great.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">╷
+│ Error: Error launching source instance: UnauthorizedOperation: You are not authorized to perform this operation. Encoded authorization failure message: &lt;encoded error message&gt;
+│       status code: 403, request id: cc586b96-11b7-4a68-a54c-24bf4bce5419
+│
+│   with aws_instance.terraform-test,
+│   on main.tf line 21, in resource &#34;aws_instance&#34; &#34;terraform-test&#34;:
+│   21: resource &#34;aws_instance&#34; &#34;terraform-test&#34; {
+│
+</code></pre></div><p>Enabling debug logs when running <code>terraform apply</code> didn&rsquo;t reveal anything useful for this particular error either</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ TF_LOG=DEBUG terraform apply
+</code></pre></div><p>A quick Google shows that I can use AWS CLI to <a href="https://docs.aws.amazon.com/cli/latest/reference/sts/decode-authorization-message.html">decode the error message</a></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ aws sts decode-authorization-message --encoded-message &lt;encoded error message&gt; --query DecodedMessage --output text | jq .
+{
+  &#34;allowed&#34;: false,
+  ...
+  &#34;context&#34;: {
+    &#34;action&#34;: &#34;ec2:RunInstances&#34;,
+    &#34;resource&#34;: &#34;arn:aws:ec2:ap-southeast-2:&lt;account ID&gt;:instance/*&#34;,
+    ...
+  }
+}
+</code></pre></div><p>which tells me that I don&rsquo;t have permission to create an EC2 instance. Of course! Permission to actually perform what I want to do on AWS! I created the necessary role and policy to interact with EC2 (I called it <code>test-project</code>, and gave my IAM user permission to assume the role. Once that&rsquo;s been done, I added the <code>assume_role</code> attribute to the AWS provider</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"># main.tf
+terraform {
+  backend &#34;s3&#34; {
+    bucket = &#34;ls-terraform-bucket&#34;
+    key = &#34;terraform.tfstate&#34;
+    region = &#34;ap-southeast-2&#34;
+    encrypt = true
+
+    dynamodb_table = &#34;TerraformLocks&#34;
+
+    role_arn = &#34;arn:aws:iam::&lt;account_id&gt;:role/terraform-backend-role&#34;
+  }
+}
+
+provider &#34;aws&#34; {
+  assume_role {
+    role_arn = &#34;arn:aws:iam::&lt;account_id&gt;:role/test-project&#34;
+  }
+  region = &#34;ap-southeast-2&#34;
+}
+
+resource &#34;aws_instance&#34; &#34;terraform-test&#34; {
+  ami = &#34;ami-0186908e2fdeea8f3&#34;
+  instance_type = &#34;t3.micro&#34;
+  availability_zone = &#34;ap-southeast-2a&#34;
+}
+</code></pre></div><p>With that, <code>terraform apply</code> was able to run successfully and created the EC2 instance</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_instance.terraform-test will be created
+  + resource &#34;aws_instance&#34; &#34;terraform-test&#34; {
+      + ami                                  = &#34;ami-0186908e2fdeea8f3&#34;
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = (known after apply)
+      + availability_zone                    = &#34;ap-southeast-2a&#34;
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = &#34;t3.micro&#34;
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + subnet_id                            = (known after apply)
+      + tags                                 = {
+          + &#34;Name&#34; = &#34;Terraform EC2&#34;
+        }
+      + tags_all                             = {
+          + &#34;Name&#34; = &#34;Terraform EC2&#34;
+        }
+      + tenancy                              = (known after apply)
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification {
+          + capacity_reservation_preference = (known after apply)
+
+          + capacity_reservation_target {
+              + capacity_reservation_id = (known after apply)
+            }
+        }
+
+      + ebs_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + snapshot_id           = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+
+      + enclave_options {
+          + enabled = (known after apply)
+        }
+
+      + ephemeral_block_device {
+          + device_name  = (known after apply)
+          + no_device    = (known after apply)
+          + virtual_name = (known after apply)
+        }
+
+      + metadata_options {
+          + http_endpoint               = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = (known after apply)
+        }
+
+      + network_interface {
+          + delete_on_termination = (known after apply)
+          + device_index          = (known after apply)
+          + network_interface_id  = (known after apply)
+        }
+
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only &#39;yes&#39; will be accepted to approve.
+
+  Enter a value: yes
+
+aws_instance.terraform-test: Creating...
+aws_instance.terraform-test: Still creating... [10s elapsed]
+aws_instance.terraform-test: Creation complete after 13s [id=i-05e44bf5cfbb98977]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+</code></pre></div><h1 id="summary">Summary</h1>
+<p>With that, I am now able to use Terraform with the state tracked remotely. Along with state locking, multiple people in the team can access the same state file safely, as long as their IAM users have the correct permission to assume the role to read/write to S3 and DynamoDB.</p>
+
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/apcj.f5labs.dev/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>

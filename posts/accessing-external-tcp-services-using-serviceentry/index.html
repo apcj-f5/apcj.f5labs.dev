@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Learning Istio | Accessing external TCP services using ServiceEntry - apcj@f5 technical articles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="apcj.f5labs.dev/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/apcj.f5labs.dev/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="apcj.f5labs.dev"><img alt="Logo" src="/apcj.f5labs.dev/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="apcj.f5labs.dev/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="apcj.f5labs.dev/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Ephemeral Kubernetes Lab with IaC and GitOps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes-2/">SQL Server on Kubernetes - Part 2</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/jwt-auth/">Learning Istio | JWT Auth</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/sql-server-kubernetes/">SQL Server on Kubernetes - Part 1</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/securing-egress-traffic-with-mtls/">Learning Istio | Securing Egress Traffic With mTLS</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/terraform-maps/">Terraform Maps</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/why-isnt-service-entry-namespaced/">Learning Istio | Why Isn&#39;t Service Entry Namespaced!?</a>
+    </li>
+    
+    <li class="active ">
+      <a href="apcj.f5labs.dev/posts/accessing-external-tcp-services-using-serviceentry/">Learning Istio | Accessing external TCP services using ServiceEntry</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/nginx-unit/">NGINX Unit</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/ingress/">Learning Istio | Ingress</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/setup/">Learning Istio | Setup</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/smallest-container-ever/">Small Containers for fun </a>
+    </li>
+    
+    <li class="">
+      <a href="apcj.f5labs.dev/posts/learning-terraform-s3-backend/">Learning Terraform S3 Backend</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">Learning Istio | Accessing external TCP services using ServiceEntry</h1>
+<div class="content ">
+  <p>In this post, we will be testing Istio&rsquo;s <a href="https://istio.io/latest/docs/reference/config/networking/service-entry/">ServiceEntry</a> by accessing a PostgreDB database hosted externally from the Kubernetes cluster.</p>
+<h1 id="setup">Setup</h1>
+<h2 id="external-postgresdb-service">&ldquo;External&rdquo; PostgresDB service</h2>
+<p>Since we are running the Kubernetes cluster locally in Docker containers using <code>k3d</code>, we can create an &ldquo;external&rdquo; service by running a <code>PostgresDB</code> Docker container on the same host and expose its ports to localhost.</p>
+<p>Create a local PostgresDB container database using Docker</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres
+</code></pre></div><p>Create a test database <code>app_db</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">docker exec -u postgres -it postgres createdb app_db
+</code></pre></div><p>This service should be accessible within the cluster at <code>host.k3d.internal:5432</code> (See <a href="https://k3d.io/faq/faq/#how-to-access-services-like-a-database-running-on-my-docker-host-machine">k3d FAQ</a> for more information on <code>host.k3d.internal</code>)</p>
+<h2 id="postgres-client">Postgres client</h2>
+<p>To test the externally hosted service, we will use <a href="https://www.pgcli.com/">pgcli</a> to open a connection towards the database. I have published an image <a href="https://hub.docker.com/r/leonseng/pgcli-docker">leonseng/pgcli-docker</a> on <a href="https://hub.docker.com/">Dockerhub</a>, which contains the <code>pgcli</code> binary for the purpose of this test.</p>
+<p>Create a deployment with the image</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create deployment pgcli --image leonseng/pgcli-docker:3.1.0 -- sleep 36000
+</code></pre></div><p>Assuming the namespace has been labelled with <code>istio-injection=enabled</code>, the pod should come up with 2 containers - one for <code>pgcli-docker</code>, another for <code>istio-proxy</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl get pods pgcli-6d678b54fb-v8fpp
+NAME                     READY   STATUS    RESTARTS   AGE
+pgcli-6d678b54fb-v8fpp   2/2     Running   0          30m
+</code></pre></div><p>Try initial connection to the PostgresDB external to the Kubernetes cluster</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec &lt;pgcli_pod&gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
+server closed the connection unexpectedly
+        This probably means the server terminated abnormally
+        before or while processing the request.
+
+command terminated with exit code 1
+$
+</code></pre></div><p>Connection fails as expected due to missing entry in the registry for the external service. Looking at logs of <code>istio-proxy</code> confirms that traffic is being sent to the <code>BlackHoleCluster</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl logs &lt;pgcli_pod&gt; -c istio-proxy --tail 50 -f
+[2021-08-16T00:47:49.898Z] &#34;- - -&#34; 0 UH - - &#34;-&#34; 0 0 0 - &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;-&#34; BlackHoleCluster - 172.17.0.1:5432 10.42.0.10:35742 - -
+</code></pre></div><h1 id="service-entry">Service Entry</h1>
+<p>Create a <code>ServiceEntry</code> which registers the PostgresDB service at <code>host.k3d.internal:5432</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">kubectl create -f - &lt;&lt;EOF
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: postgresdb
+spec:
+  hosts:
+  - host.k3d.internal
+  location: MESH_EXTERNAL
+  ports:
+  - number: 5432
+    name: postgres
+    protocol: TCP
+  resolution: DNS
+EOF
+
+</code></pre></div><p>Once the <code>ServiceEntry</code> has been created, the <code>pgcli</code> client is now able to connect to the PostgresDB</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ kubectl exec &lt;pgcli_pod&gt; -it -- pgcli postgres://postgres:password@host.k3d.internal:5432/app_db
+Server: PostgreSQL 13.3 (Debian 13.3-1.pgdg100+1)
+Version: 3.1.0
+Chat: https://gitter.im/dbcli/pgcli
+Home: http://pgcli.com
+postgres@host:app_db&gt; quit
+Goodbye!
+$
+</code></pre></div><p>This successful connection is also logged on the <code>istio-proxy</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">[2021-08-16T00:57:32.037Z] &#34;- - -&#34; 0 - - - &#34;-&#34; 452 880 30823 - &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;-&#34; &#34;172.17.0.1:5432&#34; outbound|5432||host.k3d.internal 10.42.0.10:40108 172.17.0.1:5432 10.42.0.10:40106 - -
+</code></pre></div><p>Digging deeper into the <code>istio-proxy</code> configuration will show the relevant <code>Envoy</code> objects created by this <code>ServiceEntry</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback">$ istioctl proxy-config listeners pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
+0.0.0.0       5432  ALL                                                                      Cluster: outbound|5432||host.k3d.internal
+
+$ istioctl proxy-config clusters pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
+host.k3d.internal                                       5432      -          outbound      STRICT_DNS
+
+$ istioctl proxy-config endpoints pgcli-6d678b54fb-v8fpp | grep host.k3d.internal
+172.17.0.1:5432                  HEALTHY     OK                outbound|5432||host.k3d.internal
+</code></pre></div>
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/apcj.f5labs.dev/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>
