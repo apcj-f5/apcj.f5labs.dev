@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>eli5 on apcj@f5 technical articles</title>
+    <title>eli5 on apcj@f5 technical blog</title>
     <link>/tags/eli5/</link>
-    <description>Recent content in eli5 on apcj@f5 technical articles</description>
+    <description>Recent content in eli5 on apcj@f5 technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 18 Jul 2021 14:50:02 +1000</lastBuildDate><atom:link href="/tags/eli5/index.xml" rel="self" type="application/rss+xml" />

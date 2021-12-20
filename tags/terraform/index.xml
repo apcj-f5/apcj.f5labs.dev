@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>terraform on apcj@f5 technical articles</title>
+    <title>terraform on apcj@f5 technical blog</title>
     <link>/tags/terraform/</link>
-    <description>Recent content in terraform on apcj@f5 technical articles</description>
+    <description>Recent content in terraform on apcj@f5 technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="/tags/terraform/index.xml" rel="self" type="application/rss+xml" />
@@ -19,10 +19,10 @@
     
     <item>
       <title>Terraform Maps</title>
-      <link>/posts/terraform-maps/</link>
+      <link>/posts/automation/terraform-maps/</link>
       <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
       
-      <guid>/posts/terraform-maps/</guid>
+      <guid>/posts/automation/terraform-maps/</guid>
       <description>Intro I&amp;rsquo;ve been doing a lot with terraform lately, and I&amp;rsquo;ve been looking for ways to make my terraform configurations a lot simpler and have less repetition. Like a lot of people, I&amp;rsquo;ve found myself repeating the same code over and over. An example is where I repeat the same resource over and over but with different configuration parameters. It&amp;rsquo;s essentially the same resource. Why should I do this? There has to be a better way.</description>
     </item>
     

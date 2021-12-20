@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on apcj@f5 technical articles</title>
+    <title>Tags on apcj@f5 technical blog</title>
     <link>/tags/</link>
-    <description>Recent content in Tags on apcj@f5 technical articles</description>
+    <description>Recent content in Tags on apcj@f5 technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
@@ -125,6 +125,51 @@
     </item>
     
     <item>
+      <title>ADC</title>
+      <link>/tags/adc/</link>
+      <pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/adc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cloud native application service</title>
+      <link>/tags/cloud-native-application-service/</link>
+      <pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/cloud-native-application-service/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>f5</title>
+      <link>/tags/f5/</link>
+      <pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/f5/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>platform</title>
+      <link>/tags/platform/</link>
+      <pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/platform/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Service Proxy</title>
+      <link>/tags/service-proxy/</link>
+      <pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/service-proxy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>eli5</title>
       <link>/tags/eli5/</link>
       <pubDate>Sun, 18 Jul 2021 14:50:02 +1000</pubDate>
@@ -148,6 +193,51 @@
       <pubDate>Fri, 11 Jun 2021 14:52:29 +1000</pubDate>
       
       <guid>/tags/s3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>envoy</title>
+      <link>/tags/envoy/</link>
+      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/envoy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>gateway port</title>
+      <link>/tags/gateway-port/</link>
+      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/gateway-port/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ingressgateway</title>
+      <link>/tags/ingressgateway/</link>
+      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ingressgateway/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>oAuth</title>
+      <link>/tags/oauth/</link>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/oauth/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OIDC</title>
+      <link>/tags/oidc/</link>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/oidc/</guid>
       <description></description>
     </item>
     
