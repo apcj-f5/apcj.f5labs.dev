@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>ELI5: Kubernetes Custom Resources - Hugo Whisper Theme</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="icon" href="www.example.com/favicon.png">
+
+  
+  
+  <link rel="stylesheet" href="/www.example.com/css/style.min.6719d72e323121369d5caeb4264b95d8a63cf1deaab029da67602fe5a046e0a4.css">
+  
+
+  
+
+</head>
+
+<body class='page page-default-single'>
+  <div id="main-menu-mobile" class="main-menu-mobile">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="www.example.com/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="www.example.com/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+  <div class="wrapper">
+    <div class='header'>
+  <div class="container">
+    <div class="logo">
+      <a href="www.example.com"><img alt="Logo" src="/www.example.com/images/logo.svg" /></a>
+    </div>
+    <div class="logo-mobile">
+      <a href="www.example.com"><img alt="Logo" src="/www.example.com/images/logo-mobile.svg" /></a>
+    </div>
+    <div id="main-menu" class="main-menu">
+  <ul>
+    
+    
+    <li class="menu-item-home">
+      <a href="www.example.com/">
+        <span>Home</span>
+      </a>
+    </li>
+    
+    <li class="menu-item-posts">
+      <a href="www.example.com/posts/">
+        <span>Posts</span>
+      </a>
+    </li>
+    
+  </ul>
+</div>
+    <button id="toggle-main-menu-mobile" class="hamburger hamburger--slider" type="button">
+  <span class="hamburger-box">
+    <span class="hamburger-inner"></span>
+  </span>
+</button>
+  </div>
+</div>
+
+
+    
+    
+    
+    
+    
+    
+
+    
+    <div class="container pt-2 pt-md-6 pb-3 pb-md-6">
+      <div class="row">
+        <div class="col-12 col-md-3 mb-3">
+          <div class="sidebar">
+            
+<div class="docs-menu">
+  <h4>Posts</h4>
+  <ul>
+    
+    <li class="active ">
+      <a href="www.example.com/posts/eli5-kubernetes-custom-resources/">ELI5: Kubernetes Custom Resources</a>
+    </li>
+    
+  </ul>
+</div>
+
+          </div>
+        </div>
+        <div class="col-12 col-md-9">
+          
+<h1 class="title">ELI5: Kubernetes Custom Resources</h1>
+<div class="content ">
+  <p>In this article, I will be using the process of building a house as an example to explain how Kubernetes <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">Custom Resources</a> work.</p>
+<hr>
+<p>Imagine building a custom home, which is a highly detailed and laborious work, that you decided to just hire a home builder. The builder gives you a form to fill out details such as:</p>
+<ul>
+<li>how many rooms do you need and what size should they be?</li>
+<li>do you want a garage that fits 1, 2 or 3 cars?</li>
+<li>would you like a swimming pool?</li>
+<li>do you want the utilities connected when you move in?</li>
+</ul>
+<p>You fill in the form, specifying the details of your dream home, and hand it over to the builder. Months go by, and voila, the house is completed, ready for you to move in. The builder even offers services to ensure any repairs are covered throughout the occupancy period, and the pool is cleaned regularly!</p>
+<p>3 months down, after settling in with all the furniture, you now want a beautiful backyard to go with it. Not a problem, send an updated copy of the form you submitted earlier to include landscaping, and the builder hires some landscapers to build you your garden.</p>
+<p>You like the house so much that, 6 years down the road, you fill in another form to get another house built, this time with more room for your growing family, and the builder&rsquo;s done it again!</p>
+<hr>
+<p>Let&rsquo;s now translate the example above into Kubernetes terms:</p>
+<ul>
+<li>
+<p>A house consists of many smaller, more fundamental components (walls, bricks, doors, swimming pool etc) which are analogous to the <strong>standard resources in Kubernetes - pods, services, persistent volumes etc</strong>.</p>
+</li>
+<li>
+<p>Building a house is a complex process, and that&rsquo;s when it is handy to get someone to do all the work for you, in this case the builder, which acts as a <strong>Custom Controller</strong>.</p>
+</li>
+<li>
+<p>The form provided by the builder is the <strong>Custom Resource Definition (CRD)</strong>, which defines a template or constraints the builder supports for the houses it builds. And submitting the forms back to the builder with your preferences on how the houses should look is like declaring instances of <strong>Custom Resources</strong>.</p>
+</li>
+<li>
+<p>The builder/<strong>customer controller</strong> then handles all the nitty gritty details of setting up the houses/<strong>custom resources</strong>, as well as making sure any modifications are correctly applied to them.</p>
+</li>
+</ul>
+<p>Often, applications are complex mix of resources, which makes it difficult for end users to manage them without deep understanding of how the resources work together. To lower the the barrier of entry, software vendors provide <a href="https://kubernetes.io/docs/concepts/extend-kubernetes/operator/">Operators</a> which comprises of custom controllers and CRDs, allowing users to manage the applications in a declarative manner. The controllers, written by the vendors, then do the hard work of getting the application to a desired state.</p>
+<p>Hopefully the example above helps you visualize how custom resources are used. If you are interested to build your own CRDs and custom controllers, the following resources are good starting points:</p>
+<ul>
+<li><a href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">CRD examples</a></li>
+<li><a href="https://github.com/kubernetes/sample-controller">Sample controller</a></li>
+</ul>
+
+</div>
+</div>
+
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <div class="sub-footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="sub-footer-inner">
+          <ul>
+            <li class="zerostatic"><a href="https://www.zerostatic.io">www.zerostatic.io</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+  
+  
+
+  
+  <script type="text/javascript" src="/www.example.com/js/scripts.min.eaf147370baecdd07c022597db631f99cab1c9cd6479de586f30327a568d6a0f.js"></script>
+  
+
+  
+  
+  
+    
+  
+
+
+</body>
+
+</html>
