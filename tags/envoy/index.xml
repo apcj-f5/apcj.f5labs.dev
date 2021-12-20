@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>envoy on apcj@f5 technical blog</title>
+    <link>/tags/envoy/</link>
+    <description>Recent content in envoy on apcj@f5 technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 13 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/envoy/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The rule of Istio Gateway port definition</title>
+      <link>/posts/istio-ingressgateay-port-relationship/</link>
+      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/istio-ingressgateay-port-relationship/</guid>
+      <description>Dont set wrong port in Gateway.</description>
+    </item>
+    
+    <item>
+      <title>How an application delivery veteran see Envoy in the era of cloud native</title>
+      <link>/posts/f5-envoy-cloud-native/</link>
+      <pubDate>Tue, 30 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/f5-envoy-cloud-native/</guid>
+      <description>How to understand envoy, compare to F5/NGINX.</description>
+    </item>
+    
+    <item>
+      <title>Istio sidecar iptables and traffic steering detail</title>
+      <link>/posts/istio-traffic-control-deepdive/</link>
+      <pubDate>Thu, 25 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/istio-traffic-control-deepdive/</guid>
+      <description>How istio manipulates the traffic.</description>
+    </item>
+    
+    <item>
+      <title>F5 BIG-IP links Istio to enhance ingress service capabilities</title>
+      <link>/posts/f5-istio-work-together/</link>
+      <pubDate>Mon, 22 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/f5-istio-work-together/</guid>
+      <description>F5 make istio works better</description>
+    </item>
+    
+  </channel>
+</rss>

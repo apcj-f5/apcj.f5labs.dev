@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gateway port on apcj@f5 technical blog</title>
+    <link>/tags/gateway-port/</link>
+    <description>Recent content in gateway port on apcj@f5 technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 13 Jul 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/gateway-port/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The rule of Istio Gateway port definition</title>
+      <link>/posts/istio-ingressgateay-port-relationship/</link>
+      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/posts/istio-ingressgateay-port-relationship/</guid>
+      <description>Dont set wrong port in Gateway.</description>
+    </item>
+    
+  </channel>
+</rss>
