@@ -8,6 +8,20 @@
     <language>en-us</language>
     <lastBuildDate>Wed, 28 Nov 2018 15:14:39 +1000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Authors</title>
+      <link>/authors/</link>
+      <pubDate>Mon, 20 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/authors/</guid>
+      <description>Lin Jing - https://linjing.io Scott Van Kalken https://codecowboy.io Leon Seng - https://leonseng.com Shain Singh - https://shain.io </description>
+      <content>&lt;h2 id=&#34;lin-jing---httpslinjingio&#34;&gt;Lin Jing - &lt;a href=&#34;https://linjing.io&#34;&gt;https://linjing.io&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;scott-van-kalken-httpscodecowboyio&#34;&gt;Scott Van Kalken &lt;a href=&#34;https://codecowboy.io&#34;&gt;https://codecowboy.io&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;leon-seng---httpsleonsengcom&#34;&gt;Leon Seng - &lt;a href=&#34;https://leonseng.com&#34;&gt;https://leonseng.com&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&#34;shain-singh---httpsshainio&#34;&gt;Shain Singh - &lt;a href=&#34;https://shain.io&#34;&gt;https://shain.io&lt;/a&gt;&lt;/h2&gt;
+</content>
+    </item>
+    
+    <item>
       <title>Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps</title>
       <link>/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/</link>
       <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
