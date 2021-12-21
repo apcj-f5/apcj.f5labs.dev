@@ -147,58 +147,6 @@
     
       <div class="post on-list">
         <h1 class="post-title">
-          <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps</a>
-        </h1>
-        <div class="post-meta">
-          <span class="post-date">
-            2021-12-08
-          </span>
-          
-        </div>
-
-        
-          <span class="post-tags">
-            
-            #<a href="/tags/aws/">aws</a>&nbsp;
-            
-            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
-            
-            #<a href="/tags/eks/">eks</a>&nbsp;
-            
-            #<a href="/tags/terraform/">terraform</a>&nbsp;
-            
-            #<a href="/tags/iac/">iac</a>&nbsp;
-            
-            #<a href="/tags/argocd/">argocd</a>&nbsp;
-            
-            #<a href="/tags/gitops/">gitops</a>&nbsp;
-            
-          </span>
-        
-
-        
-
-
-      
-        <div class="post-content">
-          
-          
-          I&rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&rsquo;m used to is a no-go. I need a setup that meets the following requirements:
- Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &ldquo;just the way I left it there last night&rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post.
-          
-          
-        </div>
-
-        
-        <div>
-          <a class="read-more button"
-            href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Read more →</a>
-        </div>
-        
-      </div>
-    
-      <div class="post on-list">
-        <h1 class="post-title">
           <a href="/posts/learning-istio/jwt-auth/">Learning Istio | JWT Auth</a>
         </h1>
         <div class="post-meta">
@@ -365,6 +313,49 @@ docker run --name postgres --restart always -e POSTGRES_PASSWORD=password -d -p 
         <div>
           <a class="read-more button"
             href="/posts/learning-istio/accessing-external-tcp-services-using-serviceentry/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/learning-istio/setup/">Learning Istio | Setup</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2021-08-02
+          </span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          In this series, we will be testing out several features in Istio with a local Kubernetes (k3s) cluster.
+Deploy k3s cluster First step is to deploy the k8s cluster with k3d - a wrapper to run k3s in docker. Start by creating a k3d config file:
+# k3d-istio.yaml apiVersion: k3d.io/v1alpha2 kind: Simple name: istio servers: 1 agents: 2 ports: # for exposing Istio ingress on localhost - port: 8080:80 nodeFilters: - loadbalancer - port: 8443:443 nodeFilters: - loadbalancer options: k3s: extraServerArgs: - --no-deploy=traefik  # we will be using Istio ingress instead Deploy the cluster with k3d
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/setup/">Read more →</a>
         </div>
         
       </div>

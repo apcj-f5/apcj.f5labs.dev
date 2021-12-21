@@ -1,10 +1,11 @@
----
-title: "Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps"
-date: 2021-12-08T09:05:42+11:00
-draft: false
-tags: ['aws', 'kubernetes', 'eks', 'terraform', 'iac', 'argocd', 'gitops']
-categories: ['tech']
----
++++
+title = "Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps"
+date = "2021-12-08"
+draft = false
+tags = ['aws', 'kubernetes', 'eks', 'terraform', 'iac', 'argocd', 'gitops']
+categories = ['kubernetes']
+author = "@leonseng"
++++
 
 I've been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I'm used to is a no-go. I need a setup that meets the following requirements:
 

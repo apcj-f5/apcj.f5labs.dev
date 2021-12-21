@@ -6,11 +6,21 @@
     <description>Recent content in Categories on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 08 Dec 2021 09:05:42 +1100</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 08 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>kubernetes</title>
+      <link>/categories/kubernetes/</link>
+      <pubDate>Wed, 08 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/kubernetes/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
     <item>
       <title>tech</title>
       <link>/categories/tech/</link>
-      <pubDate>Wed, 08 Dec 2021 09:05:42 +1100</pubDate>
+      <pubDate>Sat, 06 Nov 2021 21:32:16 +1100</pubDate>
       
       <guid>/categories/tech/</guid>
       <description></description>
@@ -20,7 +30,7 @@
     <item>
       <title>dev</title>
       <link>/categories/dev/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>/categories/dev/</guid>
       <description></description>
@@ -28,19 +38,9 @@
     </item>
     
     <item>
-      <title>kubernetes</title>
-      <link>/categories/kubernetes/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/kubernetes/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
       <title>software</title>
       <link>/categories/software/</link>
-      <pubDate>Wed, 01 Dec 2021 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 01 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>/categories/software/</guid>
       <description></description>
