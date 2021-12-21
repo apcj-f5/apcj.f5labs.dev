@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   
-    <title>gitops :: apcj@f5 blog</title>
+    <title>dev :: apcj@f5 blog</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="/tags/gitops/" />
+<link rel="canonical" href="/tags/dev/" />
 
 
 
@@ -33,9 +33,9 @@
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="gitops">
+<meta property="og:title" content="dev">
 <meta property="og:description" content="" />
-<meta property="og:url" content="/tags/gitops/" />
+<meta property="og:url" content="/tags/dev/" />
 <meta property="og:site_name" content="apcj@f5 blog" />
 
   
@@ -49,7 +49,7 @@
 
 
 
-  <link href="/tags/gitops/index.xml" rel="alternate" type="application/rss+xml" title="apcj@f5 blog" />
+  <link href="/tags/dev/index.xml" rel="alternate" type="application/rss+xml" title="apcj@f5 blog" />
 
 
 
@@ -147,33 +147,29 @@
     
       <div class="post on-list">
         <h1 class="post-title">
-          <a href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Kubernetes | Ephemeral Kubernetes Lab with IaC and GitOps</a>
+          <a href="/posts/kubernetes/sql-server-kubernetes-2/">Kubernetes | SQL Server on Kubernetes - Part 2</a>
         </h1>
         <div class="post-meta">
           <span class="post-date">
-            2021-12-08
+            2021-12-01
           </span>
           
-            <span class="post-author">:: @leonseng</span>
+            <span class="post-author">:: @codecowboy</span>
           
         </div>
 
         
           <span class="post-tags">
             
-            #<a href="/tags/aws/">aws</a>&nbsp;
-            
             #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
             
-            #<a href="/tags/eks/">eks</a>&nbsp;
+            #<a href="/tags/containers/">containers</a>&nbsp;
             
-            #<a href="/tags/terraform/">terraform</a>&nbsp;
+            #<a href="/tags/databases/">databases</a>&nbsp;
             
-            #<a href="/tags/iac/">iac</a>&nbsp;
+            #<a href="/tags/software/">software</a>&nbsp;
             
-            #<a href="/tags/argocd/">argocd</a>&nbsp;
-            
-            #<a href="/tags/gitops/">gitops</a>&nbsp;
+            #<a href="/tags/dev/">dev</a>&nbsp;
             
           </span>
         
@@ -185,8 +181,9 @@
         <div class="post-content">
           
           
-          I&rsquo;ve been thinking of moving my Kubernetes lab into the cloud, but with cloud resource usage being scrutinized by the IT department, running them 24x7 the way I&rsquo;m used to is a no-go. I need a setup that meets the following requirements:
- Simple to create and tear down Applications must be pre-deployed when the cluster is up, as close to &ldquo;just the way I left it there last night&rdquo; as possible cost $0 when the setup has been switched off  I eventually settled on the idea of an ephemeral Kubernetes lab environment using Infrastructure as Code (IaC) and GitOps practices, which I will cover in this post.
+          Intro So in my last post I showed how you could create databases on Kubernetes. There are many reasons to do this. Equally, there are reasons not to do this, but for highly distributed deployments it does make sense.
+This post is going to focus on the storage components of running a database on Kubernetes.
+Why do I need persistent storage Persistent storage as the name implies allows you to store your data between container restarts.
           
           
         </div>
@@ -194,7 +191,7 @@
         
         <div>
           <a class="read-more button"
-            href="/posts/ephemeral-kubernetes-lab-with-iac-and-gitops/">Read more →</a>
+            href="/posts/kubernetes/sql-server-kubernetes-2/">Read more →</a>
         </div>
         
       </div>
