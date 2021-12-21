@@ -58,21 +58,11 @@
     </item>
     
     <item>
-      <title>containers</title>
-      <link>/categories/containers/</link>
-      <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
+      <title>istio</title>
+      <link>/categories/istio/</link>
+      <pubDate>Mon, 02 Aug 2021 16:25:55 +1000</pubDate>
       
-      <guid>/categories/containers/</guid>
-      <description></description>
-      <content></content>
-    </item>
-    
-    <item>
-      <title>testing</title>
-      <link>/categories/testing/</link>
-      <pubDate>Fri, 09 Jul 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/categories/testing/</guid>
+      <guid>/categories/istio/</guid>
       <description></description>
       <content></content>
     </item>

@@ -98,6 +98,9 @@
     <loc>/tags/unit/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/categories/istio/</loc>
+    <lastmod>2021-08-02T16:25:55+10:00</lastmod>
+  </url><url>
     <loc>/posts/learning-istio/ingress/</loc>
     <lastmod>2021-08-02T16:25:55+10:00</lastmod>
   </url><url>
@@ -128,16 +131,10 @@
     <loc>/posts/eli5-kubernetes-custom-resources/</loc>
     <lastmod>2021-07-18T14:50:02+10:00</lastmod>
   </url><url>
-    <loc>/categories/containers/</loc>
-    <lastmod>2021-07-09T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/posts/kubernetes/smallest-container-ever/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/minimal/</loc>
-    <lastmod>2021-07-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/categories/testing/</loc>
     <lastmod>2021-07-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/posts/learning-terraform-s3-backend/</loc>

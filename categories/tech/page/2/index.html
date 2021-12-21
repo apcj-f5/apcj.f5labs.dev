@@ -88,15 +88,19 @@
           <li><a href="/about">About</a></li>
         
       
-        
-          <li><a href="/posts">Posts</a></li>
-        
-      
       
         <ul class="menu__sub-inner">
           <li class="menu__sub-inner-more-trigger">Show more ▾</li>
 
           <ul class="menu__sub-inner-more hidden">
+            
+              
+                <li><a href="/categories">Categories</a></li>
+              
+            
+              
+                <li><a href="/posts">Posts</a></li>
+              
             
               
                 <li><a href="/tags">Tags</a></li>
@@ -114,6 +118,10 @@
     
       
         <li><a href="/about">About</a></li>
+      
+    
+      
+        <li><a href="/categories">Categories</a></li>
       
     
       
@@ -136,50 +144,6 @@
     
   
   <div class="posts">
-    
-      <div class="post on-list">
-        <h1 class="post-title">
-          <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
-        </h1>
-        <div class="post-meta">
-          <span class="post-date">
-            2021-08-02
-          </span>
-          
-        </div>
-
-        
-          <span class="post-tags">
-            
-            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
-            
-            #<a href="/tags/istio/">istio</a>&nbsp;
-            
-          </span>
-        
-
-        
-
-
-      
-        <div class="post-content">
-          
-          
-          In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
-Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
-Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
-kubectl -n bookinfo apply -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes.
-          
-          
-        </div>
-
-        
-        <div>
-          <a class="read-more button"
-            href="/posts/learning-istio/ingress/">Read more →</a>
-        </div>
-        
-      </div>
     
       <div class="post on-list">
         <h1 class="post-title">

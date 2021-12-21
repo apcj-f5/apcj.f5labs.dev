@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   
-    <title>gateway port :: apcj@f5 blog</title>
+    <title>istio :: apcj@f5 blog</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="" />
 <meta name="keywords" content="" />
 <meta name="robots" content="noodp" />
-<link rel="canonical" href="/tags/gateway-port/" />
+<link rel="canonical" href="/categories/istio/" />
 
 
 
@@ -33,9 +33,9 @@
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="gateway port">
+<meta property="og:title" content="istio">
 <meta property="og:description" content="" />
-<meta property="og:url" content="/tags/gateway-port/" />
+<meta property="og:url" content="/categories/istio/" />
 <meta property="og:site_name" content="apcj@f5 blog" />
 
   
@@ -49,7 +49,7 @@
 
 
 
-  <link href="/tags/gateway-port/index.xml" rel="alternate" type="application/rss+xml" title="apcj@f5 blog" />
+  <link href="/categories/istio/index.xml" rel="alternate" type="application/rss+xml" title="apcj@f5 blog" />
 
 
 
@@ -147,11 +147,57 @@
     
       <div class="post on-list">
         <h1 class="post-title">
-          <a href="/posts/istio-ingressgateay-port-relationship/">Istio | The role of Istio Gateway port definition</a>
+          <a href="/posts/learning-istio/ingress/">Learning Istio | Ingress</a>
         </h1>
         <div class="post-meta">
           <span class="post-date">
-            2020-07-13
+            2021-08-02
+          </span>
+          
+            <span class="post-author">:: @leonseng</span>
+          
+        </div>
+
+        
+          <span class="post-tags">
+            
+            #<a href="/tags/kubernetes/">kubernetes</a>&nbsp;
+            
+            #<a href="/tags/istio/">istio</a>&nbsp;
+            
+          </span>
+        
+
+        
+
+
+      
+        <div class="post-content">
+          
+          
+          In the previous post, we deployed the Bookinfo application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
+Kubernetes Ingress Istio should handle Kubernetes Ingress resource just fine as documented here.
+Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation kubernetes.io/ingress.class: istio:
+kubectl -n bookinfo apply -f - &lt;&lt;EOF apiVersion: networking.k8s.io/v1 kind: Ingress metadata: annotations: kubernetes.
+          
+          
+        </div>
+
+        
+        <div>
+          <a class="read-more button"
+            href="/posts/learning-istio/ingress/">Read more →</a>
+        </div>
+        
+      </div>
+    
+      <div class="post on-list">
+        <h1 class="post-title">
+          <a href="/posts/istio-traffic-control-deepdive/">Istio | Sidecar iptables and traffic steering detail</a>
+        </h1>
+        <div class="post-meta">
+          <span class="post-date">
+            2020-06-25
           </span>
           
         </div>
@@ -162,10 +208,6 @@
             #<a href="/tags/istio/">istio</a>&nbsp;
             
             #<a href="/tags/envoy/">envoy</a>&nbsp;
-            
-            #<a href="/tags/gateway-port/">gateway port</a>&nbsp;
-            
-            #<a href="/tags/ingressgateway/">ingressgateway</a>&nbsp;
             
           </span>
         
@@ -183,7 +225,7 @@
         
         <div>
           <a class="read-more button"
-            href="/posts/istio-ingressgateay-port-relationship/">Read more →</a>
+            href="/posts/istio-traffic-control-deepdive/">Read more →</a>
         </div>
         
       </div>
