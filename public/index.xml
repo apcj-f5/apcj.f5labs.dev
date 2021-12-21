@@ -2938,7 +2938,7 @@ istio-p+    148    142  0 15:38 pts/0    00:00:00 ps -ef
       <pubDate>Thu, 25 Jun 2020 00:00:00 +0000</pubDate>
       
       <guid>/posts/istio-traffic-control-deepdive/</guid>
-      <description>How istio manipulates the traffic.</description>
+      <description>How istio manipulates traffic.</description>
       <content>&lt;h2 id=&#34;istio-injected-iptables&#34;&gt;Istio injected iptables&lt;/h2&gt;
 &lt;p&gt;Istio implements the hijacking and processing of traffic by injecting the init container and envoy proxy container into the business pod. After the init container runs, the following NAT table rules for iptables will be generated in the corresponding linux namespace&lt;/p&gt;
 &lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;amp;#91;root@k8s-node1-v1-16 ~]# iptables -t nat -L -v

@@ -1,13 +1,12 @@
 ---
 title: 'Istio | Sidecar iptables and traffic steering detail'
 subtitle: 'Translate by google'
-summary: How istio manipulates the traffic.
-authors:
-- admin
+summary: How istio manipulates traffic.
+authors: ["@myf5"]
 tags:
 - istio
 - envoy
-categories: []
+categories: ["istio"]
 date: "2020-06-25T00:00:00Z"
 lastmod: "2020-06-25T00:00:00Z"
 featured: false

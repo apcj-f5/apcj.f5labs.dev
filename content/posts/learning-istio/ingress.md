@@ -1,10 +1,11 @@
----
-title: "Learning Istio | Ingress"
-date: 2021-08-02T16:25:55+10:00
-series: ["Learning Istio"]
-tags: ['kubernetes', 'istio']
-categories: ['tech']
----
++++
+title = "Learning Istio | Ingress"
+date = 2021-08-02T16:25:55+10:00
+series = ["Learning Istio"]
+tags = ["kubernetes", "istio"]
+categories = ["istio"]
+author = "@leonseng"
++++
 
 In the previous [post](/posts/learning-istio/01-setup/), we deployed the [Bookinfo](https://istio.io/latest/docs/examples/bookinfo/#deploying-the-application) application on a k3s cluster with Istio enabled. In this post, we will explore the features on Istio Ingress.
 

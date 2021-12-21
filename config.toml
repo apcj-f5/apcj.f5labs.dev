@@ -6,7 +6,7 @@ paginate = 5
 [params]
   contentTypeName = "posts"
   themeColor = "orange"
-  showMenuItems = 2
+  showMenuItems = 1
   showLanguageSelector = true
   fullWidthTheme = true
   centerTheme = true
@@ -36,6 +36,10 @@ paginate = 5
         identifier = "posts"
         name = "Posts"
         url = "/posts"
+      [[languages.en.menu.main]]
+        identifier = "categories"
+        name = "Categories"
+        url = "/categories"
       [[languages.en.menu.main]]
         identifier = "tags"
         name = "Tags"
