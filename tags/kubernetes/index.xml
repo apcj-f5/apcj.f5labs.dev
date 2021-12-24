@@ -320,7 +320,7 @@ Events:         &amp;lt;none&amp;gt;
     <item>
       <title>Learning Istio | JWT Auth</title>
       <link>/posts/learning-istio/jwt-auth/</link>
-      <pubDate>Sat, 06 Nov 2021 21:32:16 +1100</pubDate>
+      <pubDate>Sat, 06 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>/posts/learning-istio/jwt-auth/</guid>
       <description>In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
@@ -335,7 +335,7 @@ Events:         &amp;lt;none&amp;gt;
 &lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;
 &lt;h2 id=&#34;test-application&#34;&gt;Test application&lt;/h2&gt;
 &lt;p&gt;For the test application, I will be using the &lt;a href=&#34;https://hub.docker.com/r/kennethreitz/httpbin/&#34;&gt;httpbin&lt;/a&gt; image as it exposes a &lt;code&gt;/headers&lt;/code&gt; endpoint which prints out the headers as seen by the application, allowing us to see the changes done by the sidecar proxy.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: apps/v1
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Deployment
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
@@ -373,7 +373,7 @@ Events:         &amp;lt;none&amp;gt;
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;jwt-provider&#34;&gt;JWT provider&lt;/h2&gt;
 &lt;p&gt;The JWT used in most of the examples in this post is obtained from Auth0 via the &lt;a href=&#34;https://auth0.com/docs/authorization/flows/call-your-api-using-the-client-credentials-flow&#34;&gt;client credentials flow&lt;/a&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get access token&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get access token&lt;/span&gt;
 $ BASE_URL&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;https://leonseng.au.auth0.com
 $ APP_CLIENT_ID&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client ID&amp;gt;
 $ APP_CLIENT_SECRET&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client secret&amp;gt;
@@ -406,7 +406,7 @@ $ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;requestauthentication&#34;&gt;RequestAuthentication&lt;/h1&gt;
 &lt;p&gt;Istio&amp;rsquo;s &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; is responsible for validating the JWT in a request is signed by the expected issuer, and that the payload has not been tampered with.&lt;/p&gt;
 &lt;p&gt;Below is an example where we specify the JWT issuer and the JSON Web Key Set (JWKS) for JWT validation. The decoded JWT payload can be passed onto the application in a HTTP header via the &lt;code&gt;outputPayloadToHeader&lt;/code&gt; field, allowing application to access the trusted claim without having to perform token validation itself.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: RequestAuthentication
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
@@ -421,7 +421,7 @@ $ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    outputPayloadToHeader: x-jwt-payload
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here&amp;rsquo;s a test to show that our request with the right JWT can go through&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ RESPONSE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ RESPONSE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
 $ echo $RESPONSE | jq .
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
@@ -439,7 +439,7 @@ $ echo $RESPONSE | jq .
   &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see that the decoded payload is accessible by the application in the &lt;code&gt;X-Jwt-Payload&lt;/code&gt; header after performing a base64 decode&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ FORWARDED_PAYLOAD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $RESPONSE | jq -r &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.headers.&amp;#34;X-Jwt-Payload&amp;#34;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ FORWARDED_PAYLOAD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $RESPONSE | jq -r &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.headers.&amp;#34;X-Jwt-Payload&amp;#34;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
 $ echo $FORWARDED_PAYLOAD | base64 -d | jq .
 base64: invalid input
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
@@ -453,7 +453,7 @@ base64: invalid input
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
 &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Malformed, expired and JWT issued by other issuers will be rejected:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Malformed token&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Malformed token&lt;/span&gt;
 $ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer bad&amp;#34;&lt;/span&gt; httpbin/headers
 Jwt is not in the form of Header.Payload.Signature with two dots and &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; sections
 
@@ -466,7 +466,7 @@ INVALID_TOKEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;eyJhbGciOiJ
 $ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$INVALID_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
 Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t have key to match kid or alg from Jwt
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without JWT is expected to fail, but &lt;strong&gt;it didn&amp;rsquo;t&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s httpbin/headers
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ curl -s httpbin/headers
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
     &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
@@ -494,7 +494,7 @@ Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&am
 &lt;li&gt;&lt;a href=&#34;#additional-conditions-in-the-jwt&#34;&gt;additional conditions in the JWT&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;Below is an example which we will be using&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: AuthorizationPolicy
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
@@ -518,7 +518,7 @@ Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&am
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      values: [&amp;#34;write:database, fetch:email&amp;#34;]
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;A quick test to verify that it hasn&amp;rsquo;t broken our setup&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
     &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
@@ -536,11 +536,11 @@ Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&am
 &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;who-is-the-requester&#34;&gt;Who is the requester&lt;/h2&gt;
 &lt;p&gt;The identity of the requester using JWT can be specified in the &lt;code&gt;requestPrincipals&lt;/code&gt; field as documented &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Source&#34;&gt;here&lt;/a&gt;. Istio constructs the identity from the JWT payload values in the format of &lt;code&gt;&amp;lt;iss&amp;gt;/&amp;lt;sub&amp;gt;&lt;/code&gt;. However, if you just want to enforce the presence of a valid JWT (regardless of the identity), &lt;code&gt;requestPrincipals&lt;/code&gt; can be set to &lt;code&gt;[*]&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;from:
-- source:
-    requestPrincipals: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;# iss/sub&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-YAML&#34; data-lang=&#34;YAML&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt;:
+- &lt;span style=&#34;color:#f92672&#34;&gt;source&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;requestPrincipals&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;]  &lt;span style=&#34;color:#75715e&#34;&gt;# iss/sub&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without a JWT or with a different user/subject will be denied&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# No JWT provided&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# No JWT provided&lt;/span&gt;
 $ curl -s httpbin/headers
 RBAC: access denied
 
@@ -565,23 +565,23 @@ $ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: B
 RBAC: access denied
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;what-is-the-requester-trying-to-do&#34;&gt;What is the requester trying to do&lt;/h2&gt;
 &lt;p&gt;Next, we can &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Operation&#34;&gt;restrict which HTTP verbs and path a requester has access to&lt;/a&gt;. In our example, we are only allowing &lt;code&gt;GET&lt;/code&gt; requests to &lt;code&gt;/headers&lt;/code&gt; path&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;to:
-- operation:
-    methods: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
-    paths: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/headers&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-YAML&#34; data-lang=&#34;YAML&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;to&lt;/span&gt;:
+- &lt;span style=&#34;color:#f92672&#34;&gt;operation&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;methods&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;]
+    &lt;span style=&#34;color:#f92672&#34;&gt;paths&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/headers&amp;#34;&lt;/span&gt;]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Request using another HTTP verb and/or accessing another path will not be allowed&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# POST to /post&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# POST to /post&lt;/span&gt;
 $ curl -s -X POST -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/post
 RBAC: access denied
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;additional-conditions-in-the-jwt&#34;&gt;Additional conditions in the JWT&lt;/h2&gt;
 &lt;p&gt;Lastly, Istio also enables the evaluation of additional &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/conditions/&#34;&gt;conditions against the JWT claims&lt;/a&gt;. The &lt;code&gt;AuthorizationPolicy&lt;/code&gt; applied is checking against the claims in the JWT payload&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;when:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;when:
 - key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;aud&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
   values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
 - key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;scope&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
   values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;write:database&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this example, we send a request with the scope &lt;code&gt;read:database&lt;/code&gt;, which will be rejected as the &lt;code&gt;AuthorizationPolicy&lt;/code&gt; is expecting a &lt;code&gt;write:database&lt;/code&gt; scope&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
@@ -604,16 +604,16 @@ RBAC: access denied
 &lt;p&gt;Here&amp;rsquo;s a list of things that were picked up during my tests that weren&amp;rsquo;t immediately intuitive:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Istio requires the port name in the &lt;code&gt;Service&lt;/code&gt; to be prefixed with the protocol as described &lt;a href=&#34;https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/&#34;&gt;here&lt;/a&gt;. Failing to adhere to the naming convention will break the authentication feature provided by the &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; resource. This can be caught by running &lt;code&gt;istioctl analyze&lt;/code&gt; in the application namespace, which reveals a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/analysis/ist0118/&#34;&gt;PortNameIsNotUnderNamingConvention&lt;/a&gt; message:
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ istioctl analyze
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ istioctl analyze
 &amp;lt;snipped&amp;gt;
 Info &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;IST0118&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Service httpbin.default&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; Port name &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;port: 80, targetPort: 80&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t follow the naming convention of Istio port.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;Defining a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; alone does not stop requests without JWT, the requests just won&amp;rsquo;t have identities tied to them. Augment it with a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; to enforce the presence of JWT.&lt;/li&gt;
 &lt;li&gt;The &lt;code&gt;scope&lt;/code&gt; field in a JWT can contain multiple scopes in a space delimited format,
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scope: read:database write:database
-&lt;/code&gt;&lt;/pre&gt;Fortunately, Istio recognizes that and separates the string into multiple scopes. This allows us to match individual scopes from the &lt;code&gt;scope&lt;/code&gt; field without having to do string manipulations.&lt;/li&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;scope:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;read:database&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;write:database&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;Fortunately, Istio recognizes that and separates the string into multiple scopes. This allows us to match individual scopes from the &lt;code&gt;scope&lt;/code&gt; field without having to do string manipulations.&lt;/li&gt;
 &lt;li&gt;To assist with troubleshooting, set the log level for the &lt;code&gt;jwt&lt;/code&gt; and &lt;code&gt;rbac&lt;/code&gt; loggers to &lt;code&gt;debug&lt;/code&gt;, which will produce more logs on JWT validation and RBAC enforcement in the application sidecar proxy.
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;istioctl proxy-config log &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;k get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;httpbin -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; --level jwt:debug rbac:debug
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;istioctl proxy-config log &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;k get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;httpbin -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; --level jwt:debug rbac:debug
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;/ol&gt;
 </content>
@@ -1515,7 +1515,7 @@ kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io
 &lt;h1 id=&#34;kubernetes-ingress&#34;&gt;Kubernetes Ingress&lt;/h1&gt;
 &lt;p&gt;Istio should handle &lt;a href=&#34;https://kubernetes.io/docs/concepts/services-networking/ingress/&#34;&gt;Kubernetes Ingress&lt;/a&gt; resource just fine as documented &lt;a href=&#34;https://istio.io/latest/docs/tasks/traffic-management/ingress/kubernetes-ingress/&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Here we create a Kubernetes Ingress to access the Bookinfo application. Note the additional annotation &lt;code&gt;kubernetes.io/ingress.class: istio&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl -n bookinfo apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl -n bookinfo apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: networking.k8s.io/v1
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Ingress
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
@@ -1564,14 +1564,14 @@ kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF apiVersion: networking.k8s.io
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The application is now exposed through the Istio ingress gateway on port 80, which in turn is exposed on port 8080 via the k3d configuration. Verify that it is working by browsing to &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;http://localhost:8080/productpage&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;To verify that the route has been configured on the Istio ingress gateway, first get the name of the &lt;code&gt;route&lt;/code&gt; created by the Ingress:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ ISTIO_INGRESS_GW_POD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;kubectl -n istio-system get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;istio-ingressgateway -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ ISTIO_INGRESS_GW_POD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;kubectl -n istio-system get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;istio-ingressgateway -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
 $ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
 NAME        DOMAINS     MATCH                  VIRTUAL SERVICE
 http.80     *           /productpage           -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
             *           /healthz/ready*
             *           /stats/prometheus*
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the example above, we see &lt;code&gt;http.80&lt;/code&gt; is the route created for our ingress matching &lt;code&gt;/productpage&lt;/code&gt;. We can then print out the details of the route by name&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD --name http.80 -o yaml
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD --name http.80 -o yaml
 - name: http.80
   validateClusters: false
   virtualHosts:
@@ -1603,57 +1603,57 @@ http.80     *           /productpage           -productpage-k8s-ingress-istio-au
         timeout: 0s
 &amp;lt;output truncated&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Alternatively, you can go all out and get a config dump from the ingress gateway (which is basically Envoy) by exposing the Envoy admin port &lt;code&gt;15000&lt;/code&gt;&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;k -n istio-system port-forward $ISTIO_INGRESS_GW_POD 15000
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;and calling the &lt;code&gt;config_dump&lt;/code&gt; API in a separate terminal&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;curl localhost:15000/config_dump
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;istio-gateway-and-virtual-service&#34;&gt;Istio Gateway and Virtual Service&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl -n istio-system port-forward $ISTIO_INGRESS_GW_POD &lt;span style=&#34;color:#ae81ff&#34;&gt;15000&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and calling the &lt;code&gt;config_dump&lt;/code&gt; API in a separate terminal&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;curl localhost:15000/config_dump
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;istio-gateway-and-virtual-service&#34;&gt;Istio Gateway and Virtual Service&lt;/h1&gt;
 &lt;p&gt;Istio offers the &lt;code&gt;Gateway&lt;/code&gt; and &lt;code&gt;VirtualService&lt;/code&gt; CRDs for better control of ingress traffic.&lt;/p&gt;
 &lt;p&gt;We start by deploying the &lt;code&gt;Gateway&lt;/code&gt; and &lt;code&gt;VirtualService&lt;/code&gt; resources&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n bookinfo apply -f - &amp;lt;&amp;lt;EOF
-apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  name: bookinfo-gateway
-spec:
-  selector:
-    istio: ingressgateway # use istio default controller
-  servers:
-  - port:
-      number: 80
-      name: http
-      protocol: HTTP
-    hosts:
-    - &amp;quot;*&amp;quot;
----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: bookinfo
-spec:
-  hosts:
-  - &amp;quot;*&amp;quot;
-  gateways:
-  - bookinfo-gateway
-  http:
-  - match:
-    - uri:
-        exact: /productpage
-    - uri:
-        prefix: /static
-    - uri:
-        exact: /login
-    - uri:
-        exact: /logout
-    - uri:
-        prefix: /api/v1/products
-    route:
-    - destination:
-        host: productpage
-        port:
-          number: 9080
-EOF
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Verify that the appropriate routes are created:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl -n bookinfo apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: networking.istio.io/v1alpha3
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Gateway
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: bookinfo-gateway
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  selector:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    istio: ingressgateway # use istio default controller
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  servers:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - port:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      number: 80
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      name: http
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      protocol: HTTP
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    hosts:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - &amp;#34;*&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;---
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: networking.istio.io/v1alpha3
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: VirtualService
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  name: bookinfo
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;spec:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  hosts:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - &amp;#34;*&amp;#34;
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  gateways:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - bookinfo-gateway
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  http:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  - match:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - uri:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        exact: /productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - uri:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        prefix: /static
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - uri:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        exact: /login
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - uri:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        exact: /logout
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - uri:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        prefix: /api/v1/products
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    route:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    - destination:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        host: productpage
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        port:
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          number: 9080
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify that the appropriate routes are created:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ istioctl proxy-config routes -n istio-system $ISTIO_INGRESS_GW_POD
 NAME        DOMAINS     MATCH                  VIRTUAL SERVICE
 http.80     *           /productpage           -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
 http.80     *           /static/*              -productpage-k8s-ingress-istio-autogenerated-k8s-ingress.bookinfo
@@ -1667,36 +1667,36 @@ http.80     *           /logout                bookinfo.bookinfo
 http.80     *           /api/v1/products*      bookinfo.bookinfo
             *           /healthz/ready*
             *           /stats/prometheus*
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Notice that we now have 2 sets of routes, 1 from Kubernetes Ingress and another from the Istio VirtualService. According to Envoy&amp;rsquo;s &lt;a href=&#34;https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/route_matching&#34;&gt;route matching&lt;/a&gt; rules, they are evaluated in order, so the routes introduced by the Ingress resource still has priority.&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Notice that we now have 2 sets of routes, 1 from Kubernetes Ingress and another from the Istio VirtualService. According to Envoy&amp;rsquo;s &lt;a href=&#34;https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/route_matching&#34;&gt;route matching&lt;/a&gt; rules, they are evaluated in order, so the routes introduced by the Ingress resource still has priority.&lt;/p&gt;
 &lt;p&gt;Let&amp;rsquo;s verify this by changing the target port for /productpage in the &lt;code&gt;productpage-k8s-ingress&lt;/code&gt; Ingress to something else&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n bookinfo patch ingress productpage-k8s-ingress -p &#39;{
-  &amp;quot;spec&amp;quot;: {
-    &amp;quot;rules&amp;quot;: [
-      {
-        &amp;quot;http&amp;quot;: {
-          &amp;quot;paths&amp;quot;: [
-            {
-              &amp;quot;path&amp;quot;: &amp;quot;/productpage&amp;quot;,
-              &amp;quot;pathType&amp;quot;: &amp;quot;Exact&amp;quot;,
-              &amp;quot;backend&amp;quot;: {
-                &amp;quot;service&amp;quot;: {
-                  &amp;quot;name&amp;quot;: &amp;quot;productpage&amp;quot;,
-                  &amp;quot;port&amp;quot;: {
-                    &amp;quot;number&amp;quot;: 10080
-                  }
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
-  }
-}&#39;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Attempting to browse to &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;http://localhost:8080/productpage&lt;/a&gt; will now fail as expected since the &lt;code&gt;productpage-k8s-ingress&lt;/code&gt; Ingress configuration is wrong.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl -n bookinfo patch ingress productpage-k8s-ingress -p &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  &amp;#34;spec&amp;#34;: {
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    &amp;#34;rules&amp;#34;: [
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      {
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        &amp;#34;http&amp;#34;: {
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          &amp;#34;paths&amp;#34;: [
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            {
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              &amp;#34;path&amp;#34;: &amp;#34;/productpage&amp;#34;,
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              &amp;#34;pathType&amp;#34;: &amp;#34;Exact&amp;#34;,
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              &amp;#34;backend&amp;#34;: {
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;                &amp;#34;service&amp;#34;: {
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;                  &amp;#34;name&amp;#34;: &amp;#34;productpage&amp;#34;,
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;                  &amp;#34;port&amp;#34;: {
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;                    &amp;#34;number&amp;#34;: 10080
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;                  }
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;                }
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;              }
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;            }
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;          ]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;        }
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      }
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    ]
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;  }
+&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;}&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Attempting to browse to &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;http://localhost:8080/productpage&lt;/a&gt; will now fail as expected since the &lt;code&gt;productpage-k8s-ingress&lt;/code&gt; Ingress configuration is wrong.&lt;/p&gt;
 &lt;p&gt;Now that we have observed this behaviour of Envoy route matching, we can remove the &lt;code&gt;productpage-k8s-ingress&lt;/code&gt; Ingress, and have Istio&amp;rsquo;s Gateway and VirtualService to take effect&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kubectl -n bookinfo delete ingress productpage-k8s-ingress
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;productpage&lt;/a&gt; should now work again.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl -n bookinfo delete ingress productpage-k8s-ingress
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;a href=&#34;http://localhost:8080/productpage&#34;&gt;productpage&lt;/a&gt; should now work again.&lt;/p&gt;
 &lt;h1 id=&#34;learnings&#34;&gt;Learnings&lt;/h1&gt;
 &lt;ul&gt;
 &lt;li&gt;Istio can handle Kubernetes Ingress once the &lt;code&gt;kubernetes.io/ingress.class: istio&lt;/code&gt; annotation has been added&lt;/li&gt;

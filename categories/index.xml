@@ -18,11 +18,11 @@
     </item>
     
     <item>
-      <title>tech</title>
-      <link>/categories/tech/</link>
-      <pubDate>Sat, 06 Nov 2021 21:32:16 +1100</pubDate>
+      <title>istio</title>
+      <link>/categories/istio/</link>
+      <pubDate>Sat, 06 Nov 2021 00:00:00 +0000</pubDate>
       
-      <guid>/categories/tech/</guid>
+      <guid>/categories/istio/</guid>
       <description></description>
       <content></content>
     </item>
@@ -48,21 +48,21 @@
     </item>
     
     <item>
-      <title>automation</title>
-      <link>/categories/automation/</link>
-      <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
+      <title>tech</title>
+      <link>/categories/tech/</link>
+      <pubDate>Tue, 12 Oct 2021 15:59:45 +1100</pubDate>
       
-      <guid>/categories/automation/</guid>
+      <guid>/categories/tech/</guid>
       <description></description>
       <content></content>
     </item>
     
     <item>
-      <title>istio</title>
-      <link>/categories/istio/</link>
-      <pubDate>Mon, 02 Aug 2021 16:25:55 +1000</pubDate>
+      <title>automation</title>
+      <link>/categories/automation/</link>
+      <pubDate>Sun, 26 Sep 2021 00:00:00 +0000</pubDate>
       
-      <guid>/categories/istio/</guid>
+      <guid>/categories/automation/</guid>
       <description></description>
       <content></content>
     </item>

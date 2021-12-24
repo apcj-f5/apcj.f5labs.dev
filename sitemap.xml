@@ -60,16 +60,16 @@
     <lastmod>2021-12-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/istio/</loc>
-    <lastmod>2021-11-06T21:32:16+11:00</lastmod>
+    <lastmod>2021-11-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/categories/istio/</loc>
+    <lastmod>2021-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/tags/jwt/</loc>
-    <lastmod>2021-11-06T21:32:16+11:00</lastmod>
+    <lastmod>2021-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/posts/learning-istio/jwt-auth/</loc>
-    <lastmod>2021-11-06T21:32:16+11:00</lastmod>
-  </url><url>
-    <loc>/categories/tech/</loc>
-    <lastmod>2021-11-06T21:32:16+11:00</lastmod>
+    <lastmod>2021-11-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/categories/dev/</loc>
     <lastmod>2021-11-01T00:00:00+00:00</lastmod>
@@ -81,6 +81,9 @@
     <lastmod>2021-11-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/posts/learning-istio/securing-egress-traffic-with-mtls/</loc>
+    <lastmod>2021-10-12T15:59:45+11:00</lastmod>
+  </url><url>
+    <loc>/categories/tech/</loc>
     <lastmod>2021-10-12T15:59:45+11:00</lastmod>
   </url><url>
     <loc>/categories/automation/</loc>
@@ -103,9 +106,6 @@
   </url><url>
     <loc>/tags/unit/</loc>
     <lastmod>2021-08-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/categories/istio/</loc>
-    <lastmod>2021-08-02T16:25:55+10:00</lastmod>
   </url><url>
     <loc>/posts/learning-istio/ingress/</loc>
     <lastmod>2021-08-02T16:25:55+10:00</lastmod>
