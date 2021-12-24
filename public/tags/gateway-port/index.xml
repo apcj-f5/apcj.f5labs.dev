@@ -17,87 +17,87 @@
       <content>&lt;p&gt;The port and protocol in the Gateway resource define the listener port and protocol in ingressgateway (envoy).&lt;/p&gt;
 &lt;p&gt;However, the port in Gateway can be set to the port or targetPort of the ingressgateway svc, and finally the targetPort is used in envoy.&lt;/p&gt;
 &lt;p&gt;For example below, the port is defined as 443 in Gateway:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;apiVersion: networking.istio.io/v1alpha3
-kind: Gateway
-metadata:
-  namespace: istio-bookinfo
-  name: bookinfo-gateway
-spec:
-  selector:
-    istio: ingressgateway # use istio default controller
-  servers:
-  - port:
-      number: 8080  
-      name: http
-      protocol: HTTP 
-    hosts:
-    - &amp;quot;*&amp;quot;
-  - port:
-      number: 443 #####use for assembling the route name that under the listener
-      name: https #####use for assembling the route name that under the listener
-      protocol: HTTPS #####use for assembling the route name that under the listener
-    tls:
-      mode: SIMPLE
-      serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
-      privateKey: /etc/istio/ingressgateway-certs/tls.key
-    hosts:
-    - &amp;quot;*&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;While, when you check the envoy configurations, the listener port actually is 8443&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[root@k8s-master-v1-16 networking]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-lfqz9.istio-system --port 8443 -o json
-[
-    {
-        &amp;quot;name&amp;quot;: &amp;quot;0.0.0.0_8443&amp;quot;,
-        &amp;quot;address&amp;quot;: {
-            &amp;quot;socketAddress&amp;quot;: {
-                &amp;quot;address&amp;quot;: &amp;quot;0.0.0.0&amp;quot;,
-                &amp;quot;portValue&amp;quot;: 8443 《《《《《8443！！
-            }
-        },
-        &amp;quot;filterChains&amp;quot;: [
-            {
-                &amp;quot;filters&amp;quot;: [
-                    {
-                        &amp;quot;name&amp;quot;: &amp;quot;envoy.http_connection_manager&amp;quot;,
-                        &amp;quot;typedConfig&amp;quot;: {
-                            &amp;quot;@type&amp;quot;: &amp;quot;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&amp;quot;,
-                            &amp;quot;statPrefix&amp;quot;: &amp;quot;outbound_0.0.0.0_8443&amp;quot;,
-                            &amp;quot;rds&amp;quot;: {
-                                &amp;quot;configSource&amp;quot;: {
-                                    &amp;quot;ads&amp;quot;: {}
-                                },
-                                ###The route name is assembled by protocol + port number + portname, Note here: use 443,not 8443
-                                &amp;quot;routeConfigName&amp;quot;: &amp;quot;https.443.https.bookinfo-gateway.istio-bookinfo&amp;quot;
-                            },
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This is because the ingressgateway&amp;rsquo;s 443 svc port is corresponding to targetPort 8443:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt; - name: https
-    nodePort: 30975
-    port: 443
-    protocol: TCP
-    targetPort: 8443
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If the port is defined as 8443 in the gateway, the result is same, will generate 8443 listener in envoy.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-YAML&#34; data-lang=&#34;YAML&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;networking.istio.io/v1alpha3&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;kind&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;Gateway&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;metadata&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;namespace&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;istio-bookinfo&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;bookinfo-gateway&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+  &lt;span style=&#34;color:#f92672&#34;&gt;selector&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;istio&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;ingressgateway&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;# use istio default controller&lt;/span&gt;
+  &lt;span style=&#34;color:#f92672&#34;&gt;servers&lt;/span&gt;:
+  - &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;number&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;8080&lt;/span&gt;  
+      &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;http&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;HTTP &lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;hosts&lt;/span&gt;:
+    - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*&amp;#34;&lt;/span&gt;
+  - &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;number&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;443&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#####use for assembling the route name that under the listener&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;https&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#####use for assembling the route name that under the listener&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;HTTPS&lt;/span&gt; &lt;span style=&#34;color:#75715e&#34;&gt;#####use for assembling the route name that under the listener&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;tls&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;mode&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;SIMPLE&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;serverCertificate&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;/etc/istio/ingressgateway-certs/tls.crt&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;privateKey&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;/etc/istio/ingressgateway-certs/tls.key&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;hosts&lt;/span&gt;:
+    - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;While, when you check the envoy configurations, the listener port actually is 8443&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@k8s-master-v1-16 networking&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-lfqz9.istio-system --port 8443 -o json&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0_8443&amp;#34;&lt;/span&gt;,
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;address&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;socketAddress&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;address&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;portValue&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;8443&lt;/span&gt; 《《《《《8443！！
+            &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;filterChains&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+            &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;filters&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;envoy.http_connection_manager&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typedConfig&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;@type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&amp;#34;&lt;/span&gt;,
+                            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;statPrefix&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;outbound_0.0.0.0_8443&amp;#34;&lt;/span&gt;,
+                            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;rds&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;configSource&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                                    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ads&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{}&lt;/span&gt;
+                                &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+                                &lt;span style=&#34;color:#75715e&#34;&gt;###The route name is assembled by protocol + port number + portname, Note here: use 443,not 8443&lt;/span&gt;
+                                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;routeConfigName&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https.443.https.bookinfo-gateway.istio-bookinfo&amp;#34;&lt;/span&gt;
+                            &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is because the ingressgateway&amp;rsquo;s 443 svc port is corresponding to targetPort 8443:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-YAML&#34; data-lang=&#34;YAML&#34;&gt; - &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;https&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;nodePort&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;30975&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;443&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;TCP&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;targetPort&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;8443&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If the port is defined as 8443 in the gateway, the result is same, will generate 8443 listener in envoy.&lt;/p&gt;
 &lt;p&gt;When there is only one gateway definition, it is ok to use port or the corresponding targetport of the ingressgateway, both will get the same listener port in evnoy lastly. But please be noted, if there are multiple gateway definitions and set same protocol, then the port in the gateways must be same. Otherwise, the listener will only associate the routeConfigName generated by the gateway that created afterwards, and the associated route will not contain the virtualservice logic that related to the first created gateway.&lt;/p&gt;
 &lt;p&gt;For example, configure HTTP:8080 in the gateway in the istio-bookinfo namespace (the svc 80 of ingressgateway corresponds to the 8080 of the pod):&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;apiVersion: v1
-items:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-YAML&#34; data-lang=&#34;YAML&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;apiVersion&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;v1&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;items&lt;/span&gt;:
  
-  spec:
-    selector:
-      istio: ingressgateway
-    servers:
-    - hosts:
-      - &#39;*&#39;
-      port:
-        name: http
-        number: 8080
-        protocol: HTTP
-    - hosts:
-      - istiobookinfo.lab.f5se.io
-      port:
-        name: https
-        number: 443
-        protocol: HTTPS
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The gateway in the httpbin namespace configures HTTP：80，&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[root@k8s-master-v1-16 httpbin]# kubectl get gateways.networking.istio.io -n httpbin -o yaml
+  &lt;span style=&#34;color:#f92672&#34;&gt;spec&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;selector&lt;/span&gt;:
+      &lt;span style=&#34;color:#f92672&#34;&gt;istio&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;ingressgateway&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;servers&lt;/span&gt;:
+    - &lt;span style=&#34;color:#f92672&#34;&gt;hosts&lt;/span&gt;:
+      - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;*&amp;#39;&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;http&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;number&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;8080&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;HTTP&lt;/span&gt;
+    - &lt;span style=&#34;color:#f92672&#34;&gt;hosts&lt;/span&gt;:
+      - &lt;span style=&#34;color:#ae81ff&#34;&gt;istiobookinfo.lab.f5se.io&lt;/span&gt;
+      &lt;span style=&#34;color:#f92672&#34;&gt;port&lt;/span&gt;:
+        &lt;span style=&#34;color:#f92672&#34;&gt;name&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;https&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;number&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;443&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;protocol&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;HTTPS&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The gateway in the httpbin namespace configures HTTP：80，&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@k8s-master-v1-16 httpbin&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# kubectl get gateways.networking.istio.io -n httpbin -o yaml&lt;/span&gt;
 apiVersion: v1
 items:
  
@@ -109,36 +109,36 @@ items:
       - httpbin.lab.f5se.io
       port:
         name: http-httpbin
-        number: 80
+        number: &lt;span style=&#34;color:#ae81ff&#34;&gt;80&lt;/span&gt;
         protocol: HTTP
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This leads to the fact that the envoy listener is actually actually associated with the later created http.80 route:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;[root@k8s-master-v1-16 ~]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-gh2vr.istio-system --port 8080 -o json
-[
-    {
-        &amp;quot;name&amp;quot;: &amp;quot;0.0.0.0_8080&amp;quot;,
-        &amp;quot;address&amp;quot;: {
-            &amp;quot;socketAddress&amp;quot;: {
-                &amp;quot;address&amp;quot;: &amp;quot;0.0.0.0&amp;quot;,
-                &amp;quot;portValue&amp;quot;: 8080
-            }
-        },
-        &amp;quot;filterChains&amp;quot;: [
-            {
-                &amp;quot;filters&amp;quot;: [
-                    {
-                        &amp;quot;name&amp;quot;: &amp;quot;envoy.http_connection_manager&amp;quot;,
-                        &amp;quot;typedConfig&amp;quot;: {
-                            &amp;quot;@type&amp;quot;: &amp;quot;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&amp;quot;,
-                            &amp;quot;statPrefix&amp;quot;: &amp;quot;outbound_0.0.0.0_8080&amp;quot;,
-                            &amp;quot;rds&amp;quot;: {
-                                &amp;quot;configSource&amp;quot;: {
-                                    &amp;quot;ads&amp;quot;: {}
-                                },
-                                &amp;quot;routeConfigName&amp;quot;: &amp;quot;http.80&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Therefore, in these multi gateways configuration, which ultimately shares the listener port, the port number and protocol name need to be the same (BEST practice is using the port number that envoy actually listens to), but the port must be named differently (if the port name is the same, envoy will show the conflicting configuration logs):&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;2020-07-10T09:56:26.192152Z	warning	envoy config	[external/envoy/source/common/config/grpc_subscription_impl.cc:101] gRPC config for type.googleapis.com/envoy.api.v2.Listener rejected: 
-Error adding/updating listener(s) 0.0.0.0_8080: duplicate listener 0.0.0.0_8080 found
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Gateways with the same protocol and the same port, no matter whether they are in the same namespace, can only share one listener in envoy, so they will also share same route. If you accidentally configure the same virtualservice under different namespaces at this time, it will cause envoy to generate two identical match conditions in the same route (and the associated cluster is different namespace suffix, This resulting in abnormal access)&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This leads to the fact that the envoy listener is actually actually associated with the later created http.80 route:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;root@k8s-master-v1-16 ~&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-gh2vr.istio-system --port 8080 -o json&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+    &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0_8080&amp;#34;&lt;/span&gt;,
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;address&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;socketAddress&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;address&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0&amp;#34;&lt;/span&gt;,
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;portValue&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#ae81ff&#34;&gt;8080&lt;/span&gt;
+            &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
+        &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;filterChains&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+            &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;filters&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;
+                    &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;envoy.http_connection_manager&amp;#34;&lt;/span&gt;,
+                        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typedConfig&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;@type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager&amp;#34;&lt;/span&gt;,
+                            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;statPrefix&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;outbound_0.0.0.0_8080&amp;#34;&lt;/span&gt;,
+                            &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;rds&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;configSource&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
+                                    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;ads&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{}&lt;/span&gt;
+                                &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;,
+                                &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;routeConfigName&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;http.80&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Therefore, in these multi gateways configuration, which ultimately shares the listener port, the port number and protocol name need to be the same (BEST practice is using the port number that envoy actually listens to), but the port must be named differently (if the port name is the same, envoy will show the conflicting configuration logs):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;2020-07-10T09:56:26.192152Z	warning	envoy config	&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;external/envoy/source/common/config/grpc_subscription_impl.cc:101&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; gRPC config &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; type.googleapis.com/envoy.api.v2.Listener rejected: 
+Error adding/updating listener&lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;s&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; 0.0.0.0_8080: duplicate listener 0.0.0.0_8080 found
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Gateways with the same protocol and the same port, no matter whether they are in the same namespace, can only share one listener in envoy, so they will also share same route. If you accidentally configure the same virtualservice under different namespaces at this time, it will cause envoy to generate two identical match conditions in the same route (and the associated cluster is different namespace suffix, This resulting in abnormal access)&lt;/p&gt;
 &lt;p&gt;Check more istio practice detail at my tech blog &lt;a href=&#34;https://imesh.club&#34;&gt;https://imesh.club&lt;/a&gt;&lt;/p&gt;
 </content>
     </item>

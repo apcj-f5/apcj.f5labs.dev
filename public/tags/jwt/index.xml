@@ -6,11 +6,11 @@
     <description>Recent content in jwt on apcj@f5 blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 06 Nov 2021 21:32:16 +1100</lastBuildDate><atom:link href="/tags/jwt/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/jwt/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Learning Istio | JWT Auth</title>
       <link>/posts/learning-istio/jwt-auth/</link>
-      <pubDate>Sat, 06 Nov 2021 21:32:16 +1100</pubDate>
+      <pubDate>Sat, 06 Nov 2021 00:00:00 +0000</pubDate>
       
       <guid>/posts/learning-istio/jwt-auth/</guid>
       <description>In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
@@ -25,7 +25,7 @@
 &lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;
 &lt;h2 id=&#34;test-application&#34;&gt;Test application&lt;/h2&gt;
 &lt;p&gt;For the test application, I will be using the &lt;a href=&#34;https://hub.docker.com/r/kennethreitz/httpbin/&#34;&gt;httpbin&lt;/a&gt; image as it exposes a &lt;code&gt;/headers&lt;/code&gt; endpoint which prints out the headers as seen by the application, allowing us to see the changes done by the sidecar proxy.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: apps/v1
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: Deployment
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
@@ -63,7 +63,7 @@
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;jwt-provider&#34;&gt;JWT provider&lt;/h2&gt;
 &lt;p&gt;The JWT used in most of the examples in this post is obtained from Auth0 via the &lt;a href=&#34;https://auth0.com/docs/authorization/flows/call-your-api-using-the-client-credentials-flow&#34;&gt;client credentials flow&lt;/a&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get access token&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Get access token&lt;/span&gt;
 $ BASE_URL&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;https://leonseng.au.auth0.com
 $ APP_CLIENT_ID&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client ID&amp;gt;
 $ APP_CLIENT_SECRET&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&amp;lt;Auth0 app client secret&amp;gt;
@@ -96,7 +96,7 @@ $ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;requestauthentication&#34;&gt;RequestAuthentication&lt;/h1&gt;
 &lt;p&gt;Istio&amp;rsquo;s &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; is responsible for validating the JWT in a request is signed by the expected issuer, and that the payload has not been tampered with.&lt;/p&gt;
 &lt;p&gt;Below is an example where we specify the JWT issuer and the JSON Web Key Set (JWKS) for JWT validation. The decoded JWT payload can be passed onto the application in a HTTP header via the &lt;code&gt;outputPayloadToHeader&lt;/code&gt; field, allowing application to access the trusted claim without having to perform token validation itself.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: RequestAuthentication
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
@@ -111,7 +111,7 @@ $ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;    outputPayloadToHeader: x-jwt-payload
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here&amp;rsquo;s a test to show that our request with the right JWT can go through&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ RESPONSE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ RESPONSE&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
 $ echo $RESPONSE | jq .
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
@@ -129,7 +129,7 @@ $ echo $RESPONSE | jq .
   &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see that the decoded payload is accessible by the application in the &lt;code&gt;X-Jwt-Payload&lt;/code&gt; header after performing a base64 decode&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ FORWARDED_PAYLOAD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $RESPONSE | jq -r &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.headers.&amp;#34;X-Jwt-Payload&amp;#34;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ FORWARDED_PAYLOAD&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $RESPONSE | jq -r &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.headers.&amp;#34;X-Jwt-Payload&amp;#34;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
 $ echo $FORWARDED_PAYLOAD | base64 -d | jq .
 base64: invalid input
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
@@ -143,7 +143,7 @@ base64: invalid input
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gty&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;client-credentials&amp;#34;&lt;/span&gt;
 &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Malformed, expired and JWT issued by other issuers will be rejected:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Malformed token&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Malformed token&lt;/span&gt;
 $ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer bad&amp;#34;&lt;/span&gt; httpbin/headers
 Jwt is not in the form of Header.Payload.Signature with two dots and &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt; sections
 
@@ -156,7 +156,7 @@ INVALID_TOKEN&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;eyJhbGciOiJ
 $ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$INVALID_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
 Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t have key to match kid or alg from Jwt
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without JWT is expected to fail, but &lt;strong&gt;it didn&amp;rsquo;t&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s httpbin/headers
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ curl -s httpbin/headers
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
     &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
@@ -184,7 +184,7 @@ Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&am
 &lt;li&gt;&lt;a href=&#34;#additional-conditions-in-the-jwt&#34;&gt;additional conditions in the JWT&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;Below is an example which we will be using&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;kubectl apply -f - &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;lt;&amp;lt;EOF
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;apiVersion: security.istio.io/v1beta1
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;kind: AuthorizationPolicy
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;metadata:
@@ -208,7 +208,7 @@ Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&am
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;      values: [&amp;#34;write:database, fetch:email&amp;#34;]
 &lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;EOF&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;A quick test to verify that it hasn&amp;rsquo;t broken our setup&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/headers
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;headers&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
     &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Accept&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;*/*&amp;#34;&lt;/span&gt;,
@@ -226,11 +226,11 @@ Jwks doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&am
 &lt;span style=&#34;color:#f92672&#34;&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;who-is-the-requester&#34;&gt;Who is the requester&lt;/h2&gt;
 &lt;p&gt;The identity of the requester using JWT can be specified in the &lt;code&gt;requestPrincipals&lt;/code&gt; field as documented &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Source&#34;&gt;here&lt;/a&gt;. Istio constructs the identity from the JWT payload values in the format of &lt;code&gt;&amp;lt;iss&amp;gt;/&amp;lt;sub&amp;gt;&lt;/code&gt;. However, if you just want to enforce the presence of a valid JWT (regardless of the identity), &lt;code&gt;requestPrincipals&lt;/code&gt; can be set to &lt;code&gt;[*]&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;from:
-- source:
-    requestPrincipals: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;  &lt;span style=&#34;color:#75715e&#34;&gt;# iss/sub&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-YAML&#34; data-lang=&#34;YAML&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt;:
+- &lt;span style=&#34;color:#f92672&#34;&gt;source&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;requestPrincipals&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients&amp;#34;&lt;/span&gt;]  &lt;span style=&#34;color:#75715e&#34;&gt;# iss/sub&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Requests without a JWT or with a different user/subject will be denied&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# No JWT provided&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# No JWT provided&lt;/span&gt;
 $ curl -s httpbin/headers
 RBAC: access denied
 
@@ -255,23 +255,23 @@ $ curl -s -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: B
 RBAC: access denied
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;what-is-the-requester-trying-to-do&#34;&gt;What is the requester trying to do&lt;/h2&gt;
 &lt;p&gt;Next, we can &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/#Operation&#34;&gt;restrict which HTTP verbs and path a requester has access to&lt;/a&gt;. In our example, we are only allowing &lt;code&gt;GET&lt;/code&gt; requests to &lt;code&gt;/headers&lt;/code&gt; path&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;to:
-- operation:
-    methods: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
-    paths: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/headers&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-YAML&#34; data-lang=&#34;YAML&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;to&lt;/span&gt;:
+- &lt;span style=&#34;color:#f92672&#34;&gt;operation&lt;/span&gt;:
+    &lt;span style=&#34;color:#f92672&#34;&gt;methods&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;GET&amp;#34;&lt;/span&gt;]
+    &lt;span style=&#34;color:#f92672&#34;&gt;paths&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;/headers&amp;#34;&lt;/span&gt;]
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Request using another HTTP verb and/or accessing another path will not be allowed&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# POST to /post&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# POST to /post&lt;/span&gt;
 $ curl -s -X POST -H &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;Authorization: Bearer &lt;/span&gt;$ACCESS_TOKEN&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&lt;/span&gt; httpbin/post
 RBAC: access denied
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;additional-conditions-in-the-jwt&#34;&gt;Additional conditions in the JWT&lt;/h2&gt;
 &lt;p&gt;Lastly, Istio also enables the evaluation of additional &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/conditions/&#34;&gt;conditions against the JWT claims&lt;/a&gt;. The &lt;code&gt;AuthorizationPolicy&lt;/code&gt; applied is checking against the claims in the JWT payload&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;when:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;when:
 - key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;aud&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
   values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;istio-jwt-test&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
 - key: request.auth.claims&lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;scope&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
   values: &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;write:database&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this example, we send a request with the scope &lt;code&gt;read:database&lt;/code&gt;, which will be rejected as the &lt;code&gt;AuthorizationPolicy&lt;/code&gt; is expecting a &lt;code&gt;write:database&lt;/code&gt; scope&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ jq -R &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;split(&amp;#34;.&amp;#34;) | .[0],.[1] | @base64d | fromjson&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;echo $ACCESS_TOKEN&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt;
 &lt;span style=&#34;color:#f92672&#34;&gt;{&lt;/span&gt;
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;alg&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;RS256&amp;#34;&lt;/span&gt;,
   &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;typ&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;JWT&amp;#34;&lt;/span&gt;,
@@ -294,16 +294,16 @@ RBAC: access denied
 &lt;p&gt;Here&amp;rsquo;s a list of things that were picked up during my tests that weren&amp;rsquo;t immediately intuitive:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Istio requires the port name in the &lt;code&gt;Service&lt;/code&gt; to be prefixed with the protocol as described &lt;a href=&#34;https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/&#34;&gt;here&lt;/a&gt;. Failing to adhere to the naming convention will break the authentication feature provided by the &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; resource. This can be caught by running &lt;code&gt;istioctl analyze&lt;/code&gt; in the application namespace, which reveals a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/analysis/ist0118/&#34;&gt;PortNameIsNotUnderNamingConvention&lt;/a&gt; message:
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;$ istioctl analyze
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;$ istioctl analyze
 &amp;lt;snipped&amp;gt;
 Info &lt;span style=&#34;color:#f92672&#34;&gt;[&lt;/span&gt;IST0118&lt;span style=&#34;color:#f92672&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;Service httpbin.default&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; Port name &lt;span style=&#34;color:#f92672&#34;&gt;(&lt;/span&gt;port: 80, targetPort: 80&lt;span style=&#34;color:#f92672&#34;&gt;)&lt;/span&gt; doesn&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;&amp;#39;&lt;/span&gt;t follow the naming convention of Istio port.
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;li&gt;Defining a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/request_authentication/&#34;&gt;RequestAuthentication&lt;/a&gt; alone does not stop requests without JWT, the requests just won&amp;rsquo;t have identities tied to them. Augment it with a &lt;a href=&#34;https://istio.io/latest/docs/reference/config/security/authorization-policy/&#34;&gt;AuthorizationPolicy&lt;/a&gt; to enforce the presence of JWT.&lt;/li&gt;
 &lt;li&gt;The &lt;code&gt;scope&lt;/code&gt; field in a JWT can contain multiple scopes in a space delimited format,
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;scope: read:database write:database
-&lt;/code&gt;&lt;/pre&gt;Fortunately, Istio recognizes that and separates the string into multiple scopes. This allows us to match individual scopes from the &lt;code&gt;scope&lt;/code&gt; field without having to do string manipulations.&lt;/li&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-JSON&#34; data-lang=&#34;JSON&#34;&gt;&lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;scope:&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;read:database&lt;/span&gt; &lt;span style=&#34;color:#960050;background-color:#1e0010&#34;&gt;write:database&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;Fortunately, Istio recognizes that and separates the string into multiple scopes. This allows us to match individual scopes from the &lt;code&gt;scope&lt;/code&gt; field without having to do string manipulations.&lt;/li&gt;
 &lt;li&gt;To assist with troubleshooting, set the log level for the &lt;code&gt;jwt&lt;/code&gt; and &lt;code&gt;rbac&lt;/code&gt; loggers to &lt;code&gt;debug&lt;/code&gt;, which will produce more logs on JWT validation and RBAC enforcement in the application sidecar proxy.
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;istioctl proxy-config log &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;k get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;httpbin -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; --level jwt:debug rbac:debug
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-Bash&#34; data-lang=&#34;Bash&#34;&gt;istioctl proxy-config log &lt;span style=&#34;color:#66d9ef&#34;&gt;$(&lt;/span&gt;k get pods -l app&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;httpbin -o jsonpath&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;{.items[*].metadata.name}&amp;#39;&lt;/span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;)&lt;/span&gt; --level jwt:debug rbac:debug
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
 &lt;/ol&gt;
 </content>

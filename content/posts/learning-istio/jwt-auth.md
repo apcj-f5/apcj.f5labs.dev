@@ -1,11 +1,12 @@
----
-title: "Learning Istio | JWT Auth"
-date: 2021-11-06T21:32:16+11:00
-draft: false
-series: ["Learning Istio"]
-tags: ['kubernetes', 'istio', 'jwt']
-categories: ['tech']
----
++++
+title = "Learning Istio | JWT Auth"
+date = "2021-11-06"
+draft = false
+series = ["Learning Istio"]
+tags = ['kubernetes', 'istio', 'jwt']
+categories = ["istio"]
+author = "@leonseng"
++++
 
 In this post, we will be looking at how Istio handles end user authentication/authorization based on JSON Web Tokens (JWT). JWT is commonly used in OAuth2.0 flows to specify the resources a client has access to, but there are a couple of things to verify before the client is given access:
 
@@ -21,7 +22,7 @@ Alternatively, as we will discover in this post, we can simplify the application
 ## Test application
 
 For the test application, I will be using the [httpbin](https://hub.docker.com/r/kennethreitz/httpbin/) image as it exposes a `/headers` endpoint which prints out the headers as seen by the application, allowing us to see the changes done by the sidecar proxy.
-```sh
+```Bash
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -63,7 +64,7 @@ EOF
 ## JWT provider
 
 The JWT used in most of the examples in this post is obtained from Auth0 via the [client credentials flow](https://auth0.com/docs/authorization/flows/call-your-api-using-the-client-credentials-flow):
-```sh
+```Bash
 # Get access token
 $ BASE_URL=https://leonseng.au.auth0.com
 $ APP_CLIENT_ID=<Auth0 app client ID>
@@ -102,7 +103,7 @@ Istio's [RequestAuthentication](https://istio.io/latest/docs/reference/config/se
 
 Below is an example where we specify the JWT issuer and the JSON Web Key Set (JWKS) for JWT validation. The decoded JWT payload can be passed onto the application in a HTTP header via the `outputPayloadToHeader` field, allowing application to access the trusted claim without having to perform token validation itself.
 
-```sh
+```Bash
 kubectl apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
@@ -120,7 +121,7 @@ EOF
 ```
 
 Here's a test to show that our request with the right JWT can go through
-```sh
+```Bash
 $ RESPONSE=$(curl -s -H "Authorization: Bearer $ACCESS_TOKEN" httpbin/headers)
 $ echo $RESPONSE | jq .
 {
@@ -141,7 +142,7 @@ $ echo $RESPONSE | jq .
 ```
 
 We can see that the decoded payload is accessible by the application in the `X-Jwt-Payload` header after performing a base64 decode
-```sh
+```Bash
 $ FORWARDED_PAYLOAD=$(echo $RESPONSE | jq -r '.headers."X-Jwt-Payload"')
 $ echo $FORWARDED_PAYLOAD | base64 -d | jq .
 base64: invalid input
@@ -158,7 +159,7 @@ base64: invalid input
 ```
 
 Malformed, expired and JWT issued by other issuers will be rejected:
-```sh
+```Bash
 # Malformed token
 $ curl -s -H "Authorization: Bearer bad" httpbin/headers
 Jwt is not in the form of Header.Payload.Signature with two dots and 3 sections
@@ -174,7 +175,7 @@ Jwks doesn't have key to match kid or alg from Jwt
 ```
 
 Requests without JWT is expected to fail, but **it didn't**
-```sh
+```Bash
 $ curl -s httpbin/headers
 {
   "headers": {
@@ -206,7 +207,7 @@ This was unexpected to me, but it is a [documented behaviour](https://istio.io/l
 1. [additional conditions in the JWT](#additional-conditions-in-the-jwt)
 
 Below is an example which we will be using
-```sh
+```Bash
 kubectl apply -f - <<EOF
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -233,7 +234,7 @@ EOF
 ```
 
 A quick test to verify that it hasn't broken our setup
-```sh
+```Bash
 $ curl -s -H "Authorization: Bearer $ACCESS_TOKEN" httpbin/headers
 {
   "headers": {
@@ -255,14 +256,14 @@ $ curl -s -H "Authorization: Bearer $ACCESS_TOKEN" httpbin/headers
 ## Who is the requester
 
 The identity of the requester using JWT can be specified in the `requestPrincipals` field as documented [here](https://istio.io/latest/docs/reference/config/security/authorization-policy/#Source). Istio constructs the identity from the JWT payload values in the format of `<iss>/<sub>`. However, if you just want to enforce the presence of a valid JWT (regardless of the identity), `requestPrincipals` can be set to `[*]`.
-```sh
+```YAML
 from:
 - source:
     requestPrincipals: ["https://leonseng.au.auth0.com//QWPjwvmVTLVJiQejcPJim0CKR3pxtgd3@clients"]  # iss/sub
 ```
 
 Requests without a JWT or with a different user/subject will be denied
-```sh
+```Bash
 # No JWT provided
 $ curl -s httpbin/headers
 RBAC: access denied
@@ -291,7 +292,7 @@ RBAC: access denied
 ## What is the requester trying to do
 
 Next, we can [restrict which HTTP verbs and path a requester has access to](https://istio.io/latest/docs/reference/config/security/authorization-policy/#Operation). In our example, we are only allowing `GET` requests to `/headers` path
-```sh
+```YAML
 to:
 - operation:
     methods: ["GET"]
@@ -299,7 +300,7 @@ to:
 ```
 
 Request using another HTTP verb and/or accessing another path will not be allowed
-```sh
+```Bash
 # POST to /post
 $ curl -s -X POST -H "Authorization: Bearer $ACCESS_TOKEN" httpbin/post
 RBAC: access denied
@@ -308,7 +309,7 @@ RBAC: access denied
 ## Additional conditions in the JWT
 
 Lastly, Istio also enables the evaluation of additional [conditions against the JWT claims](https://istio.io/latest/docs/reference/config/security/conditions/). The `AuthorizationPolicy` applied is checking against the claims in the JWT payload
-```sh
+```Bash
 when:
 - key: request.auth.claims[aud]
   values: ["istio-jwt-test"]
@@ -317,7 +318,7 @@ when:
 ```
 
 In this example, we send a request with the scope `read:database`, which will be rejected as the `AuthorizationPolicy` is expecting a `write:database` scope
-```sh
+```Bash
 $ jq -R 'split(".") | .[0],.[1] | @base64d | fromjson' <<< $(echo $ACCESS_TOKEN)
 {
   "alg": "RS256",
@@ -345,18 +346,18 @@ RBAC: access denied
 Here's a list of things that were picked up during my tests that weren't immediately intuitive:
 
 1. Istio requires the port name in the `Service` to be prefixed with the protocol as described [here](https://istio.io/latest/docs/ops/configuration/traffic-management/protocol-selection/). Failing to adhere to the naming convention will break the authentication feature provided by the [RequestAuthentication](https://istio.io/latest/docs/reference/config/security/request_authentication/) resource. This can be caught by running `istioctl analyze` in the application namespace, which reveals a [PortNameIsNotUnderNamingConvention](https://istio.io/latest/docs/reference/config/analysis/ist0118/) message:
-    ```sh
+    ```Bash
     $ istioctl analyze
     <snipped>
     Info [IST0118] (Service httpbin.default) Port name (port: 80, targetPort: 80) doesn't follow the naming convention of Istio port.
     ```
 1. Defining a [RequestAuthentication](https://istio.io/latest/docs/reference/config/security/request_authentication/) alone does not stop requests without JWT, the requests just won't have identities tied to them. Augment it with a [AuthorizationPolicy](https://istio.io/latest/docs/reference/config/security/authorization-policy/) to enforce the presence of JWT.
 1. The `scope` field in a JWT can contain multiple scopes in a space delimited format,
-    ```
+    ```JSON
     scope: read:database write:database
     ```
     Fortunately, Istio recognizes that and separates the string into multiple scopes. This allows us to match individual scopes from the `scope` field without having to do string manipulations.
 1. To assist with troubleshooting, set the log level for the `jwt` and `rbac` loggers to `debug`, which will produce more logs on JWT validation and RBAC enforcement in the application sidecar proxy.
-    ```sh
+    ```Bash
     istioctl proxy-config log $(k get pods -l app=httpbin -o jsonpath='{.items[*].metadata.name}') --level jwt:debug rbac:debug
     ```

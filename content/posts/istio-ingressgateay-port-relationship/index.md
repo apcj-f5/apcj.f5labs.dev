@@ -39,7 +39,7 @@ However, the port in Gateway can be set to the port or targetPort of the ingress
 
 For example below, the port is defined as 443 in Gateway:
 
-```
+```YAML
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -69,7 +69,7 @@ spec:
 
 While, when you check the envoy configurations, the listener port actually is 8443
 
-```
+```Bash
 [root@k8s-master-v1-16 networking]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-lfqz9.istio-system --port 8443 -o json
 [
     {
@@ -99,7 +99,7 @@ While, when you check the envoy configurations, the listener port actually is 84
 
 This is because the ingressgateway's 443 svc port is corresponding to targetPort 8443:
 
-```
+```YAML
  - name: https
     nodePort: 30975
     port: 443
@@ -112,7 +112,7 @@ When there is only one gateway definition, it is ok to use port or the correspon
 
 For example, configure HTTP:8080 in the gateway in the istio-bookinfo namespace (the svc 80 of ingressgateway corresponds to the 8080 of the pod):
 
-```
+```YAML
 apiVersion: v1
 items:
  
@@ -135,7 +135,8 @@ items:
 ```
 
 The gateway in the httpbin namespace configures HTTP：80，
-```
+
+```Bash
 [root@k8s-master-v1-16 httpbin]# kubectl get gateways.networking.istio.io -n httpbin -o yaml
 apiVersion: v1
 items:
@@ -154,7 +155,7 @@ items:
 
 This leads to the fact that the envoy listener is actually actually associated with the later created http.80 route:
 
-```
+```Bash
 [root@k8s-master-v1-16 ~]# istioctl proxy-config listener istio-ingressgateway-7b869dcfb5-gh2vr.istio-system --port 8080 -o json
 [
     {
@@ -182,7 +183,7 @@ This leads to the fact that the envoy listener is actually actually associated w
 
 Therefore, in these multi gateways configuration, which ultimately shares the listener port, the port number and protocol name need to be the same (BEST practice is using the port number that envoy actually listens to), but the port must be named differently (if the port name is the same, envoy will show the conflicting configuration logs):
 
-```
+```Bash
 2020-07-10T09:56:26.192152Z	warning	envoy config	[external/envoy/source/common/config/grpc_subscription_impl.cc:101] gRPC config for type.googleapis.com/envoy.api.v2.Listener rejected: 
 Error adding/updating listener(s) 0.0.0.0_8080: duplicate listener 0.0.0.0_8080 found
 ```
